@@ -1,0 +1,22 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/about/page": "app/about/page.js",
+  "/admin/content/page": "app/admin/content/page.js",
+  "/admin/enquiries/page": "app/admin/enquiries/page.js",
+  "/admin/gallery/page": "app/admin/gallery/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/projects/page": "app/admin/projects/page.js",
+  "/api/enquiries/route": "app/api/enquiries/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/api/info/route": "app/api/info/route.js",
+  "/capabilities/page": "app/capabilities/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/gallery/page": "app/gallery/page.js",
+  "/industries/page": "app/industries/page.js",
+  "/page": "app/page.js",
+  "/projects/[projectId]/page": "app/projects/[projectId]/page.js",
+  "/projects/page": "app/projects/page.js",
+  "/services/page": "app/services/page.js"
+}

@@ -1,141 +1,156 @@
-import { Link } from "@tanstack/react-router";
+"use client";
+
+import Link from "next/link";
+import { Container, TechLabel, Btn, Badge } from "./ui";
 import { useSite } from "@/store/site-store";
-import { IMAGES } from "@/data/images";
-import { Btn, Container, Reveal, TechLabel } from "./ui";
-export function PageHero({ index, eyebrow, title, intro, image }) {
+
+export function Section({
+  children,
+  dark = false,
+  grid = false,
+  tight = false,
+  className = "",
+  id,
+}) {
+  const bg = dark ? "bg-navy text-onnavy" : "bg-background text-foreground";
+  const gridCls = grid ? (dark ? "blueprint-grid-dark" : "blueprint-grid") : "";
+  const pad = tight ? "py-16 sm:py-20" : "py-20 sm:py-28 lg:py-32";
   return (
-    <section className="relative overflow-hidden bg-navy pt-32 pb-16 text-onnavy sm:pt-40 sm:pb-24">
-      {image ? (
-        <>
-          <img
-            src={image}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover opacity-25"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/90 to-navy/40" />
-        </>
-      ) : null}
-      <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-60" />
-      <Container className="relative">
-        <Reveal>
-          <div className="flex items-center gap-3">
-            <span className="tech-label text-accent">{index}</span>
-            <span className="h-px w-8 bg-accent" />
-            <TechLabel tone="light">{eyebrow}</TechLabel>
-          </div>
-          <h1 className="mt-6 max-w-4xl text-4xl leading-[1.05] font-semibold sm:text-5xl lg:text-6xl">
-            {title}
-          </h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-onnavy-muted sm:text-lg">
-            {intro}
-          </p>
-        </Reveal>
-      </Container>
-    </section>
-  );
-}
-export function Section({ children, dark = false, tight = false, grid = false, className = "" }) {
-  return (
-    <section
-      className={`relative overflow-hidden ${dark ? "bg-navy text-onnavy" : "bg-background"} ${tight ? "py-16 sm:py-20" : "py-20 sm:py-28"} ${className}`}
-    >
-      {grid ? (
-        <div
-          className={`pointer-events-none absolute inset-0 ${dark ? "blueprint-grid-dark opacity-50" : "blueprint-grid opacity-40"}`}
-        />
-      ) : null}
+    <section id={id} className={`relative overflow-hidden ${bg} ${gridCls} ${pad} ${className}`}>
       <Container className="relative">{children}</Container>
     </section>
   );
 }
-export function ProjectCard({ project, index }) {
-  const LinkAny = Link;
+
+export function PageHero({ index, eyebrow, title, intro, image, action }) {
   return (
-    <LinkAny
-      to="/projects/$projectId"
-      params={{ projectId: project.id }}
-      className="group flex flex-col border border-line bg-surface transition-all duration-500 hover:-translate-y-1 hover:border-accent/60 hover:shadow-[0_24px_60px_-32px_rgba(15,23,42,0.35)]"
+    <section className="relative overflow-hidden bg-navy pt-32 pb-20 text-onnavy sm:pt-40 sm:pb-28 lg:pb-32">
+      {image ? (
+        <img
+          src={image}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover opacity-25"
+          priority="true"
+        />
+      ) : null}
+      <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/95 to-navy/60" />
+      <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-60" />
+      <Container className="relative">
+        <div className="max-w-4xl">
+          <div className="flex flex-wrap items-center gap-3">
+            {index ? <Badge variant="accent">{index}</Badge> : null}
+            <span className="h-px w-8 bg-accent" />
+            <TechLabel tone="light">{eyebrow}</TechLabel>
+          </div>
+          <h1 className="mt-6 text-4xl leading-[1.05] font-bold tracking-tight sm:text-5xl lg:text-[3.5rem]">
+            {title}
+          </h1>
+          {intro ? (
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-onnavy-muted sm:text-lg">
+              {intro}
+            </p>
+          ) : null}
+          {action ? <div className="mt-8 flex flex-wrap gap-4">{action}</div> : null}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+export function SpecTable({ specs }) {
+  if (!specs || specs.length === 0) return null;
+  return (
+    <dl className="divide-y divide-line">
+      {specs.map((s, i) => (
+        <div
+          key={`${s.label}-${i}`}
+          className="grid grid-cols-1 gap-1 py-3 text-xs sm:grid-cols-[11rem_1fr] sm:gap-4 sm:text-sm"
+        >
+          <dt className="tech-label text-muted">{s.label}</dt>
+          <dd className="font-medium text-foreground">{s.value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+export function ProjectCard({ project, index = 0 }) {
+  return (
+    <Link
+      href={`/projects/${project.id}`}
+      className="group card-soft corner-marks flex h-full flex-col overflow-hidden bg-surface"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-navy">
+      <div className="relative aspect-[16/10] overflow-hidden bg-navy">
         <img
           src={project.image}
           alt={project.title}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-[900ms] group-hover:scale-[1.06]"
+          className="h-full w-full object-cover transition-transform duration-[1000ms] group-hover:scale-[1.06]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent opacity-70" />
-        <span className="tech-label absolute top-4 left-4 bg-navy/85 px-2.5 py-1 text-onnavy">
-          {String(index + 1).padStart(2, "0")}
-        </span>
-        <span className="tech-label absolute bottom-4 left-4 text-onnavy">{project.category}</span>
+        <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
+        <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+          <Badge variant="navy">{project.category}</Badge>
+          {project.featured ? <Badge variant="accent">Featured</Badge> : null}
+        </div>
+        <div className="tech-label absolute bottom-3 right-3 bg-navy/90 px-2.5 py-1 text-[0.65rem] text-onnavy backdrop-blur-sm">
+          {`REF P-${String(index + 1).padStart(2, "0")}`}
+        </div>
       </div>
-      <div className="flex flex-1 flex-col p-6">
-        <TechLabel>{project.industry}</TechLabel>
-        <h3 className="mt-3 text-lg leading-snug font-semibold text-foreground transition-colors duration-300 group-hover:text-accent">
-          {project.title}
-        </h3>
-        <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{project.short}</p>
-        <span className="mt-6 inline-flex items-center gap-2 text-[0.72rem] font-semibold tracking-[0.14em] text-steel uppercase transition-colors duration-300 group-hover:text-accent">
-          View Project
-          <svg
-            viewBox="0 0 24 24"
-            className="h-3.5 w-3.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-        </span>
+
+      <div className="flex flex-1 flex-col justify-between p-6 sm:p-7">
+        <div>
+          <span className="tech-label text-accent">{project.industry}</span>
+          <h3 className="mt-2 font-display text-xl leading-snug font-bold text-foreground transition-colors group-hover:text-accent">
+            {project.title}
+          </h3>
+          <p className="mt-3 text-sm leading-relaxed text-muted line-clamp-2">
+            {project.short || project.overview}
+          </p>
+        </div>
+
+        <div className="mt-6 border-t border-line pt-4 flex items-center justify-between text-xs font-mono text-muted group-hover:text-accent">
+          <span>Explore Specification →</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity" />
+        </div>
       </div>
-    </LinkAny>
+    </Link>
   );
 }
+
 export function CtaBand() {
-  const { home } = useSite();
+  const { home, company } = useSite();
   return (
     <section className="relative overflow-hidden bg-navy py-20 text-onnavy sm:py-28">
-      <img
-        src={IMAGES.cta}
-        alt="Industrial workshop floor at Three Star Enterprises"
-        className="absolute inset-0 h-full w-full object-cover opacity-25"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/85 to-navy/30" />
+      <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-60" />
+      <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
       <Container className="relative">
-        <div className="max-w-3xl">
-          <TechLabel tone="accent">Next Step</TechLabel>
-          <h2 className="mt-5 text-3xl leading-[1.08] font-semibold sm:text-4xl lg:text-5xl">
-            {home.ctaHeading}
-          </h2>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-onnavy-muted">
-            Share your drawings, concept or line requirement. Project details available on request —
-            talk to our team about your requirement.
-          </p>
-          <div className="mt-9 flex flex-wrap gap-4">
-            <Btn to="/contact">{home.ctaButton}</Btn>
-            <Btn to="/projects" variant="light">
+        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-8">
+            <div className="flex items-center gap-3">
+              <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
+              <TechLabel tone="accent">Ready for Production</TechLabel>
+            </div>
+            <h2 className="mt-4 font-display text-3xl leading-tight font-bold text-onnavy sm:text-4xl lg:text-[2.75rem]">
+              {home.ctaHeading || "Discuss your equipment programme with our Pune engineering team."}
+            </h2>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-onnavy-muted">
+              Bring us in for concept review, build-to-print manufacturing, or single-point turnkey machinery programmes.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-6 text-xs font-mono text-onnavy-muted">
+              <span>📍 Workshop: Dehu Gaon, Pune</span>
+              <span>📞 Phone: {company.phone}</span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 sm:flex-row lg:col-span-4 lg:flex-col lg:items-end">
+            <Btn to="/contact" variant="primary" className="w-full sm:w-auto text-center">
+              {home.ctaButton || "Start an Enquiry"}
+            </Btn>
+            <Btn to="/projects" variant="light" className="w-full sm:w-auto text-center">
               View Portfolio
             </Btn>
           </div>
         </div>
       </Container>
     </section>
-  );
-}
-export function SpecTable({ specs, dark = false }) {
-  return (
-    <dl className={`divide-y ${dark ? "divide-onnavy/12" : "divide-line"}`}>
-      {specs.map((s) => (
-        <div key={s.label} className="flex items-baseline justify-between gap-6 py-3.5">
-          <dt className={`tech-label ${dark ? "text-onnavy-muted" : "text-muted"}`}>{s.label}</dt>
-          <dd
-            className={`text-right font-mono text-sm font-medium ${dark ? "text-onnavy" : "text-foreground"}`}
-          >
-            {s.value}
-          </dd>
-        </div>
-      ))}
-    </dl>
   );
 }

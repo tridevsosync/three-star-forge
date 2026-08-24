@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   ADMIN_CREDENTIALS,
@@ -92,8 +94,19 @@ export function SiteProvider({ children }) {
   );
   return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>;
 }
+const defaultContextValue = {
+  ...initialState,
+  isAuthed: false,
+  login: () => false,
+  logout: () => {},
+  update: () => {},
+  addEnquiry: () => {},
+  usedImages: [],
+  reset: () => {},
+};
+
 export function useSite() {
   const ctx = useContext(SiteContext);
-  if (!ctx) throw new Error("useSite must be used inside SiteProvider");
-  return ctx;
+  return ctx || defaultContextValue;
 }
+

@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 /**
  * Scroll-triggered reveal using IntersectionObserver + CSS transitions only.

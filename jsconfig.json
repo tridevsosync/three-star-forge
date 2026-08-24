@@ -11,5 +11,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*", "server.js", "vite.config.js"]
+  "include": ["src/**/*", "server/**/*", "vite.config.js"]
 }

@@ -38,11 +38,13 @@ const enquiries = [
 const companyInfo = {
   name: "THREE STAR ENTERPRISES",
   contactPerson: "V.A.Chavan",
-  address: "Gat No 78, Near Parandwal Chowk Behind Atharva Hotel, Dehu Gaon, TQ: Haveli, Dist: Pune, Maharashtra - 412109",
+  address:
+    "Gat No 78, Near Parandwal Chowk Behind Atharva Hotel, Dehu Gaon, TQ: Haveli, Dist: Pune, Maharashtra - 412109",
   phone: "+91 9823463655 / 8788848977",
   email: "3starchavan@gmail.com",
   website: "www.threestarent.com",
-  positioning: "Comprehensive design, turnkey manufacturing, and product management services for global OEMs.",
+  positioning:
+    "Comprehensive design, turnkey manufacturing, and product management services for global OEMs.",
 };
 
 // API Routes

@@ -46,27 +46,29 @@ import pageCapabilities from "@/assets/page-capabilities-induction.jpg";
 import pageProjects from "@/assets/page-projects-line.jpg";
 import pageContact from "@/assets/page-contact-facility.jpg";
 import galleryInspection from "@/assets/gallery-inspection-bench.jpg";
+const s = (img) => (img && typeof img === "object" && "src" in img ? img.src : img);
+
 export const IMAGES = {
   // Site-level
-  hero: heroIndustrial,
-  about: aboutDesign,
-  cta: ctaWorkshop,
-  metrology: capabilitiesMetrology,
-  blueprints: npiBlueprints,
+  hero: s(heroIndustrial),
+  about: s(aboutDesign),
+  cta: s(ctaWorkshop),
+  metrology: s(capabilitiesMetrology),
+  blueprints: s(npiBlueprints),
   // Page heroes (each used once)
-  pageAbout,
-  pageServices,
-  pageCapabilities,
-  pageProjects,
-  pageContact,
+  pageAbout: s(pageAbout),
+  pageServices: s(pageServices),
+  pageCapabilities: s(pageCapabilities),
+  pageProjects: s(pageProjects),
+  pageContact: s(pageContact),
   // Industries
-  materialHandling: indMaterialHandling,
-  automation: indAutomation,
-  pharma: indPharma,
-  food: indFood,
-  process: indProcess,
-  engineeringEquipment: indEngineeringEquipment,
-  lineAutomation: indLineAutomation,
+  materialHandling: s(indMaterialHandling),
+  automation: s(indAutomation),
+  pharma: s(indPharma),
+  food: s(indFood),
+  process: s(indProcess),
+  engineeringEquipment: s(indEngineeringEquipment),
+  lineAutomation: s(indLineAutomation),
   // Projects (real photographs from the company presentation)
   verticalInduction: p4_1.url,
   horizontalInduction: p3_2.url,
@@ -98,5 +100,6 @@ export const IMAGES = {
   galleryCrankMechanism: p5_3.url,
   galleryOperatorPanel: p12_2.url,
   galleryMaintenance: p13_2.url,
-  galleryInspection,
+  galleryInspection: s(galleryInspection),
 };
+
