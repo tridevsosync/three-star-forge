@@ -142,8 +142,8 @@ export function CtaBand() {
             </div>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row lg:col-span-4 lg:flex-col lg:items-end">
-            <Btn to="/contact" variant="primary" className="w-full sm:w-auto text-center">
-              {home.ctaButton || "Start an Enquiry"}
+            <Btn to="/quote" variant="primary" className="w-full sm:w-auto text-center font-bold">
+              Request a Quote (RFQ)
             </Btn>
             <Btn to="/projects" variant="light" className="w-full sm:w-auto text-center">
               View Portfolio

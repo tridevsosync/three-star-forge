@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function Container({ children, className = "" }) {
   return (
@@ -143,77 +143,200 @@ export function MetricCard({ label, value, subtext, icon }) {
   );
 }
 
-export function Lightbox({ isOpen, onClose, image, title, category, onNext, onPrev }) {
+export function Lightbox({
+  isOpen,
+  onClose,
+  image,
+  title,
+  category,
+  description,
+  items = [],
+  currentIndex = 0,
+  onChangeIndex,
+  onNext,
+  onPrev,
+}) {
+  const [zoom, setZoom] = useState(false);
+
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setZoom(false);
+      return;
+    }
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight" && onNext) onNext();
-      if (e.key === "ArrowLeft" && onPrev) onPrev();
+      if (e.key === "ArrowRight") {
+        if (onNext) onNext();
+        else if (items.length > 0 && onChangeIndex) {
+          onChangeIndex((currentIndex + 1) % items.length);
+        }
+      }
+      if (e.key === "ArrowLeft") {
+        if (onPrev) onPrev();
+        else if (items.length > 0 && onChangeIndex) {
+          onChangeIndex((currentIndex - 1 + items.length) % items.length);
+        }
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose, onNext, onPrev]);
+  }, [isOpen, onClose, onNext, onPrev, items, currentIndex, onChangeIndex]);
 
-  if (!isOpen || !image) return null;
+  if (!isOpen) return null;
+
+  const currentItem = items.length > 0 && items[currentIndex] ? items[currentIndex] : null;
+  const displayImage = currentItem?.image || image;
+  const displayTitle = currentItem?.title || title || "Equipment Photograph";
+  const displayCategory = currentItem?.category || category;
+  const displayDesc = currentItem?.description || description;
+
+  const handleNextAction = () => {
+    if (onNext) onNext();
+    else if (items.length > 0 && onChangeIndex) {
+      onChangeIndex((currentIndex + 1) % items.length);
+    }
+  };
+
+  const handlePrevAction = () => {
+    if (onPrev) onPrev();
+    else if (items.length > 0 && onChangeIndex) {
+      onChangeIndex((currentIndex - 1 + items.length) % items.length);
+    }
+  };
+
+  const total = items.length > 0 ? items.length : 1;
+  const currentNum = items.length > 0 ? currentIndex + 1 : 1;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/95 backdrop-blur-md p-4 sm:p-8">
-      <div className="relative max-w-5xl w-full flex flex-col items-center">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute -top-12 right-0 sm:right-0 p-2 text-onnavy hover:text-accent font-mono text-sm tracking-widest uppercase flex items-center gap-2"
-        >
-          <span>Close [ESC]</span>
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-between bg-navy/95 backdrop-blur-md p-3 sm:p-6 overflow-hidden select-none">
+      {/* Top Header Bar */}
+      <div className="w-full flex items-center justify-between max-w-6xl py-2 z-10 border-b border-onnavy/15 text-onnavy">
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-xs font-semibold text-accent px-2.5 py-1 bg-accent/10 border border-accent/30">
+            {String(currentNum).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </span>
+          {displayCategory && (
+            <span className="tech-label text-onnavy-muted hidden sm:inline-block">
+              {displayCategory}
+            </span>
+          )}
+        </div>
 
-        {/* Prev Button */}
-        {onPrev && (
+        <div className="flex items-center gap-3">
+          {/* Zoom Toggle */}
           <button
-            onClick={onPrev}
-            className="absolute left-2 sm:-left-16 top-1/2 -translate-y-1/2 p-3 bg-navy/80 border border-onnavy/20 text-onnavy hover:text-accent hover:border-accent transition-colors"
+            type="button"
+            onClick={() => setZoom(!zoom)}
+            className="px-3 py-1.5 border border-onnavy/20 text-onnavy-muted hover:text-accent hover:border-accent font-mono text-xs transition-colors flex items-center gap-1.5"
+            title={zoom ? "Normal view" : "Zoom in"}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {zoom ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+              )}
+            </svg>
+            <span className="hidden sm:inline">{zoom ? "100%" : "Zoom"}</span>
+          </button>
+
+          {/* Close Button */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-3.5 py-1.5 border border-accent/40 bg-accent/10 text-accent hover:bg-accent hover:text-navy font-mono text-xs tracking-wider uppercase transition-all flex items-center gap-2"
+          >
+            <span>Close</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Center Stage */}
+      <div className="relative w-full max-w-6xl flex-1 flex items-center justify-center min-h-0 my-2">
+        {/* Prev Button */}
+        {total > 1 && (
+          <button
+            type="button"
+            onClick={handlePrevAction}
+            className="absolute left-1 sm:left-4 z-20 p-3.5 bg-navy/80 border border-onnavy/20 text-onnavy hover:text-accent hover:border-accent hover:bg-navy transition-all backdrop-blur-sm"
             aria-label="Previous image"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
         )}
 
         {/* Next Button */}
-        {onNext && (
+        {total > 1 && (
           <button
-            onClick={onNext}
-            className="absolute right-2 sm:-right-16 top-1/2 -translate-y-1/2 p-3 bg-navy/80 border border-onnavy/20 text-onnavy hover:text-accent hover:border-accent transition-colors"
+            type="button"
+            onClick={handleNextAction}
+            className="absolute right-1 sm:right-4 z-20 p-3.5 bg-navy/80 border border-onnavy/20 text-onnavy hover:text-accent hover:border-accent hover:bg-navy transition-all backdrop-blur-sm"
             aria-label="Next image"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
         )}
 
-        {/* Main Image */}
-        <div className="overflow-hidden border border-onnavy/20 bg-navy max-h-[75vh] w-full flex items-center justify-center">
+        {/* Image Container */}
+        <div className={`relative max-h-[68vh] w-full flex items-center justify-center overflow-auto p-1 transition-all ${zoom ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+          onClick={() => setZoom(!zoom)}
+        >
           <img
-            src={image}
-            alt={title || "Engineering preview"}
-            className="max-h-[75vh] w-auto max-w-full object-contain"
+            src={displayImage}
+            alt={displayTitle}
+            className={`object-contain transition-all duration-300 ${
+              zoom ? "max-h-none max-w-none scale-125 my-auto" : "max-h-[68vh] max-w-full"
+            }`}
           />
         </div>
+      </div>
 
-        {/* Caption */}
-        <div className="mt-4 w-full flex items-center justify-between border-t border-onnavy/15 pt-3 text-onnavy">
-          <div>
-            {category && <span className="tech-label text-accent block">{category}</span>}
-            <h4 className="text-base font-semibold mt-0.5">{title}</h4>
+      {/* Bottom Info Bar & Thumbnails */}
+      <div className="w-full max-w-6xl border-t border-onnavy/15 pt-3 z-10 flex flex-col gap-3 text-onnavy">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="max-w-2xl">
+            <h4 className="text-base sm:text-lg font-semibold text-onnavy leading-snug">{displayTitle}</h4>
+            {displayDesc && (
+              <p className="mt-1 text-xs text-onnavy-muted leading-relaxed">{displayDesc}</p>
+            )}
           </div>
-          <span className="font-mono text-xs text-onnavy-muted">Three Star Enterprises Precision Archive</span>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/quote?project=${encodeURIComponent(displayTitle)}&machine=${encodeURIComponent(displayCategory || "Induction Hardening Machine")}`}
+              className="border border-accent bg-accent/15 px-4 py-2 text-[0.72rem] font-semibold tracking-wider text-accent uppercase hover:bg-accent hover:text-navy transition-all flex items-center gap-2"
+            >
+              <span>Request Quote for This Build</span>
+              <span>→</span>
+            </Link>
+          </div>
         </div>
+
+        {/* Thumbnail Ribbon */}
+        {items.length > 1 && (
+          <div className="flex items-center gap-2 overflow-x-auto py-1 scrollbar-none">
+            {items.map((it, idx) => (
+              <button
+                key={it.id || idx}
+                type="button"
+                onClick={() => onChangeIndex ? onChangeIndex(idx) : null}
+                className={`relative h-12 w-16 shrink-0 border overflow-hidden transition-all ${
+                  idx === currentIndex
+                    ? "border-accent ring-2 ring-accent/50 opacity-100 scale-105"
+                    : "border-onnavy/20 opacity-50 hover:opacity-100"
+                }`}
+              >
+                <img src={it.image} alt={it.title} className="h-full w-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

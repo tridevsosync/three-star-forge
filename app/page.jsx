@@ -58,8 +58,8 @@ export default function HomePage() {
               </p>
 
               <div className="mt-10 flex flex-wrap items-center gap-4">
-                <Btn to="/contact" variant="primary" className="text-base px-8 py-4">
-                  {home.primaryCta || "Discuss a Requirement"}
+                <Btn to="/quote" variant="primary" className="text-base px-8 py-4 font-bold">
+                  {home.primaryCta || "Request Machinery Quote"}
                 </Btn>
                 <Btn to="/projects" variant="light" className="text-base px-8 py-4">
                   {home.secondaryCta || "View Portfolio"}

@@ -1,72 +1,98 @@
 import { NextResponse } from "next/server";
-
-// In-memory demo store
-const enquiries = [
-  {
-    id: "enq-1",
-    name: "John Miller",
-    company: "Apex Precision Engineering",
-    email: "j.miller@apexeng.com",
-    phone: "+91 98234 56789",
-    industry: "Industrial Automation",
-    requirement: "Turnkey induction hardening machine line automation",
-    message: "Interested in discussing customized fixture design and cycle time optimization.",
-    createdAt: new Date().toISOString(),
-  },
-];
+import { connectToDatabase } from "@/lib/mongodb";
+import Enquiry from "@/models/Enquiry";
 
 export async function GET() {
-  return NextResponse.json({
-    success: true,
-    count: enquiries.length,
-    data: enquiries,
-  });
+  try {
+    await connectToDatabase();
+    const enquiries = await Enquiry.find({}).sort({ createdAt: -1 }).lean();
+    const normalized = enquiries.map((e) => ({
+      ...e,
+      id: e._id ? e._id.toString() : e.id,
+    }));
+    return NextResponse.json({ success: true, count: normalized.length, data: normalized });
+  } catch (error) {
+    console.error("Fetch enquiries error:", error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
 }
 
 export async function POST(request) {
   try {
+    await connectToDatabase();
     const body = await request.json();
-    const { name, company, email, phone, industry, requirement, message } = body;
+    const {
+      name,
+      email,
+      phone,
+      company,
+      location,
+      industry,
+      machineType,
+      requirement,
+      timeline,
+      targetVolume,
+      message,
+      referenceProject,
+      priority,
+    } = body;
 
-    if (!name || !email || !message) {
+    if (!name || !email || !phone || !company || !message) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Name, email, and message are required fields.",
-        },
-        { status: 400 },
+        { success: false, error: "Name, email, phone, company, and project scope are required fields." },
+        { status: 400 }
       );
     }
 
-    const newEnquiry = {
-      id: `enq-${Date.now()}`,
-      name,
-      company: company || "",
-      email,
-      phone: phone || "",
-      industry: industry || "General",
-      requirement: requirement || "",
-      message,
-      createdAt: new Date().toISOString(),
-    };
+    const newEnquiry = await Enquiry.create({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      company: company.trim(),
+      location: location ? location.trim() : "",
+      industry: industry ? industry.trim() : "Industrial Automation",
+      machineType: machineType ? machineType.trim() : "Induction Hardening Machine",
+      requirement: requirement ? requirement.trim() : "Turnkey Machine Manufacturing",
+      timeline: timeline ? timeline.trim() : "1 - 3 Months",
+      targetVolume: targetVolume ? targetVolume.trim() : "",
+      message: message.trim(),
+      referenceProject: referenceProject ? referenceProject.trim() : "",
+      priority: priority || "standard",
+    });
 
-    enquiries.unshift(newEnquiry);
+    const result = {
+      ...newEnquiry.toObject(),
+      id: newEnquiry._id.toString(),
+    };
 
     return NextResponse.json(
       {
         success: true,
-        message: "Enquiry submitted successfully.",
-        data: newEnquiry,
+        message: "Quotation request (RFQ) received successfully. Reference ID: " + result.id.slice(-6).toUpperCase(),
+        data: result,
       },
-      { status: 201 },
+      { status: 201 }
     );
-  } catch {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Invalid JSON payload.",
-      },
-      { status: 400 },
-    );
+  } catch (error) {
+    console.error("Create enquiry error:", error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    await connectToDatabase();
+    const body = await request.json().catch(() => ({}));
+    const { ids } = body;
+
+    if (Array.isArray(ids) && ids.length > 0) {
+      await Enquiry.deleteMany({ _id: { $in: ids } });
+      return NextResponse.json({ success: true, message: `Deleted ${ids.length} quotation enquiries` });
+    }
+
+    await Enquiry.deleteMany({});
+    return NextResponse.json({ success: true, message: "Cleared all quotation enquiries" });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

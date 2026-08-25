@@ -868,7 +868,7 @@ export const GALLERY_CATEGORIES = [
   "Engineering",
   "Projects",
 ];
-export const GALLERY = [
+export const DEMO_GALLERY = [
   {
     id: "g-1",
     title: "Precision Components & Engineering Drawings",
@@ -933,6 +933,7 @@ export const GALLERY = [
     featured: false,
   },
 ];
+export const GALLERY = [];
 export const TESTIMONIALS = [
   {
     id: "t-1",
