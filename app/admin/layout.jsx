@@ -17,7 +17,7 @@ const TABS = [
 ];
 
 export default function AdminLayout({ children }) {
-  const { isAuthed, authChecked, login, logout, reset, contacts, enquiries } = useSite();
+  const { isAuthed, authChecked, login, logout, contacts, enquiries } = useSite();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -92,13 +92,11 @@ export default function AdminLayout({ children }) {
                 Content & Inquiries Console
               </h2>
               <p className="mt-2 font-mono text-xs text-onnavy-muted">
-                Manage shop-floor records, visual media, technical specifications, contact submissions, and RFQs.
+                Manage shop-floor records, visual media, technical specifications, contact
+                submissions, and RFQs.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Btn variant="light" onClick={reset}>
-                Reset content
-              </Btn>
               <Btn
                 variant="light"
                 onClick={() => {

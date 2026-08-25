@@ -35,8 +35,51 @@ export function SiteProvider({ children }) {
   const [isAuthed, setIsAuthed] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [galleryLoading, setGalleryLoading] = useState(false);
+  const [projectsLoading, setProjectsLoading] = useState(false);
+  const [contentLoading, setContentLoading] = useState(false);
   const [contactsLoading, setContactsLoading] = useState(false);
   const [enquiriesLoading, setEnquiriesLoading] = useState(false);
+
+  const fetchProjects = useCallback(async () => {
+    setProjectsLoading(true);
+    try {
+      const res = await fetch("/api/projects", { cache: "no-store" });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || "Could not fetch projects");
+      setState((prev) => ({ ...prev, projects: data.data }));
+    } catch (err) {
+      console.warn("Could not fetch projects:", err);
+    } finally {
+      setProjectsLoading(false);
+    }
+  }, []);
+
+  const fetchContent = useCallback(async () => {
+    setContentLoading(true);
+    try {
+      const sections = ["company", "home", "services", "industries", "faqs", "testimonials"];
+      const responses = await Promise.all(
+        sections.map((section) => fetch(`/api/content/${section}`, { cache: "no-store" })),
+      );
+      const payloads = await Promise.all(responses.map((res) => res.json()));
+      if (payloads.some((data) => !data.success)) throw new Error("Could not fetch content");
+      setState((prev) =>
+        Object.fromEntries([
+          ["company", payloads[0].data],
+          ["home", payloads[1].data],
+          ["services", payloads[2].data],
+          ["industries", payloads[3].data],
+          ["faqs", payloads[4].data],
+          ["testimonials", payloads[5].data],
+          ...Object.entries(prev).filter(([key]) => !sections.includes(key)),
+        ]),
+      );
+    } catch (err) {
+      console.warn("Could not fetch content:", err);
+    } finally {
+      setContentLoading(false);
+    }
+  }, []);
 
   // RFQ Modal Global State
   const [isRfqOpen, setIsRfqOpen] = useState(false);
@@ -110,21 +153,37 @@ export function SiteProvider({ children }) {
     try {
       const raw = window.sessionStorage.getItem(STORAGE_KEY);
       if (raw) setState({ ...initialState, ...JSON.parse(raw) });
-      setIsAuthed(window.sessionStorage.getItem(AUTH_KEY) === "1");
+      setIsAuthed(false);
     } catch {
       /* ignore */
     } finally {
       setAuthChecked(true);
     }
 
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => setIsAuthed(data.authenticated === true))
+      .catch(() => {});
+    fetchProjects();
+    fetchContent();
     fetchGallery();
     fetchContacts();
     fetchEnquiries();
-  }, [fetchGallery, fetchContacts, fetchEnquiries]);
+  }, [fetchProjects, fetchContent, fetchGallery, fetchContacts, fetchEnquiries]);
 
   useEffect(() => {
     try {
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      const persisted = {
+        ...state,
+        company: initialState.company,
+        home: initialState.home,
+        services: initialState.services,
+        industries: initialState.industries,
+        projects: initialState.projects,
+        faqs: initialState.faqs,
+        testimonials: initialState.testimonials,
+      };
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
     } catch {
       /* ignore */
     }
@@ -256,7 +315,7 @@ export function SiteProvider({ children }) {
     }
   }, []);
 
-  const uploadToCloudinary = useCallback(async (fileOrBase64) => {
+  const uploadToCloudinary = useCallback(async (fileOrBase64, folder) => {
     try {
       let body;
       let headers = {};
@@ -273,7 +332,13 @@ export function SiteProvider({ children }) {
       const res = await fetch("/api/upload", {
         method: "POST",
         headers,
-        body,
+        body:
+          fileOrBase64 instanceof File
+            ? (() => {
+                body.append("folder", folder || "three-star-forge/gallery");
+                return body;
+              })()
+            : JSON.stringify({ image: fileOrBase64, folder: folder || "three-star-forge/gallery" }),
       });
       const data = await res.json();
       if (data.success) {
@@ -304,7 +369,12 @@ export function SiteProvider({ children }) {
       }
       return { success: false, error: data.error };
     } catch (err) {
-      const local = { ...contactData, id: `C-${Date.now()}`, createdAt: new Date().toISOString(), read: false };
+      const local = {
+        ...contactData,
+        id: `C-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        read: false,
+      };
       setState((prev) => ({ ...prev, contacts: [local, ...prev.contacts] }));
       return { success: true, item: local };
     }
@@ -368,7 +438,12 @@ export function SiteProvider({ children }) {
       }
       return { success: false, error: data.error };
     } catch (err) {
-      const local = { ...enquiryData, id: `E-${Date.now()}`, createdAt: new Date().toISOString(), read: false };
+      const local = {
+        ...enquiryData,
+        id: `E-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        read: false,
+      };
       setState((prev) => ({ ...prev, enquiries: [local, ...prev.enquiries] }));
       return { success: true, item: local };
     }
@@ -417,28 +492,27 @@ export function SiteProvider({ children }) {
     }
   }, []);
 
-  const login = useCallback((email, password) => {
-    const ok =
-      email.trim().toLowerCase() === ADMIN_CREDENTIALS.email &&
-      password === ADMIN_CREDENTIALS.password;
-    if (ok) {
-      setIsAuthed(true);
-      try {
-        window.sessionStorage.setItem(AUTH_KEY, "1");
-      } catch {
-        /* ignore */
+  const login = useCallback(async (email, password) => {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsAuthed(true);
+        return true;
       }
+    } catch {
+      /* ignore */
     }
-    return ok;
+    return false;
   }, []);
 
   const logout = useCallback(() => {
     setIsAuthed(false);
-    try {
-      window.sessionStorage.removeItem(AUTH_KEY);
-    } catch {
-      /* ignore */
-    }
+    fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
   }, []);
 
   const reset = useCallback(() => setState(initialState), []);
@@ -458,6 +532,8 @@ export function SiteProvider({ children }) {
       isAuthed,
       authChecked,
       galleryLoading,
+      projectsLoading,
+      contentLoading,
       contactsLoading,
       enquiriesLoading,
       isRfqOpen,
@@ -468,6 +544,8 @@ export function SiteProvider({ children }) {
       logout,
       update,
       fetchGallery,
+      fetchProjects,
+      fetchContent,
       createGalleryItem,
       updateGalleryItem,
       deleteGalleryItem,
@@ -491,6 +569,8 @@ export function SiteProvider({ children }) {
       isAuthed,
       authChecked,
       galleryLoading,
+      projectsLoading,
+      contentLoading,
       contactsLoading,
       enquiriesLoading,
       isRfqOpen,
@@ -501,6 +581,8 @@ export function SiteProvider({ children }) {
       logout,
       update,
       fetchGallery,
+      fetchProjects,
+      fetchContent,
       createGalleryItem,
       updateGalleryItem,
       deleteGalleryItem,
@@ -529,6 +611,8 @@ const defaultContextValue = {
   isAuthed: false,
   authChecked: false,
   galleryLoading: false,
+  projectsLoading: false,
+  contentLoading: false,
   contactsLoading: false,
   enquiriesLoading: false,
   isRfqOpen: false,
@@ -539,6 +623,8 @@ const defaultContextValue = {
   logout: () => {},
   update: () => {},
   fetchGallery: async () => {},
+  fetchProjects: async () => {},
+  fetchContent: async () => {},
   createGalleryItem: async () => ({ success: false }),
   updateGalleryItem: async () => ({ success: false }),
   deleteGalleryItem: async () => ({ success: false }),

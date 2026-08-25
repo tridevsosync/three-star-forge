@@ -1,0 +1,32 @@
+import mongoose from "mongoose";
+
+const ProjectSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true, trim: true },
+    industry: { type: String, required: true, trim: true },
+    category: { type: String, required: true, trim: true },
+    image: { type: String, required: true, trim: true },
+    short: { type: String, default: "", trim: true },
+    featured: { type: Boolean, default: false },
+    overview: { type: String, default: "", trim: true },
+    challenge: { type: String, default: "", trim: true },
+    solution: { type: String, default: "", trim: true },
+    application: { type: String, default: "", trim: true },
+    specs: { type: [{ label: String, value: String }], default: [] },
+    highlights: { type: [String], default: [] },
+  },
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        ret.id = ret._id.toString();
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
+  },
+);
+
+export default mongoose.models.Project || mongoose.model("Project", ProjectSchema);

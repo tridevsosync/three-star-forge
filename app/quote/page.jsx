@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { IMAGES } from "@/data/images";
@@ -43,7 +43,7 @@ const emptyRfq = {
   referenceProject: "",
 };
 
-export default function QuotePage() {
+function QuoteForm() {
   const searchParams = useSearchParams();
   const { createEnquiry } = useSite();
   const [form, setForm] = useState(emptyRfq);
@@ -67,8 +67,16 @@ export default function QuotePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.company.trim() || !form.message.trim()) {
-      setError("Please fill all required fields (Name, Email, Phone, Company, Project Specifications).");
+    if (
+      !form.name.trim() ||
+      !form.email.trim() ||
+      !form.phone.trim() ||
+      !form.company.trim() ||
+      !form.message.trim()
+    ) {
+      setError(
+        "Please fill all required fields (Name, Email, Phone, Company, Project Specifications).",
+      );
       return;
     }
     setError("");
@@ -119,7 +127,13 @@ export default function QuotePage() {
             {submittedRfq ? (
               <div className="px-8 py-16 text-center space-y-6">
                 <div className="mx-auto flex h-20 w-20 items-center justify-center border-2 border-accent bg-accent/10 text-accent">
-                  <svg viewBox="0 0 24 24" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-10 w-10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
                     <path d="M4 12.5l5 5L20 6.5" />
                   </svg>
                 </div>
@@ -130,7 +144,12 @@ export default function QuotePage() {
                     RFQ Received Successfully
                   </h3>
                   <p className="mt-2 font-mono text-xs text-muted">
-                    Reference ID: <span className="font-bold text-accent">{submittedRfq.id ? submittedRfq.id.slice(-8).toUpperCase() : `RFQ-${Date.now().toString().slice(-6)}`}</span>
+                    Reference ID:{" "}
+                    <span className="font-bold text-accent">
+                      {submittedRfq.id
+                        ? submittedRfq.id.slice(-8).toUpperCase()
+                        : `RFQ-${Date.now().toString().slice(-6)}`}
+                    </span>
                   </p>
                 </div>
 
@@ -154,7 +173,8 @@ export default function QuotePage() {
                 </div>
 
                 <p className="mx-auto max-w-md text-xs text-muted leading-relaxed">
-                  Our engineering department will review your specifications and contact you directly with a techno-commercial proposal.
+                  Our engineering department will review your specifications and contact you
+                  directly with a techno-commercial proposal.
                 </p>
 
                 <div className="pt-4 flex flex-wrap justify-center gap-4">
@@ -187,7 +207,9 @@ export default function QuotePage() {
                 {/* Section 1: Contact & Organization */}
                 <div>
                   <div className="border-b border-line pb-2 mb-6">
-                    <span className="tech-label text-accent font-bold">Step 1 // Client & Organization</span>
+                    <span className="tech-label text-accent font-bold">
+                      Step 1 // Client & Organization
+                    </span>
                   </div>
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
@@ -214,7 +236,9 @@ export default function QuotePage() {
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">Work Email Address *</label>
+                      <label className="tech-label text-muted block mb-2">
+                        Work Email Address *
+                      </label>
                       <input
                         type="email"
                         required
@@ -226,7 +250,9 @@ export default function QuotePage() {
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">Direct Phone / Mobile *</label>
+                      <label className="tech-label text-muted block mb-2">
+                        Direct Phone / Mobile *
+                      </label>
                       <input
                         type="tel"
                         required
@@ -238,7 +264,9 @@ export default function QuotePage() {
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">Company / Enterprise Name *</label>
+                      <label className="tech-label text-muted block mb-2">
+                        Company / Enterprise Name *
+                      </label>
                       <input
                         type="text"
                         required
@@ -250,7 +278,9 @@ export default function QuotePage() {
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">Plant Location / City</label>
+                      <label className="tech-label text-muted block mb-2">
+                        Plant Location / City
+                      </label>
                       <input
                         type="text"
                         value={form.location}
@@ -265,11 +295,15 @@ export default function QuotePage() {
                 {/* Section 2: Machine Specifications */}
                 <div>
                   <div className="border-b border-line pb-2 mb-6">
-                    <span className="tech-label text-accent font-bold">Step 2 // Equipment & Project Scope</span>
+                    <span className="tech-label text-accent font-bold">
+                      Step 2 // Equipment & Project Scope
+                    </span>
                   </div>
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
-                      <label className="tech-label text-muted block mb-2">Target Machine / System Type *</label>
+                      <label className="tech-label text-muted block mb-2">
+                        Target Machine / System Type *
+                      </label>
                       <select
                         value={form.machineType}
                         onChange={(e) => set("machineType", e.target.value)}
@@ -299,7 +333,9 @@ export default function QuotePage() {
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="tech-label text-muted block mb-2">Target Production Volume / Part Geometry / Cycle Time</label>
+                      <label className="tech-label text-muted block mb-2">
+                        Target Production Volume / Part Geometry / Cycle Time
+                      </label>
                       <input
                         type="text"
                         value={form.targetVolume}
@@ -310,7 +346,9 @@ export default function QuotePage() {
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="tech-label text-muted block mb-2">Technical Specifications & Scope Details *</label>
+                      <label className="tech-label text-muted block mb-2">
+                        Technical Specifications & Scope Details *
+                      </label>
                       <textarea
                         required
                         rows={6}
@@ -342,5 +380,19 @@ export default function QuotePage() {
         </div>
       </Section>
     </>
+  );
+}
+
+export default function QuotePage() {
+  return (
+    <Suspense
+      fallback={
+        <section className="flex min-h-[60vh] items-center justify-center bg-background">
+          <p className="font-mono text-xs text-muted">Loading quotation form...</p>
+        </section>
+      }
+    >
+      <QuoteForm />
+    </Suspense>
   );
 }

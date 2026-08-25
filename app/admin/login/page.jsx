@@ -13,9 +13,9 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    if (login(email, password)) {
+    if (await login(email, password)) {
       router.push("/admin");
     } else {
       setError("Invalid credentials. Use the demo login shown below.");
@@ -28,9 +28,8 @@ export default function AdminLoginPage() {
     setError("");
   };
 
-  const handleInstantDemoLogin = () => {
-    login(ADMIN_CREDENTIALS.email, ADMIN_CREDENTIALS.password);
-    router.push("/admin");
+  const handleInstantDemoLogin = async () => {
+    if (await login(ADMIN_CREDENTIALS.email, ADMIN_CREDENTIALS.password)) router.push("/admin");
   };
 
   return (
@@ -50,7 +49,7 @@ export default function AdminLoginPage() {
           <p className="mt-3 text-sm leading-relaxed text-onnavy-muted">
             {isAuthed
               ? "You are currently signed in for this session."
-              : "Sign in to edit site content. Changes live in browser session state only."}
+              : "Sign in to edit site content stored in the production database."}
           </p>
 
           {isAuthed ? (
@@ -101,12 +100,7 @@ export default function AdminLoginPage() {
                 <Btn type="submit" full>
                   Sign in
                 </Btn>
-                <Btn
-                  type="button"
-                  variant="light"
-                  onClick={handleInstantDemoLogin}
-                  full
-                >
+                <Btn type="button" variant="light" onClick={handleInstantDemoLogin} full>
                   Instant 1-Click Demo Login
                 </Btn>
               </div>
@@ -129,8 +123,12 @@ export default function AdminLoginPage() {
               className="mt-2 cursor-pointer rounded border border-onnavy/10 bg-navy/40 p-2.5 transition-colors hover:border-accent/40"
               title="Click to autofill"
             >
-              <p className="text-onnavy">Email: <span className="text-accent">{ADMIN_CREDENTIALS.email}</span></p>
-              <p className="text-onnavy">Password: <span className="text-accent">{ADMIN_CREDENTIALS.password}</span></p>
+              <p className="text-onnavy">
+                Email: <span className="text-accent">{ADMIN_CREDENTIALS.email}</span>
+              </p>
+              <p className="text-onnavy">
+                Password: <span className="text-accent">{ADMIN_CREDENTIALS.password}</span>
+              </p>
             </div>
           </div>
         </div>
