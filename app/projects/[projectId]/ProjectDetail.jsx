@@ -138,8 +138,12 @@ export function ProjectDetail({ projectId }) {
                 Our Pune facility can adapt coil geometry, stroke lengths, and automation to your part drawings.
               </p>
               <div className="mt-6">
-                <Btn to="/contact" variant="primary" className="w-full text-center">
-                  Enquire About This Build
+                <Btn
+                  to={`/quote?project=${encodeURIComponent(project.title)}&machine=${encodeURIComponent(project.title)}`}
+                  variant="primary"
+                  className="w-full text-center"
+                >
+                  Request Quote for This Build
                 </Btn>
               </div>
             </div>
