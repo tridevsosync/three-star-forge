@@ -7,7 +7,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Invalid credentials" }, { status: 401 });
   }
 
-  const response = NextResponse.json({ success: true });
-  response.cookies.set(sessionCookie(createSessionToken()));
+  const authenticatedEmail = (email || process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+  const response = NextResponse.json({ success: true, email: authenticatedEmail });
+  response.cookies.set(sessionCookie(createSessionToken(authenticatedEmail)));
   return response;
 }

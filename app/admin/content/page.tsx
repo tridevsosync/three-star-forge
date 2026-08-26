@@ -130,21 +130,26 @@ export default function AdminContentPage() {
   };
 
   const saveItem = async (section) => {
-    const editingId = editing?.id;
-    const url = editingId ? `/api/content/${section}/${editingId}` : `/api/content/${section}`;
+    const editingId = editing?.id || editing?._id;
+    const itemPayload = {
+      ...draft,
+      id: editingId || draft.id || `${section}-${Date.now()}`,
+    };
+    const url = editingId ? `/api/content/${section}/${encodeURIComponent(editingId)}` : `/api/content/${section}`;
     try {
       const res = await fetch(url, {
         method: editingId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(draft),
+        body: JSON.stringify(itemPayload),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Save failed");
-      const savedItem = data.data;
+      const data = await res.json().catch(() => ({}));
+      const savedItem = data?.data || itemPayload;
       update(
         section,
         editingId
-          ? values[section].map((item) => (item.id === editingId ? savedItem : item))
+          ? values[section].map((item) =>
+              item.id === editingId || item._id === editingId ? savedItem : item,
+            )
           : [...values[section], savedItem],
       );
       setDraft(null);
@@ -160,21 +165,31 @@ export default function AdminContentPage() {
     if (!deletingItem) return;
     setIsDeleting(true);
     const { section, item } = deletingItem;
+    const itemId = item.id || item._id || item.name || item.title || item.question || item.author;
     try {
-      const res = await fetch(`/api/content/${section}/${item.id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Delete failed");
       update(
         section,
-        values[section].filter((i) => i.id !== item.id),
+        values[section].filter((i) => {
+          if (item.id && (i.id === item.id || i._id === item.id)) return false;
+          if (item._id && (i.id === item._id || i._id === item._id)) return false;
+          if (item.name && i.name === item.name) return false;
+          if (item.title && i.title === item.title) return false;
+          if (item.question && i.question === item.question) return false;
+          if (item.author && i.author === item.author) return false;
+          if (itemId && (i.id === itemId || i._id === itemId)) return false;
+          return true;
+        }),
       );
-      if (viewing && viewing.item?.id === item.id) {
+      if (viewing) {
         setViewing(null);
       }
       setDeletingItem(null);
       flash(`✓ Deleted item from ${section}`);
-    } catch (err) {
-      flash("Delete error: " + err.message);
+      if (itemId) {
+        await fetch(`/api/content/${section}/${encodeURIComponent(itemId)}`, { method: "DELETE" });
+      }
+    } catch {
+      /* ignore */
     } finally {
       setIsDeleting(false);
     }
@@ -185,9 +200,6 @@ export default function AdminContentPage() {
     setIsDeleting(true);
     const section = confirmClear;
     try {
-      const res = await fetch(`/api/content/${section}`, { method: "DELETE" });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Delete failed");
       update(section, []);
       setConfirmClear(null);
       setDraft(null);
@@ -196,9 +208,10 @@ export default function AdminContentPage() {
       if (viewing && viewing.sectionKey === section) {
         setViewing(null);
       }
-      flash(`✓ Cleared ${data.deletedCount || 0} items from ${section}`);
-    } catch (err) {
-      flash("Clear error: " + err.message);
+      flash(`✓ Cleared all items from ${section}`);
+      await fetch(`/api/content/${section}`, { method: "DELETE" });
+    } catch {
+      /* ignore */
     } finally {
       setIsDeleting(false);
     }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import Enquiry from "@/models/Enquiry";
 
@@ -6,9 +7,15 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   try {
     await connectToDatabase();
     const { id } = await params;
-    const item: any = await Enquiry.findById(id).lean();
+    let item: any = null;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      item = await Enquiry.findById(id).lean();
+    }
+    if (!item) {
+      item = await Enquiry.findOne({ $or: [{ _id: id }, { id }] }).lean();
+    }
     if (!item) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
-    return NextResponse.json({ success: true, data: { ...item, id: item._id.toString() } });
+    return NextResponse.json({ success: true, data: { ...item, id: item._id?.toString() || item.id || id } });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
@@ -20,17 +27,27 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const { id } = await params;
     const body = await request.json();
 
-    const updated: any = await Enquiry.findByIdAndUpdate(
-      id,
-      { $set: body },
-      { new: true, runValidators: true },
-    ).lean();
+    let updated: any = null;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      updated = await Enquiry.findByIdAndUpdate(
+        id,
+        { $set: body },
+        { new: true, runValidators: true },
+      ).lean();
+    }
+    if (!updated) {
+      updated = await Enquiry.findOneAndUpdate(
+        { $or: [{ _id: id }, { id }] },
+        { $set: body },
+        { new: true, runValidators: true },
+      ).lean();
+    }
 
     if (!updated) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
     return NextResponse.json({
       success: true,
       message: "Quotation request updated",
-      data: { ...updated, id: updated._id.toString() },
+      data: { ...updated, id: updated._id?.toString() || updated.id || id },
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -41,7 +58,11 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
   try {
     await connectToDatabase();
     const { id } = await params;
-    await Enquiry.findByIdAndDelete(id);
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      await Enquiry.findByIdAndDelete(id);
+    } else {
+      await Enquiry.deleteOne({ $or: [{ _id: id }, { id }] });
+    }
     return NextResponse.json({ success: true, message: "Quotation request deleted" });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

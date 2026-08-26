@@ -95,15 +95,15 @@ export default function AdminDashboardPage() {
       {/* KPI Metrics HUD */}
       <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-2 lg:grid-cols-4 shadow-sm">
         <Stat
-          label="RFQ Quotations"
+          label="Enquiries"
           value={stats ? stats.enquiries : enquiries.length}
-          note={`${unreadEnquiries} new / unread RFQs`}
+          note={`${unreadEnquiries} new / unread enquiries`}
           icon={<FileSpreadsheet className="h-6 w-6 text-accent" />}
           tone={unreadEnquiries > 0 ? "danger" : "default"}
         />
 
         <Stat
-          label="Contact Messages"
+          label="Contacts"
           value={contacts?.length || 0}
           note={`${unreadContacts} unread messages`}
           icon={<Mail className="h-6 w-6 text-accent" />}
@@ -127,13 +127,13 @@ export default function AdminDashboardPage() {
 
       {/* Dual Activity Streams Grid */}
       <div className="grid gap-8 lg:grid-cols-2">
-        {/* Left: Recent Inbound RFQs */}
+        {/* Left: Recent Enquiries */}
         <div className="border border-line bg-surface shadow-sm overflow-hidden flex flex-col">
           <header className="flex items-center justify-between border-b border-line bg-background/50 px-6 py-4">
             <div className="flex items-center gap-2">
               <FileSpreadsheet className="h-4 w-4 text-accent" />
               <span className="tech-label font-bold text-foreground text-xs uppercase tracking-wider">
-                Recent RFQ Quotation Enquiries
+                Recent Enquiries
               </span>
             </div>
             <Link

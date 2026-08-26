@@ -156,12 +156,6 @@ export function Footer() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
               </svg>
             </button>
-            <Link
-              href="/admin/login"
-              className="tech-label text-onnavy-muted/60 transition-colors hover:text-accent"
-            >
-              Admin Panel →
-            </Link>
           </div>
         </div>
       </Container>

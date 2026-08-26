@@ -91,12 +91,15 @@ export function SectionHead({ index, eyebrow, title, intro, dark = false, align 
 const btnBase =
   "group inline-flex items-center justify-center gap-2.5 px-6 py-3.5 text-[0.78rem] font-semibold tracking-[0.14em] uppercase transition-all duration-300 rounded-[2px]";
 const variants = {
-  primary: "bg-accent text-navy hover:bg-navy hover:text-onnavy shadow-[0_4px_16px_rgba(14,165,233,0.25)] hover:shadow-none",
+  primary:
+    "bg-accent text-navy hover:bg-navy hover:text-onnavy shadow-[0_4px_16px_rgba(14,165,233,0.28)] hover:shadow-none font-bold",
   outline:
-    "border border-line-strong text-foreground hover:border-navy hover:bg-navy hover:text-onnavy",
-  light: "border border-onnavy/30 text-onnavy hover:bg-onnavy hover:text-navy",
-  ghost: "text-foreground hover:text-accent",
-  accentGhost: "text-accent hover:bg-accent/10 border border-accent/30",
+    "border border-line-strong text-foreground hover:border-navy hover:bg-navy hover:text-onnavy bg-surface/60 font-semibold",
+  light:
+    "border border-white/30 bg-white/10 text-onnavy hover:bg-white hover:text-navy font-semibold backdrop-blur-sm shadow-sm",
+  ghost: "text-foreground hover:text-accent font-semibold",
+  accentGhost: "text-accent hover:bg-accent/15 border border-accent/40 font-semibold",
+  accentOutline: "border border-accent bg-accent/10 text-accent hover:bg-accent hover:text-navy font-bold shadow-[0_0_12px_rgba(14,165,233,0.2)]",
 };
 
 export interface BtnProps {
@@ -104,7 +107,7 @@ export interface BtnProps {
   to?: string;
   href?: string;
   params?: Record<string, string>;
-  variant?: "primary" | "outline" | "light" | "ghost" | "accentGhost";
+  variant?: "primary" | "outline" | "light" | "ghost" | "accentGhost" | "accentOutline";
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;

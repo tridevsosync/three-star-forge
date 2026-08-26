@@ -23,22 +23,31 @@ const TABS = [
   { to: "/admin/content", label: "Content CMS", icon: FileText },
   { to: "/admin/projects", label: "Projects Studio", icon: Briefcase },
   { to: "/admin/gallery", label: "Gallery Archive", icon: ImageIcon },
-  { to: "/admin/contacts", label: "Inbound Contacts", icon: Mail },
-  { to: "/admin/enquiries", label: "RFQ Quotations", icon: FileSpreadsheet },
+  { to: "/admin/contacts", label: "Contact", icon: Mail },
+  { to: "/admin/enquiries", label: "Enquiry", icon: FileSpreadsheet },
 ];
 
+import { useEffect } from "react";
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthed, authChecked, login, logout, contacts, enquiries } = useSite();
+  const { isAuthed, authChecked, authEmail, logout, contacts, enquiries } = useSite();
   const pathname = usePathname();
   const router = useRouter();
+
+  // Redirect to login if unauthenticated (called unconditionally)
+  useEffect(() => {
+    if (authChecked && !isAuthed && pathname !== "/admin/login") {
+      router.replace("/admin/login");
+    }
+  }, [authChecked, isAuthed, pathname, router]);
 
   // If on login page, render children directly without admin shell
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
 
-  // Prevent flash while checking session storage
-  if (!authChecked) {
+  // Loading state while checking session
+  if (!authChecked || !isAuthed) {
     return (
       <section className="flex min-h-screen items-center justify-center bg-navy py-24 text-onnavy">
         <div className="flex flex-col items-center gap-4 text-center">
@@ -47,69 +56,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <div>
             <p className="font-display text-lg font-bold text-onnavy">Initializing Command Console</p>
-            <p className="mt-1 font-mono text-xs text-onnavy-muted">Verifying administrator authorization token...</p>
+            <p className="mt-1 font-mono text-xs text-onnavy-muted">Verifying administrator authorization...</p>
           </div>
         </div>
-      </section>
-    );
-  }
-
-  if (!isAuthed) {
-    return (
-      <section className="relative flex min-h-screen items-center justify-center bg-navy py-20 text-onnavy">
-        <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-40" />
-        <Container className="relative z-10">
-          <div className="mx-auto max-w-lg border border-onnavy/20 bg-navy-deep/90 p-8 sm:p-12 shadow-2xl backdrop-blur-md">
-            <div className="flex items-center justify-between border-b border-onnavy/15 pb-4">
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-danger animate-pulse" />
-                <TechLabel tone="accent">Restricted Access</TechLabel>
-              </div>
-              <span className="font-mono text-[0.65rem] text-onnavy-muted uppercase tracking-widest">
-                Security Tier 1
-              </span>
-            </div>
-
-            <div className="mt-6 flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-accent/40 bg-accent/10 text-accent">
-                <Lock className="h-6 w-6" />
-              </div>
-              <div>
-                <h1 className="font-display text-2xl font-bold text-onnavy">
-                  Administrator Session Required
-                </h1>
-                <p className="mt-1 text-xs text-onnavy-muted">
-                  Three Star Enterprises Master Administration Console
-                </p>
-              </div>
-            </div>
-
-            <p className="mt-4 text-sm leading-relaxed text-onnavy-muted">
-              Access to modify shop-floor machinery data, project portfolios, RFQs, and visual media archives requires an authenticated administrator session.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3">
-              <Btn
-                onClick={() => {
-                  login(ADMIN_CREDENTIALS.email, ADMIN_CREDENTIALS.password);
-                }}
-                full
-              >
-                1-Click Instant Demo Login →
-              </Btn>
-              <Btn variant="light" to="/admin/login" full>
-                Sign In With Password Form
-              </Btn>
-            </div>
-
-            <div className="mt-6 border-t border-onnavy/10 pt-4">
-              <div className="flex items-center justify-between font-mono text-xs text-onnavy-muted">
-                <span>Demo Account</span>
-                <span className="text-accent">{ADMIN_CREDENTIALS.email}</span>
-              </div>
-            </div>
-          </div>
-        </Container>
       </section>
     );
   }
@@ -133,7 +82,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </span>
                 <span className="h-px w-6 bg-accent/40" />
                 <span className="font-mono text-xs text-onnavy-muted">
-                  Signed in as <strong className="text-onnavy font-semibold">{ADMIN_CREDENTIALS.email}</strong>
+                  Signed in as <strong className="text-onnavy font-semibold">{authEmail || ADMIN_CREDENTIALS.email}</strong>
                 </span>
               </div>
 

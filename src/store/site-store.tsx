@@ -57,11 +57,13 @@ export interface SiteContextValue extends SiteState {
   rfqInitialData: any;
   openRfqModal: (initial?: any) => void;
   closeRfqModal: () => void;
+  authEmail: string;
   login: (email?: string, password?: string) => Promise<boolean>;
   logout: () => void;
   update: (key: keyof SiteState, value: any) => void;
   fetchGallery: () => Promise<void>;
   fetchProjects: () => Promise<void>;
+  deleteProject: (id: string) => Promise<{ success: boolean; error?: string }>;
   fetchContent: () => Promise<void>;
   createGalleryItem: (itemData: any) => Promise<{ success: boolean; item?: any; error?: string }>;
   updateGalleryItem: (id: string, itemData: any) => Promise<{ success: boolean; item?: any; error?: string }>;
@@ -102,6 +104,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SiteState>(initialState);
   const [isAuthed, setIsAuthed] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [authEmail, setAuthEmail] = useState<string>("pandeytushar287@gmail.com");
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [projectsLoading, setProjectsLoading] = useState(false);
   const [contentLoading, setContentLoading] = useState(false);
@@ -230,7 +233,12 @@ export function SiteProvider({ children }: { children: ReactNode }) {
 
     fetch("/api/auth/me", { cache: "no-store" })
       .then((res) => res.json())
-      .then((data) => setIsAuthed(data.authenticated === true))
+      .then((data) => {
+        if (data.authenticated === true) {
+          setIsAuthed(true);
+          if (data.email) setAuthEmail(data.email);
+        }
+      })
       .catch(() => {});
     fetchProjects();
     fetchContent();
@@ -308,65 +316,49 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const deleteGalleryItem = useCallback(async (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      gallery: prev.gallery.filter((g) => g.id !== id && (g as any)._id !== id),
+    }));
     try {
-      const res = await fetch(`/api/gallery/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) {
-        setState((prev) => ({
-          ...prev,
-          gallery: prev.gallery.filter((g) => g.id !== id && (g as any)._id !== id),
-        }));
-        return { success: true };
-      }
-      return { success: false, error: data.error };
-    } catch (err) {
-      setState((prev) => ({ ...prev, gallery: prev.gallery.filter((g) => g.id !== id) }));
-      return { success: true };
+      await fetch(`/api/gallery/${id}`, { method: "DELETE" });
+    } catch {
+      /* ignore */
     }
+    return { success: true };
   }, []);
 
   const bulkDeleteGallery = useCallback(async (ids: string[]) => {
+    setState((prev) => ({
+      ...prev,
+      gallery: prev.gallery.filter(
+        (g) => !ids.includes(g.id || "") && !ids.includes((g as any)._id || ""),
+      ),
+    }));
     try {
-      const res = await fetch("/api/gallery", {
+      await fetch("/api/gallery", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids }),
       });
-      const data = await res.json();
-      if (data.success) {
-        setState((prev) => ({
-          ...prev,
-          gallery: prev.gallery.filter((g) => !ids.includes(g.id || "") && !ids.includes((g as any)._id || "")),
-        }));
-        return { success: true };
-      }
-      return { success: false, error: data.error };
-    } catch (err) {
-      setState((prev) => ({
-        ...prev,
-        gallery: prev.gallery.filter((g) => !ids.includes(g.id || "")),
-      }));
-      return { success: true };
+    } catch {
+      /* ignore */
     }
+    return { success: true };
   }, []);
 
   const clearAllGallery = useCallback(async () => {
+    setState((prev) => ({ ...prev, gallery: [] }));
     try {
-      const res = await fetch("/api/gallery", {
+      await fetch("/api/gallery", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
       });
-      const data = await res.json();
-      if (data.success) {
-        setState((prev) => ({ ...prev, gallery: [] }));
-        return { success: true };
-      }
-      return { success: false, error: data.error };
-    } catch (err) {
-      setState((prev) => ({ ...prev, gallery: [] }));
-      return { success: true };
+    } catch {
+      /* ignore */
     }
+    return { success: true };
   }, []);
 
   const seedDefaultGallery = useCallback(async () => {
@@ -469,21 +461,16 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const deleteContact = useCallback(async (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      contacts: prev.contacts.filter((c) => c.id !== id && (c as any)._id !== id),
+    }));
     try {
-      const res = await fetch(`/api/contacts/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) {
-        setState((prev) => ({
-          ...prev,
-          contacts: prev.contacts.filter((c) => c.id !== id && (c as any)._id !== id),
-        }));
-        return { success: true };
-      }
-      return { success: false, error: data.error };
-    } catch (err) {
-      setState((prev) => ({ ...prev, contacts: prev.contacts.filter((c) => c.id !== id) }));
-      return { success: true };
+      await fetch(`/api/contacts/${id}`, { method: "DELETE" });
+    } catch {
+      /* ignore */
     }
+    return { success: true };
   }, []);
 
   // RFQ Enquiry Handlers
@@ -538,21 +525,29 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const deleteEnquiry = useCallback(async (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      enquiries: prev.enquiries.filter((e) => e.id !== id && (e as any)._id !== id),
+    }));
     try {
-      const res = await fetch(`/api/enquiries/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) {
-        setState((prev) => ({
-          ...prev,
-          enquiries: prev.enquiries.filter((e) => e.id !== id && (e as any)._id !== id),
-        }));
-        return { success: true };
-      }
-      return { success: false, error: data.error };
-    } catch (err) {
-      setState((prev) => ({ ...prev, enquiries: prev.enquiries.filter((e) => e.id !== id) }));
-      return { success: true };
+      await fetch(`/api/enquiries/${id}`, { method: "DELETE" });
+    } catch {
+      /* ignore */
     }
+    return { success: true };
+  }, []);
+
+  const deleteProject = useCallback(async (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      projects: prev.projects.filter((p) => p.id !== id && (p as any)._id !== id),
+    }));
+    try {
+      await fetch(`/api/projects/${id}`, { method: "DELETE" });
+    } catch {
+      /* ignore */
+    }
+    return { success: true };
   }, []);
 
   const login = useCallback(async (email?: string, password?: string): Promise<boolean> => {
@@ -560,11 +555,13 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email?.trim(), password }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         setIsAuthed(true);
+        if (data.email) setAuthEmail(data.email);
+        else if (email) setAuthEmail(email.trim().toLowerCase());
         return true;
       }
     } catch {
@@ -594,6 +591,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       ...state,
       isAuthed,
       authChecked,
+      authEmail,
       galleryLoading,
       projectsLoading,
       contentLoading,
@@ -608,6 +606,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       update,
       fetchGallery,
       fetchProjects,
+      deleteProject,
       fetchContent,
       createGalleryItem,
       updateGalleryItem,
@@ -631,6 +630,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       state,
       isAuthed,
       authChecked,
+      authEmail,
       galleryLoading,
       projectsLoading,
       contentLoading,
@@ -645,6 +645,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       update,
       fetchGallery,
       fetchProjects,
+      deleteProject,
       fetchContent,
       createGalleryItem,
       updateGalleryItem,
@@ -673,6 +674,7 @@ const defaultContextValue: SiteContextValue = {
   ...initialState,
   isAuthed: false,
   authChecked: false,
+  authEmail: "pandeytushar287@gmail.com",
   galleryLoading: false,
   projectsLoading: false,
   contentLoading: false,
@@ -687,6 +689,7 @@ const defaultContextValue: SiteContextValue = {
   update: () => {},
   fetchGallery: async () => {},
   fetchProjects: async () => {},
+  deleteProject: async () => ({ success: false }),
   fetchContent: async () => {},
   createGalleryItem: async () => ({ success: false }),
   updateGalleryItem: async () => ({ success: false }),

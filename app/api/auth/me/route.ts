@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isValidSession } from "@/lib/admin-auth";
+import { isValidSession, getSessionEmail } from "@/lib/admin-auth";
 
 export async function GET(request: NextRequest) {
-  return NextResponse.json({ success: true, authenticated: isValidSession(request) });
+  const authenticated = isValidSession(request);
+  const email = authenticated ? getSessionEmail(request) : null;
+  return NextResponse.json({ success: true, authenticated, email });
 }

@@ -932,6 +932,6 @@ export const HOME_CONTENT = {
   clientsHeading: "Trusted by OEMs and engineering businesses",
 };
 export const ADMIN_CREDENTIALS = {
-  email: "admin@threestar.local",
-  password: "ThreeStar@123",
+  email: "pandeytushar287@gmail.com",
+  password: "Admin@123",
 };

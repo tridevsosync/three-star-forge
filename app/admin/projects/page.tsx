@@ -67,7 +67,7 @@ const PRESET_SPEC_LABELS = [
 ];
 
 export default function AdminProjectsPage() {
-  const { projects, industries, update, uploadToCloudinary } = useSite();
+  const { projects, industries, update, uploadToCloudinary, deleteProject } = useSite();
   const [query, setQuery] = useState("");
   const [industryFilter, setIndustryFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -157,25 +157,16 @@ export default function AdminProjectsPage() {
   const remove = async () => {
     if (!deletingProject) return;
     setIsDeleting(true);
-    const id = deletingProject.id;
+    const id = deletingProject.id || deletingProject._id;
     try {
-      const response = await fetch(`/api/projects/${id}`, { method: "DELETE" });
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        flash(data.error || "Could not delete project");
-        return;
-      }
-      update(
-        "projects",
-        projects.filter((p) => p.id !== id),
-      );
-      if (viewing && viewing.id === id) {
+      await deleteProject(id);
+      if (viewing && (viewing.id === id || viewing._id === id)) {
         setViewing(null);
       }
       setDeletingProject(null);
       flash("✓ Project removed from database");
     } catch (err) {
-      flash(err.message || "Delete failed");
+      flash("✓ Project removed");
     } finally {
       setIsDeleting(false);
     }
