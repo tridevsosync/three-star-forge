@@ -328,9 +328,9 @@ export default function GalleryPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="mt-4 font-display text-xl font-bold text-foreground">Archive is Currently Empty</h3>
+              <h3 className="mt-4 font-display text-xl font-bold text-foreground">Archive is Updating</h3>
               <p className="mt-2 text-sm text-muted max-w-md mx-auto">
-                No photographs are published in the database yet. You can upload custom build photos via the Admin Panel.
+                No photographs are currently published in this view. Contact our Pune engineering team to request customized project photographs and machine specifications.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <Link
@@ -340,10 +340,10 @@ export default function GalleryPage() {
                   Contact Our Engineering Team
                 </Link>
                 <Link
-                  href="/admin/gallery"
+                  href="/quote"
                   className="border border-line bg-surface px-5 py-2.5 font-mono text-xs font-semibold text-foreground hover:border-accent transition-colors"
                 >
-                  Go to Admin Panel →
+                  Request Machinery Quote →
                 </Link>
               </div>
             </div>

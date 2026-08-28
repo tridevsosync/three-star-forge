@@ -99,10 +99,10 @@ function QuoteForm() {
   return (
     <>
       <PageHero
-        index="RFQ"
-        eyebrow="Request For Quotation"
-        title="Custom Machine Manufacturing & Engineering Proposal."
-        intro="Submit your technical part parameters, hardening depth requirements, or turnkey automation scope. Our senior engineering team in Pune will review the specifications and issue a comprehensive manufacturing quotation."
+        index="Quote"
+        eyebrow="Get Pricing"
+        title="Request a Machine & Tooling Price Quote"
+        intro="Tell us about the machine you need, your part sizes, and your target timeline. Our Pune engineering team will review your details and send you a clear, competitive quotation."
         image={IMAGES.pageCapabilities}
       />
 
@@ -112,14 +112,14 @@ function QuoteForm() {
             {/* Header */}
             <div className="border-b border-line bg-navy text-onnavy px-8 py-6 flex flex-wrap items-center justify-between gap-4">
               <div>
-                <TechLabel tone="accent">Technical RFQ Form</TechLabel>
+                <TechLabel tone="accent">Fast 2-Step Quote Request</TechLabel>
                 <h2 className="mt-1 font-display text-2xl font-bold text-onnavy">
-                  Machinery & Tooling Quotation Request
+                  Machine & Tooling Quotation Form
                 </h2>
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs text-accent border border-accent/40 bg-accent/10 px-3 py-1">
-                  ISO 9001:2015 COMPLIANT
+                  100% CONFIDENTIAL & SECURE
                 </span>
               </div>
             </div>
@@ -139,9 +139,9 @@ function QuoteForm() {
                 </div>
 
                 <div>
-                  <span className="tech-label text-accent">Proposal Request Logged</span>
+                  <span className="tech-label text-accent">Quote Request Received</span>
                   <h3 className="mt-2 font-display text-2xl sm:text-3xl font-bold text-foreground">
-                    RFQ Received Successfully
+                    Thank You! Your Request Has Been Logged
                   </h3>
                   <p className="mt-2 font-mono text-xs text-muted">
                     Reference ID:{" "}
@@ -155,15 +155,15 @@ function QuoteForm() {
 
                 <div className="mx-auto max-w-lg border border-line bg-background p-6 text-left space-y-3 font-mono text-xs">
                   <div className="flex justify-between border-b border-line pb-2">
-                    <span className="text-muted">Client Name:</span>
+                    <span className="text-muted">Your Name:</span>
                     <span className="font-bold text-foreground">{submittedRfq.name}</span>
                   </div>
                   <div className="flex justify-between border-b border-line pb-2">
-                    <span className="text-muted">Company:</span>
+                    <span className="text-muted">Company Name:</span>
                     <span className="font-bold text-foreground">{submittedRfq.company}</span>
                   </div>
                   <div className="flex justify-between border-b border-line pb-2">
-                    <span className="text-muted">Target Equipment:</span>
+                    <span className="text-muted">Machine Type:</span>
                     <span className="font-bold text-accent">{submittedRfq.machineType}</span>
                   </div>
                   <div className="flex justify-between">
@@ -173,8 +173,7 @@ function QuoteForm() {
                 </div>
 
                 <p className="mx-auto max-w-md text-xs text-muted leading-relaxed">
-                  Our engineering department will review your specifications and contact you
-                  directly with a techno-commercial proposal.
+                  Our engineering department in Pune will review your project details and contact you directly with a full price quotation.
                 </p>
 
                 <div className="pt-4 flex flex-wrap justify-center gap-4">
@@ -186,13 +185,13 @@ function QuoteForm() {
                     }}
                     className="border border-line bg-surface px-6 py-2.5 font-mono text-xs uppercase tracking-wider text-foreground hover:border-accent"
                   >
-                    Submit Another RFQ
+                    Submit Another Quote Request
                   </button>
                   <Link
-                    href="/gallery"
+                    href="/projects"
                     className="border border-accent bg-accent text-navy px-6 py-2.5 font-mono text-xs font-bold uppercase tracking-wider hover:bg-accent-hover"
                   >
-                    Explore Machine Gallery →
+                    See Delivered Machines →
                   </Link>
                 </div>
               </div>
@@ -208,7 +207,7 @@ function QuoteForm() {
                 <div>
                   <div className="border-b border-line pb-2 mb-6">
                     <span className="tech-label text-accent font-bold">
-                      Step 1 // Client & Organization
+                      Step 1 // Your Contact Details
                     </span>
                   </div>
                   <div className="grid gap-6 sm:grid-cols-2">

@@ -43,36 +43,36 @@ export default function HomePage() {
               {/* Telemetry pill */}
               <div className="inline-flex items-center gap-3 border border-onnavy/20 bg-navy-soft/80 px-4 py-2 text-xs font-mono backdrop-blur-md">
                 <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
-                <span className="text-accent font-semibold">PUNE PRECISION FACILITY</span>
+                <span className="text-accent font-semibold">PUNE WORKSHOP & WORKS</span>
                 <span className="h-3 w-px bg-onnavy/20" />
-                <span className="text-onnavy-muted hidden sm:inline">Design • Fabrication • NPI</span>
+                <span className="text-onnavy-muted hidden sm:inline">Design • Manufacturing • Testing</span>
               </div>
 
               <h1 className="mt-8 font-display text-4xl leading-[1.05] font-extrabold tracking-tight sm:text-6xl lg:text-[4.2rem]">
-                {home.heroTitle || "Design. Sourcing. Turnkey Manufacturing."}
+                {home.heroTitle || "We Turn Engineering Ideas Into Reliable Machines."}
               </h1>
 
               <p className="mt-6 max-w-2xl text-base leading-relaxed text-onnavy-muted sm:text-xl">
                 {home.heroSubtitle ||
-                  "Engineering partner to global OEMs — delivering custom machines, induction hardening systems, and automated handling lines from concept to shop-floor stabilisation."}
+                  "Custom machine design, complete in-house manufacturing, and live testing for factories and equipment makers worldwide."}
               </p>
 
               <div className="mt-10 flex flex-wrap items-center gap-4">
                 <Btn to="/quote" variant="primary" className="text-base px-8 py-4 font-bold">
-                  {home.primaryCta || "Request Machinery Quote"}
+                  {home.primaryCta || "Get a Free Quote"}
                 </Btn>
                 <Btn to="/projects" variant="light" className="text-base px-8 py-4">
-                  {home.secondaryCta || "View Portfolio"}
+                  {home.secondaryCta || "See Our Machines"}
                 </Btn>
               </div>
 
               {/* Live Metric Strip */}
               <div className="mt-14 grid grid-cols-2 gap-4 border-t border-onnavy/15 pt-8 sm:grid-cols-4 sm:gap-6">
                 {[
-                  { value: "40+", label: "Machinery Programmes", desc: "Delivered & Commissioned" },
-                  { value: "0.005mm", label: "Precision Tolerances", desc: "Metrology Verified" },
-                  { value: "7", label: "Core Industries", desc: "From Forging to Pharma" },
-                  { value: "100%", label: "Turnkey Accountability", desc: "Single Point Coordination" },
+                  { value: "40+", label: "Machines Delivered", desc: "Built & Working on Factory Floors" },
+                  { value: "25+", label: "Years Experience", desc: "Practical Workshop Engineering" },
+                  { value: "7", label: "Industries Served", desc: "Automotive, Food, Pharma & More" },
+                  { value: "100%", label: "Tested In-House", desc: "Live Trials Before Shipping" },
                 ].map((s, idx) => (
                   <div key={idx} className="border-l border-onnavy/20 pl-4">
                     <span className="font-display text-2xl font-bold text-accent sm:text-3xl">
@@ -94,12 +94,12 @@ export default function HomePage() {
       <div className="border-y border-line bg-surface py-5">
         <Container>
           <div className="flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-muted">
-            <span className="font-semibold text-foreground">WORKFLOW DISCIPLINE:</span>
+            <span className="font-semibold text-foreground">HOW WE WORK:</span>
             <div className="flex flex-wrap items-center gap-3 sm:gap-6">
               {WORKFLOW.map((w, i) => (
                 <div key={w} className="flex items-center gap-2">
                   <span className="text-accent font-bold">0{i + 1}</span>
-                  <span className="text-foreground">{w}</span>
+                  <span className="text-foreground">{w.replace(/^\d+\.\s*/, '')}</span>
                   {i < WORKFLOW.length - 1 && <span className="text-line-strong">→</span>}
                 </div>
               ))}
@@ -114,26 +114,26 @@ export default function HomePage() {
           <InView className="lg:col-span-6">
             <SectionHead
               index="01"
-              eyebrow="Company Overview"
-              title={home.aboutHeading || "Engineering depth that carries from concept to the shop floor."}
-              intro="We work alongside OEM engineering teams on equipment programmes — reviewing intent, developing the design, sourcing components and assembling the machinery. Because design and manufacturing sit under one roof, every drawing is shop-floor validated."
+              eyebrow="Who We Are"
+              title={home.aboutHeading || "Your complete machine design and manufacturing partner."}
+              intro="We work closely with engineering teams and plant managers to turn concepts into working machinery. Because design, machining, and assembly all happen in our Pune workshop, every blueprint is verified by the team who builds the machine."
             />
             <div className="mt-8 grid grid-cols-2 gap-4">
               <div className="card-soft p-5">
-                <span className="tech-label text-accent">Design Office</span>
-                <p className="mt-2 text-sm text-muted">Full CAD/CAM, 3D modeling, FEA, and manufacturing detailing.</p>
+                <span className="tech-label text-accent">Design & 3D Modeling</span>
+                <p className="mt-2 text-sm text-muted">Full CAD models, 2D part drawings, and manufacturing blueprints.</p>
               </div>
               <div className="card-soft p-5">
-                <span className="tech-label text-accent">Workshop Works</span>
-                <p className="mt-2 text-sm text-muted">Machining, welding, precision assembly, wiring, and trials.</p>
+                <span className="tech-label text-accent">Workshop & Assembly</span>
+                <p className="mt-2 text-sm text-muted">Precision CNC cutting, welding, wiring, assembly, and live testing.</p>
               </div>
             </div>
             <div className="mt-8 flex gap-4">
               <Btn to="/about" variant="outline">
-                About Three Star
+                About Our Company
               </Btn>
               <Btn to="/capabilities" variant="ghost">
-                Technical Capabilities →
+                Explore Capabilities →
               </Btn>
             </div>
           </InView>
@@ -163,9 +163,9 @@ export default function HomePage() {
             <SectionHead
               dark
               index="02"
-              eyebrow="Capabilities"
-              title="Seven connected engineering service lines"
-              intro="Engage us for design only, build-to-print manufacturing, or single-point turnkey programmes."
+              eyebrow="What We Offer"
+              title="Our Core Machine Building & Design Services"
+              intro="Whether you need a full machine built from scratch, drawings made for your own team, or machine upgrades — we have you covered."
             />
             <Btn to="/services" variant="light">
               Explore All Services
@@ -180,7 +180,7 @@ export default function HomePage() {
                 <div>
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-sm text-accent font-bold">{String(i + 1).padStart(2, "0")}</span>
-                    <Badge variant="navy">Turnkey</Badge>
+                    <Badge variant="navy">Complete Service</Badge>
                   </div>
                   <h3 className="mt-4 font-display text-xl font-bold text-onnavy group-hover:text-accent transition-colors">
                     {s.title}
@@ -198,7 +198,7 @@ export default function HomePage() {
                   </ul>
                 </div>
                 <div className="mt-6 pt-4 border-t border-onnavy/10 flex items-center justify-between text-xs text-accent">
-                  <span>Scope Details →</span>
+                  <span>Learn More →</span>
                 </div>
               </div>
             </InView>
@@ -212,9 +212,9 @@ export default function HomePage() {
           <div className="flex flex-wrap items-end justify-between gap-6">
             <SectionHead
               index="03"
-              eyebrow="Portfolio"
-              title="Delivered equipment & automation programmes"
-              intro="Browse machines and material handling systems engineered and trialled for global manufacturing clients."
+              eyebrow="Our Work"
+              title="Machines Built & Delivered to Customers"
+              intro="Browse real machines, conveyors, and automation setups designed and manufactured in our Pune workshop."
             />
             <div className="flex flex-wrap gap-2">
               {industryFilters.map((ind) => (
@@ -244,7 +244,7 @@ export default function HomePage() {
 
         <div className="mt-12 text-center">
           <Btn to="/projects" variant="outline" className="px-8 py-4">
-            View All 22+ Delivered Projects
+            View All Delivered Machines ({projects.length}+ Builds)
           </Btn>
         </div>
       </Section>
@@ -255,9 +255,9 @@ export default function HomePage() {
           <SectionHead
             dark
             index="04"
-            eyebrow="Methodology"
-            title="New Product Introduction (NPI) Roadmap"
-            intro="How we take complex engineering briefs and convert them into repeatable, production-proven equipment."
+            eyebrow="Our Process"
+            title="How We Build Your Machine (Step-by-Step)"
+            intro="A simple, organized approach that guarantees your machine is built right, tested thoroughly, and delivered on time."
           />
         </InView>
 
@@ -267,11 +267,11 @@ export default function HomePage() {
               <div className="h-full border border-onnavy/15 bg-navy-soft/60 p-7 flex flex-col justify-between">
                 <div>
                   <span className="font-mono text-2xl font-bold text-accent">0{i + 1}</span>
-                  <h3 className="mt-3 font-display text-lg font-bold text-onnavy">{step.step}</h3>
+                  <h3 className="mt-3 font-display text-lg font-bold text-onnavy">{step.step.replace(/^\d+\.\s*/, '')}</h3>
                   <p className="mt-3 text-xs leading-relaxed text-onnavy-muted">{step.body}</p>
                 </div>
                 <div className="mt-6 pt-3 border-t border-onnavy/10 text-[0.7rem] font-mono text-accent">
-                  PHASE {i + 1} COMPLETE
+                  STEP {i + 1}
                 </div>
               </div>
             </InView>
@@ -284,9 +284,9 @@ export default function HomePage() {
         <InView>
           <SectionHead
             index="05"
-            eyebrow="Questions"
-            title="Frequently Asked Technical Questions"
-            intro="Common questions regarding project engagement, manufacturing timelines, IP protection, and trials."
+            eyebrow="FAQ"
+            title="Frequently Asked Questions"
+            intro="Quick answers to common questions about our machines, project timelines, testing, and pricing."
           />
         </InView>
 

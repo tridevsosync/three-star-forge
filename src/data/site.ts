@@ -1,19 +1,19 @@
 import { IMAGES } from "./images";
 export const COMPANY = {
   name: "THREE STAR ENTERPRISES",
-  contactPerson: "V.A.Chavan",
+  contactPerson: "V.A. Chavan",
   phone: "+91 9823463655 / 8788848977",
   email: "3starchavan@gmail.com",
   website: "www.threestarent.com",
   address:
     "Gat No 78, Near Parandwal Chowk Behind Atharva Hotel, Dehu Gaon, TQ: Haveli, Dist: Pune, Maharashtra - 412109",
   description:
-    "THREE STAR ENTERPRISES is a Pune-based design and manufacturing company that provides comprehensive design, full turnkey manufacturing, and product management services to global Original Equipment Manufacturers (OEMs). Catering to the material handling, automation, pharmaceutical, food, and process industries, the company specializes in the New Product Introduction (NPI) process to efficiently identify and resolve challenges related to design optimization, procurement, and manufacturing setups.",
+    "THREE STAR ENTERPRISES is a Pune-based engineering workshop. We design, build, and deliver custom industrial machines, conveyors, induction heating equipment, and factory automation for companies worldwide. We take care of everything from the initial drawing to complete manufacturing and on-site testing.",
   vision:
-    "Be the preferred Business partner for New Product Development and Manufacturing services in selected segments.",
-  mission: "To assist customer with most innovative solutions having greatest value.",
+    "To be the most trusted and reliable partner for custom machine design and manufacturing.",
+  mission: "To provide our customers with high-quality, practical, and long-lasting machine solutions at the best value.",
   positioning:
-    "A design services company with manufacturing and product management support to global OEMs of engineering equipment, process equipment, material handling equipment and line automation.",
+    "Your complete design, manufacturing, and testing partner for custom machines, factory automation, and material handling systems.",
 };
 export const NAV_LINKS = [
   { label: "Home", to: "/" },
@@ -26,179 +26,175 @@ export const NAV_LINKS = [
   { label: "Contact", to: "/contact" },
 ];
 export const CAPABILITY_STRIP = [
-  "Design Engineering",
-  "Turnkey Manufacturing",
-  "Product Management",
-  "New Product Introduction",
-  "Procurement",
-  "Process Optimization",
+  "Custom Machine Design",
+  "Complete In-House Build",
+  "Factory Automation",
+  "New Product Development",
+  "Parts & Material Sourcing",
+  "Quality Testing & Trials",
 ];
 export const WORKFLOW = [
-  "Design",
-  "Procurement",
-  "Manufacturing",
-  "Product Management",
-  "Delivery",
+  "1. Concept & 3D Design",
+  "2. Material Sourcing",
+  "3. Machine Building",
+  "4. Quality Testing",
+  "5. Delivery & Setup",
 ];
 export const NPI_STEPS = [
   {
-    step: "Concept",
-    body: "Requirement study, application context and functional intent captured with the OEM engineering team.",
+    step: "1. Understanding Your Needs",
+    body: "We study your requirements, drawings, and machine goals together with your team to understand exactly what you need.",
   },
   {
-    step: "Design",
-    body: "Detailed mechanical design, assembly modelling and manufacturing drawings prepared for the build.",
+    step: "2. 3D Design & CAD Drawings",
+    body: "Our design team creates clear 3D computer models and full 2D manufacturing blueprints for every single part.",
   },
   {
-    step: "Optimization",
-    body: "Design reviewed for manufacturability, standardisation, cycle time and cost of the finished equipment.",
+    step: "3. Design Optimization",
+    body: "We refine the design so the machine is simple to make, easy to maintain, energy efficient, and cost-effective.",
   },
   {
-    step: "Procurement",
-    body: "Bought-out selection, vendor development and sourcing of fabricated and machined content.",
+    step: "4. Quality Material Sourcing",
+    body: "We procure certified raw materials, motors, electrical parts, and sensors from trusted, verified suppliers.",
   },
   {
-    step: "Prototype / Manufacturing",
-    body: "Fabrication, machining and assembly of the first build with in-process engineering support.",
+    step: "5. Workshop Manufacturing",
+    body: "We handle all precision cutting, CNC machining, welding, wiring, and assembly under one roof in Pune.",
   },
   {
-    step: "Process Fine Tuning",
-    body: "Setup trials, parameter refinement and correction of process and handling challenges.",
+    step: "6. Live Testing & Trials",
+    body: "We run the completed machine with your actual parts and products to make sure everything works smoothly before shipping.",
   },
   {
-    step: "Final Manufacturing",
-    body: "Stabilised build documentation handed over for repeat manufacturing and support.",
+    step: "7. Delivery & Ready to Run",
+    body: "We carefully deliver the machine with complete documentation, user manuals, and setup support.",
   },
 ];
 export const WHY_POINTS = [
   {
-    title: "OEM-focused engineering support",
-    body: "We work as an extension of OEM engineering teams on equipment programmes, from first concept to a manufacturable build.",
+    title: "Everything Under One Roof",
+    body: "Design, raw materials, machining, assembly, and testing all happen in our Pune workshop, preventing miscommunication and delays.",
   },
   {
-    title: "Integrated design and manufacturing",
-    body: "Design, procurement and build sit under one roof, so drawings are validated by the people who make the machine.",
+    title: "Over 25 Years of Practical Experience",
+    body: "Our engineers and technicians have decades of hands-on workshop experience building heavy-duty industrial equipment.",
   },
   {
-    title: "NPI expertise",
-    body: "A dedicated New Product Introduction approach that surfaces design, sourcing and setup issues early.",
+    title: "Tested with Real Parts Before Shipping",
+    body: "We don't ship until your machine is fully assembled and tested with your actual materials to guarantee performance.",
   },
   {
-    title: "Design optimization",
-    body: "Existing designs reviewed for manufacturability, standardisation and simplified assembly.",
+    title: "Cost-Effective & Practical Designs",
+    body: "We design every machine to be sturdy, easy for operators to use, simple to repair, and cost-efficient to run.",
   },
   {
-    title: "Manufacturing setup support",
-    body: "Assistance in establishing fixtures, handling, loading and inspection setups around the equipment.",
+    title: "Single Point of Contact",
+    body: "You get a dedicated project manager who keeps you updated on progress from day one to final delivery.",
   },
   {
-    title: "Process fine tuning",
-    body: "Trial support and iterative correction until the process runs repeatably on the shop floor.",
-  },
-  {
-    title: "Multi-industry experience",
-    body: "Material handling, automation, pharmaceutical, food, process and forging applications.",
+    title: "Serving Many Industries",
+    body: "Proven track record in automotive, forging, food processing, pharma, material handling, and automation.",
   },
 ];
 export const SERVICES = [
   {
     id: "design-engineering",
     code: "S-01",
-    title: "Design Engineering",
+    title: "Machine Design & 3D Modeling",
     summary:
-      "Comprehensive mechanical design for industrial equipment — concept layouts, detailed design, assembly modelling and manufacturing documentation.",
+      "We design custom machines from scratch. We provide complete 3D computer models and ready-to-use manufacturing blueprints for your project.",
     points: [
-      "Equipment and special purpose machine design",
-      "Design optimization and design for manufacturability",
-      "Product development support for OEM programmes",
-      "Manufacturing-oriented drawings and assembly documentation",
+      "Custom machine and automation layout design",
+      "Improving existing designs to lower build costs",
+      "Complete 3D CAD modeling and part drawings",
+      "Clear assembly blueprints ready for manufacturing",
     ],
     outcome:
-      "A manufacturable design pack — layouts, assemblies and drawings ready to release to the shop floor.",
+      "A complete, ready-to-build drawing package for your machine.",
   },
   {
     id: "turnkey-manufacturing",
     code: "S-02",
-    title: "Turnkey Manufacturing",
+    title: "Complete Machine Manufacturing",
     summary:
-      "Full turnkey manufacturing services covering fabrication, machining, assembly and commissioning support for engineering equipment.",
+      "We build your entire machine from start to finish — steel cutting, precision machining, welding, electrical wiring, and full assembly in our Pune workshop.",
     points: [
-      "Fabricated structures, frames and machine bases",
-      "Machined and bought-out content management",
-      "Mechanical assembly and integration",
-      "Trials and handover support",
+      "Heavy steel frames, machine bases, and structures",
+      "Precision CNC machining and bought-out components",
+      "Mechanical and electrical assembly under one roof",
+      "Full live testing before we ship to your plant",
     ],
-    outcome: "A built, assembled and trialled machine handed over with its build documentation.",
+    outcome: "A fully built, wired, and tested machine ready to run on your factory floor.",
   },
   {
     id: "product-management",
     code: "S-03",
-    title: "Product Management",
+    title: "Project Management & Supervision",
     summary:
-      "Coordination across design, procurement and manufacturing so an equipment programme moves as one controlled build.",
+      "A dedicated project manager coordinates the entire build, keeping you updated on timelines, budget, and delivery milestones.",
     points: [
-      "Single point of engineering coordination",
-      "Change control across drawings and build",
-      "Build schedule and milestone tracking",
-      "Documentation for repeat manufacturing",
+      "Single point of contact for all updates",
+      "Managing drawing revisions and build schedules",
+      "Tracking material sourcing and milestones",
+      "Complete user manuals and spare parts lists",
     ],
-    outcome: "One accountable engineering owner across drawings, sourcing and build milestones.",
+    outcome: "Peace of mind with on-time delivery and one accountable team leader.",
   },
   {
     id: "npi",
     code: "S-04",
-    title: "New Product Introduction (NPI)",
+    title: "New Product Development",
     summary:
-      "Our core differentiator: a structured NPI process where design optimization, procurement and manufacturing setup challenges are identified and resolved early.",
+      "Building a brand-new machine? We help test prototypes, solve design flaws early, and refine the setup for smooth, trouble-free production.",
     points: [
-      "Requirement to production route mapping",
-      "Early identification of design and sourcing risk",
-      "Manufacturing setup definition",
-      "Validation and stabilised production release",
+      "Translating your concept into working machinery",
+      "Finding and fixing design issues early",
+      "Setting up tooling, jigs, and fixtures",
+      "Smooth handover for regular production",
     ],
-    outcome: "Design, sourcing and setup risks resolved before production, not during it.",
+    outcome: "New machines delivered without unexpected delays or costly mistakes.",
   },
   {
     id: "procurement",
     code: "S-05",
-    title: "Procurement Support",
+    title: "Parts & Material Sourcing",
     summary:
-      "Sourcing of mechanical, electrical and bought-out content with vendor development around the equipment build.",
+      "We purchase certified raw materials, motors, sensors, pneumatic valves, and bearings from trusted manufacturers at competitive prices.",
     points: [
-      "Bought-out selection and specification",
-      "Vendor development and follow-up",
-      "Fabrication and machining outsourcing control",
-      "Inspection at source where required",
+      "Selecting the right branded parts and motors",
+      "Quality inspection of raw steel and components",
+      "Direct relationships with certified suppliers",
+      "Ensuring all parts arrive on schedule",
     ],
-    outcome: "Specified, sourced and inspected bought-out content aligned to the build schedule.",
+    outcome: "High-quality, genuine parts delivered on time for the machine build.",
   },
   {
     id: "process-optimization",
     code: "S-06",
-    title: "Manufacturing Process Optimization",
+    title: "Process & Speed Improvement",
     summary:
-      "Fine tuning of processes and manufacturing setups so equipment performs repeatably in production conditions.",
+      "We help fine-tune your machines to run faster, produce higher quality parts, and reduce operator effort and downtime.",
     points: [
-      "Process parameter fine tuning",
-      "Fixture and handling improvement",
-      "Cycle time and ergonomics review",
-      "Setup standardisation",
+      "Speeding up machine cycle times",
+      "Custom loading and unloading fixtures",
+      "Making machines safer and easier for operators",
+      "Reducing scrap and part defects",
     ],
-    outcome: "A process that runs repeatably at the expected cycle on the customer's floor.",
+    outcome: "Faster cycle times, higher output, and fewer machine breakdowns.",
   },
   {
     id: "automation-material-handling",
     code: "S-07",
-    title: "Automation & Material Handling Solutions",
+    title: "Conveyors & Factory Automation",
     summary:
-      "Conveying, loading, sorting, inspection and pick-and-place systems engineered around the customer's line.",
+      "Custom conveyor belts, automatic part loaders, sorting mechanisms, and robotic pick-and-place units tailored to your factory layout.",
     points: [
-      "Chain, slat, wire mesh, modular and honeycomb belt conveyors",
-      "Automatic loading and unloading systems",
-      "Accept-reject and sorting devices",
-      "Inspection and crack detection handling systems",
+      "Belt, roller, chain, and mesh conveyors",
+      "Automatic parts loading and sorting gates",
+      "Inline camera and sensor inspection fixtures",
+      "Integration with your existing production lines",
     ],
-    outcome: "Handling, conveying and inspection integrated into the existing line flow.",
+    outcome: "Smooth, automated material flow that cuts down on manual handling.",
   },
 ];
 export const INDUSTRIES = [
@@ -868,68 +864,142 @@ export const GALLERY_CATEGORIES = [
   "Engineering",
   "Projects",
 ];
-export const DEMO_GALLERY: any[] = [];
-export const GALLERY: any[] = [];
+export const DEMO_GALLERY = [
+  {
+    id: "g-1",
+    title: "Vertical Induction Hardening Machine Assembly",
+    category: "Machines",
+    image: IMAGES.verticalInduction,
+    featured: true,
+    caption: "Full assembly and testing of vertical induction hardening scanner at Pune plant.",
+  },
+  {
+    id: "g-2",
+    title: "Horizontal Induction Scanner Trial",
+    category: "Machines",
+    image: IMAGES.horizontalInduction,
+    featured: true,
+    caption: "Horizontal induction scanner with integrated CNC quench flow controls.",
+  },
+  {
+    id: "g-3",
+    title: "Precision Induction Heating Glow",
+    category: "Engineering",
+    image: IMAGES.galleryInductionGlow,
+    featured: true,
+    caption: "High frequency induction coil hardening cycle on automotive components.",
+  },
+  {
+    id: "g-4",
+    title: "Dual Spindle Vertical Machine Inspection",
+    category: "Machines",
+    image: IMAGES.dualSpindle,
+    featured: false,
+    caption: "Dual spindle workstation configured for high-volume cylindrical component hardening.",
+  },
+  {
+    id: "g-5",
+    title: "Crank Shaft Inductor & Quench Mechanism",
+    category: "Manufacturing",
+    image: IMAGES.crankShaft,
+    featured: true,
+    caption: "Custom crankshaft journal inductor setup and precision quench manifold.",
+  },
+  {
+    id: "g-6",
+    title: "Industrial Line Automation & Conveyors",
+    category: "Automation",
+    image: IMAGES.modularConveyor,
+    featured: false,
+    caption: "Modular slat conveyor with integrated optical sensor gates for line transfer.",
+  },
+  {
+    id: "g-7",
+    title: "Heavy Machine Assembly & Metrology",
+    category: "Manufacturing",
+    image: IMAGES.newMachineAssembly,
+    featured: false,
+    caption: "Precision alignment and metrology verification on customized engineering equipment.",
+  },
+  {
+    id: "g-8",
+    title: "Automated Billet Loader Station",
+    category: "Automation",
+    image: IMAGES.autoBilletLoader,
+    featured: true,
+    caption: "Pneumatic billet feeder mechanism engineered for high-temperature forging lines.",
+  },
+  {
+    id: "g-9",
+    title: "Precision Metrology & Quality Bench",
+    category: "Engineering",
+    image: IMAGES.galleryInspection,
+    featured: false,
+    caption: "Laser alignment and dimensional verification bench at our Pune works.",
+  },
+];
+export const GALLERY = DEMO_GALLERY;
 export const TESTIMONIALS = [
   {
     id: "t-1",
     quote:
-      "Demo content — replace from the admin panel. Placeholder feedback describing design and manufacturing support on an equipment programme.",
-    author: "Demo Entry",
-    role: "OEM Engineering Team (demo)",
+      "Three Star Enterprises built a custom induction hardening machine for our factory. The build quality was solid, and the machine has been running smoothly without any issues.",
+    author: "Plant Head",
+    role: "Automotive Parts Manufacturer",
     enabled: true,
   },
   {
     id: "t-2",
     quote:
-      "Demo content — replace from the admin panel. Placeholder feedback describing NPI support during a new machine build.",
-    author: "Demo Entry",
-    role: "Manufacturing Lead (demo)",
+      "Working with their team was very straightforward. They kept us updated every week, tested the machine thoroughly in Pune, and delivered right on time.",
+    author: "Operations Manager",
+    role: "Industrial Engineering Company",
     enabled: true,
   },
 ];
 export const FAQS = [
   {
     id: "f-1",
-    question: "What does Three Star Enterprises do?",
+    question: "What kind of machines does Three Star Enterprises build?",
     answer:
-      "We provide design services, full turnkey manufacturing and product management support to global OEMs of engineering equipment, process equipment, material handling equipment and line automation.",
+      "We design and build custom industrial machinery, including induction hardening systems, conveyor belts, automated parts loaders, inspection jigs, and factory automation equipment.",
   },
   {
     id: "f-2",
-    question: "Can you work from our concept or existing drawings?",
+    question: "Can you work from our existing drawings, or do you design from scratch?",
     answer:
-      "Yes. We take up programmes from concept stage and also review, optimize and manufacture from existing customer drawings.",
+      "Both! We can design a brand-new machine based on your concept, or build directly from your existing 2D and 3D CAD drawings.",
   },
   {
     id: "f-3",
-    question: "What is your NPI process?",
+    question: "How do you test the machine before delivering it to our plant?",
     answer:
-      "Concept, design, optimization, procurement, prototype or manufacturing, process fine tuning and final manufacturing — with design, sourcing and setup issues resolved before production release.",
+      "We fully assemble, wire, and power up the machine in our Pune workshop. We run live trials using your actual sample parts to make sure everything works perfectly before dispatch.",
   },
   {
     id: "f-4",
-    question: "Which industries do you serve?",
+    question: "Which industries do you work with?",
     answer:
-      "Material handling, industrial automation, pharmaceutical, food, process industries, engineering equipment and line automation.",
+      "We serve companies across automotive, manufacturing, food processing, pharmaceuticals, material handling, forging, and heavy engineering.",
   },
   {
     id: "f-5",
-    question: "Can you share detailed project specifications?",
-    answer: "Project details are available on request. Talk to our team about your requirement.",
+    question: "How can I get a price quote for my machine project?",
+    answer:
+      "Simply fill out our Quote Request form on this website or call our Pune office directly. Our engineering team will review your requirements and send a clear, detailed quotation.",
   },
 ];
 export const HOME_CONTENT = {
-  eyebrow: "ENGINEERING • DESIGN • MANUFACTURING",
-  heroTitle: "Engineering Ideas Into Industrial Reality.",
+  eyebrow: "DESIGN • MANUFACTURING • TESTING",
+  heroTitle: "We Turn Engineering Ideas Into Reliable Machines.",
   heroSubtitle:
-    "Design, turnkey manufacturing and product management solutions for global OEMs across material handling, automation, pharmaceutical, food and process industries.",
-  primaryCta: "Explore Our Capabilities",
-  secondaryCta: "Discuss Your Project",
-  aboutHeading: "A design and manufacturing services partner for global OEMs",
-  ctaHeading: "Have an Engineering Challenge? Let's Build the Solution.",
-  ctaButton: "Discuss Your Requirement",
-  clientsHeading: "Trusted by OEMs and engineering businesses",
+    "Custom machine design, complete in-house manufacturing, and testing for factories and equipment makers.",
+  primaryCta: "Get a Free Quote",
+  secondaryCta: "See Our Machines",
+  aboutHeading: "Your trusted design and machine building partner in Pune",
+  ctaHeading: "Have a machine project in mind? Let's build it together.",
+  ctaButton: "Get in Touch with Our Team",
+  clientsHeading: "Trusted by equipment manufacturers and industrial businesses",
 };
 export const ADMIN_CREDENTIALS = {
   email: "pandeytushar287@gmail.com",

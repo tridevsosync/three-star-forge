@@ -156,13 +156,13 @@ export function CtaBand() {
           <div className="lg:col-span-8">
             <div className="flex items-center gap-3">
               <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
-              <TechLabel tone="accent">Ready for Production</TechLabel>
+              <TechLabel tone="accent">Ready to Build</TechLabel>
             </div>
             <h2 className="mt-4 font-display text-3xl leading-tight font-bold text-onnavy sm:text-4xl lg:text-[2.75rem]">
-              {home.ctaHeading || "Discuss your equipment programme with our Pune engineering team."}
+              {home.ctaHeading || "Have a machine project in mind? Let's build it together."}
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-onnavy-muted">
-              Bring us in for concept review, build-to-print manufacturing, or single-point turnkey machinery programmes.
+              Talk directly with our Pune workshop team. Whether you need a new custom machine or drawings built, we provide fast, honest pricing.
             </p>
             <div className="mt-6 flex flex-wrap gap-6 text-xs font-mono text-onnavy-muted">
               <span>📍 Workshop: Dehu Gaon, Pune</span>
@@ -171,10 +171,10 @@ export function CtaBand() {
           </div>
           <div className="flex flex-col gap-4 sm:flex-row lg:col-span-4 lg:flex-col lg:items-end">
             <Btn to="/quote" variant="primary" className="w-full sm:w-auto text-center font-bold">
-              Request a Quote (RFQ)
+              Get a Free Quote
             </Btn>
             <Btn to="/projects" variant="light" className="w-full sm:w-auto text-center">
-              View Portfolio
+              See Our Work
             </Btn>
           </div>
         </div>

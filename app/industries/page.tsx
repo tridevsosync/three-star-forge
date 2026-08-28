@@ -13,13 +13,13 @@ export default function IndustriesPage() {
     <>
       <PageHero
         index="03"
-        eyebrow="Industry Sectors"
-        title="Equipment engineered for the demanding conditions of each industry."
-        intro="From high-temperature hot forging lines to hygienic pharmaceutical and food processing environments — our design parameters, metallurgy, and controls adapt to every operating requirement."
+        eyebrow="Industries"
+        title="Custom Machines Built for Every Industry"
+        intro="From heavy-duty forging plants to clean pharmaceutical and food factories, we design and build machinery tailored to your exact plant conditions and materials."
         image={IMAGES.pageProjects}
         action={
-          <Btn to="/contact" variant="primary">
-            Request Sector Consultation
+          <Btn to="/quote" variant="primary">
+            Request an Industry Quote
           </Btn>
         }
       />
@@ -28,9 +28,9 @@ export default function IndustriesPage() {
         <InView>
           <SectionHead
             index="3.1"
-            eyebrow="Sector Coverage"
-            title="Seven Core Industries, One Engineering Discipline"
-            intro="Detailed sector capabilities and equipment engineered for global OEM clients. Full project case studies available on request."
+            eyebrow="Our Reach"
+            title="Serving 7 Core Industries with Proven Machines"
+            intro="Explore the custom machines, conveyors, and automated systems we have built for factories across India and globally."
           />
         </InView>
 

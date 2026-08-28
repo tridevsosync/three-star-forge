@@ -62,23 +62,23 @@ export default function ContactPage() {
     <>
       <PageHero
         index="07"
-        eyebrow="Direct Communication"
-        title="Connect with Three Star Enterprises."
-        intro="Have a question about our engineering facility, manufacturing capabilities, or want to schedule an on-site visit in Pune? Reach out directly using the form below."
+        eyebrow="Contact Us"
+        title="Get in Touch with Three Star Enterprises"
+        intro="Have a question about our machines, need a price quote, or want to visit our workshop in Pune? Send us a message below or call us directly."
         image={IMAGES.pageContact}
       />
 
       {/* RFQ Prompt Banner */}
       <div className="border-b border-line bg-accent/10 py-4 px-4 text-center">
         <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-          <span className="font-bold text-accent">LOOKING FOR A MACHINERY QUOTATION?</span>
+          <span className="font-bold text-accent">NEED A FAST PRICE QUOTE FOR A MACHINE?</span>
           <span className="text-muted hidden sm:inline">—</span>
-          <span className="text-foreground">For custom machine builds, tooling, and induction hardening specifications:</span>
+          <span className="text-foreground">Tell us about your machine type, dimensions, and timeline:</span>
           <Link
             href="/quote"
             className="border border-accent bg-accent text-navy px-3.5 py-1 font-bold uppercase tracking-wider hover:bg-navy hover:text-onnavy transition-colors"
           >
-            Open RFQ Form →
+            Get a Free Quote →
           </Link>
         </div>
       </div>

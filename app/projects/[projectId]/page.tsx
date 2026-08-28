@@ -8,6 +8,8 @@ export function generateStaticParams() {
   }));
 }
 
+export const dynamicParams = true;
+
 export async function generateMetadata({
   params,
 }: {
@@ -18,7 +20,8 @@ export async function generateMetadata({
 
   if (!project) {
     return {
-      title: "Project unavailable — Three Star Enterprises",
+      title: "Project Specifications — Three Star Enterprises",
+      description: "Custom machinery and industrial automation equipment manufactured by Three Star Enterprises in Pune.",
     };
   }
 

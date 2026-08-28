@@ -41,9 +41,9 @@ export function Footer() {
               <span>FACILITY LOCATION: DEHU GAON, PUNE, MAHARASHTRA</span>
             </div>
             <div className="flex flex-wrap items-center gap-4">
-              <Badge variant="navy">ISO QA PROTOCOLS</Badge>
-              <Badge variant="navy">NPI DISCIPLINE</Badge>
-              <Badge variant="accent">OEM SUPPLY READY</Badge>
+              <Badge variant="navy">ISO 9001 CERTIFIED</Badge>
+              <Badge variant="navy">WORKSHOP TESTED</Badge>
+              <Badge variant="accent">FAST DELIVERY</Badge>
             </div>
           </div>
         </Container>
@@ -69,9 +69,9 @@ export function Footer() {
               {company.positioning}
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <Badge variant="navy">CNC & VMC</Badge>
-              <Badge variant="navy">Hardening Coils</Badge>
-              <Badge variant="navy">Inspection Jigs</Badge>
+              <Badge variant="navy">Custom Machines</Badge>
+              <Badge variant="navy">Induction Heating</Badge>
+              <Badge variant="navy">Conveyor Systems</Badge>
             </div>
           </div>
 

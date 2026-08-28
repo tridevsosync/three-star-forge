@@ -33,17 +33,17 @@ export default function AboutPage() {
     <>
       <PageHero
         index="01"
-        eyebrow="Company Profile"
-        title="Engineering partner to global OEMs, built around design and manufacturing."
+        eyebrow="About Us"
+        title="We design, build, and test custom industrial machines."
         intro={company.positioning}
         image={IMAGES.pageAbout}
         action={
           <div className="flex flex-wrap items-center gap-4">
             <Btn to="/quote" variant="primary">
-              Submit Machinery RFQ
+              Get a Free Quote
             </Btn>
             <Btn to="/projects" variant="light">
-              Explore Portfolio
+              See Our Work
             </Btn>
           </div>
         }
@@ -58,11 +58,11 @@ export default function AboutPage() {
               <p className="mt-1.5 font-display text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
                 25+ <span className="text-accent text-xl">Years</span>
               </p>
-              <p className="mt-1 font-mono text-xs text-muted">Shop-Floor Engineering</p>
+              <p className="mt-1 font-mono text-xs text-muted">Hands-On Engineering</p>
             </div>
 
             <div className="px-4 py-2 sm:py-0 text-center sm:text-left">
-              <span className="tech-label text-accent">Machinery Delivered</span>
+              <span className="tech-label text-accent">Machines Delivered</span>
               <p className="mt-1.5 font-display text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
                 100+ <span className="text-accent text-xl">Builds</span>
               </p>
@@ -70,19 +70,19 @@ export default function AboutPage() {
             </div>
 
             <div className="px-4 py-2 sm:py-0 text-center sm:text-left">
-              <span className="tech-label text-accent">Industry Sectors</span>
+              <span className="tech-label text-accent">Industries Served</span>
               <p className="mt-1.5 font-display text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                05 <span className="text-accent text-xl">Sectors</span>
+                07 <span className="text-accent text-xl">Sectors</span>
               </p>
-              <p className="mt-1 font-mono text-xs text-muted">Global OEM Partnerships</p>
+              <p className="mt-1 font-mono text-xs text-muted">Trusted Manufacturing</p>
             </div>
 
             <div className="px-4 py-2 sm:py-0 text-center sm:text-left">
-              <span className="tech-label text-accent">Standard Quality</span>
+              <span className="tech-label text-accent">Testing & QA</span>
               <p className="mt-1.5 font-display text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                100% <span className="text-accent text-xl">In-House</span>
+                100% <span className="text-accent text-xl">Tested</span>
               </p>
-              <p className="mt-1 font-mono text-xs text-muted">DFM & Assembly Trial</p>
+              <p className="mt-1 font-mono text-xs text-muted">Run with Real Parts</p>
             </div>
           </div>
         </Container>
@@ -95,17 +95,17 @@ export default function AboutPage() {
             <InView>
               <SectionHead
                 index="1.1"
-                eyebrow="Company Overview"
-                title="A design engineering house with shop-floor manufacturing depth"
+                eyebrow="Our Story"
+                title="A full machine design and manufacturing facility in Pune"
               />
               <p className="mt-7 text-base leading-relaxed text-muted sm:text-lg">
                 {company.description}
               </p>
               <p className="mt-5 text-base leading-relaxed text-muted">
-                We work alongside OEM engineering teams on equipment programmes — reviewing intent,
-                developing the 3D design, procuring verified components, and manufacturing the custom machine.
-                Because design and fabrication sit in the same Pune facility, drawings are validated by the people
-                who assemble and trial the equipment.
+                We work side-by-side with plant engineers, factory owners, and technical directors.
+                We review your goals, create clean 3D CAD blueprints, source certified parts, and build the machine
+                in our Pune workshop. Because the people designing the machine are working directly with the people
+                assembling it, you get higher quality with zero miscommunication.
               </p>
             </InView>
 
@@ -117,10 +117,10 @@ export default function AboutPage() {
                   <Wrench className="h-4 w-4 text-accent" />
                 </div>
                 <h4 className="mt-3 font-display text-lg font-bold text-foreground">
-                  Design for Manufacturing (DFM)
+                  Smart, Practical Design
                 </h4>
                 <p className="mt-2 text-xs leading-relaxed text-muted font-mono">
-                  Every 3D CAD model is engineered to eliminate setup bottlenecks, utilize standard raw materials, and guarantee component interchangeability.
+                  Every 3D model is designed to be sturdy, simple to maintain, easy for operators to use, and cost-effective.
                 </p>
               </div>
 
@@ -130,10 +130,10 @@ export default function AboutPage() {
                   <Cpu className="h-4 w-4 text-accent" />
                 </div>
                 <h4 className="mt-3 font-display text-lg font-bold text-foreground">
-                  Turnkey Single-Point Control
+                  Everything Under One Roof
                 </h4>
                 <p className="mt-2 text-xs leading-relaxed text-muted font-mono">
-                  End-to-end execution covering mechanical machining, heavy fabrication, solid-state electrical power supplies, PLC programming, and plant commissioning.
+                  We handle steel fabrication, precision CNC machining, electrical wiring, PLC programming, and final setup in-house.
                 </p>
               </div>
 
@@ -143,10 +143,10 @@ export default function AboutPage() {
                   <ShieldCheck className="h-4 w-4 text-accent" />
                 </div>
                 <h4 className="mt-3 font-display text-lg font-bold text-foreground">
-                  Shop-Floor Trial & Validation
+                  Full Workshop Testing
                 </h4>
                 <p className="mt-2 text-xs leading-relaxed text-muted font-mono">
-                  Before dispatch, every equipment build undergoes live component trials, quench flow calibration, and cycle time verification on our Pune shop floor.
+                  Before we ship, we run the completed machine with your actual parts and materials to verify speeds, cycles, and quality.
                 </p>
               </div>
 
@@ -156,10 +156,10 @@ export default function AboutPage() {
                   <Layers className="h-4 w-4 text-accent" />
                 </div>
                 <h4 className="mt-3 font-display text-lg font-bold text-foreground">
-                  Bespoke NPI Process
+                  Clear Step-by-Step Process
                 </h4>
                 <p className="mt-2 text-xs leading-relaxed text-muted font-mono">
-                  A structured 7-stage New Product Introduction workflow that systematically de-risks mechanical assembly before serial production release.
+                  Our organized 7-step process catches any potential issues early so your machine is delivered on time without surprises.
                 </p>
               </div>
             </div>
@@ -411,25 +411,25 @@ export default function AboutPage() {
             <div className="lg:col-span-8 space-y-4">
               <div className="flex items-center gap-2 text-xs font-mono text-accent">
                 <ShieldCheck className="h-4 w-4" />
-                <span className="font-bold uppercase tracking-wider">Chief Engineer's Guarantee</span>
+                <span className="font-bold uppercase tracking-wider">Our Quality Guarantee</span>
               </div>
               <h3 className="font-display text-2xl sm:text-3xl font-bold text-onnavy">
-                Built in Pune, Engineered for Global Standards.
+                Built in Pune, Trusted by Industry Leaders.
               </h3>
               <p className="text-sm sm:text-base text-onnavy-muted leading-relaxed">
-                “Every induction machine, automation cell, and fixture leaving our Pune works represents our uncompromising dedication to repeatability, thermal precision, and operator ergonomics.”
+                “Every machine, conveyor, and automation system leaving our workshop is built with pride, tested thoroughly with real materials, and engineered to run reliably year after year.”
               </p>
               <div className="pt-2 font-mono text-xs text-onnavy">
-                <strong>{company.contactPerson}</strong> — Proprietor & Principal Engineer
+                <strong>{company.contactPerson}</strong> — Founder & Head of Works
               </div>
             </div>
 
             <div className="lg:col-span-4 flex flex-col gap-3">
               <Btn to="/quote" variant="primary" full>
-                Request Custom RFQ →
+                Request a Free Quote →
               </Btn>
               <Btn to="/contact" variant="outline" full>
-                Contact Works Office
+                Contact Our Pune Workshop
               </Btn>
             </div>
           </div>

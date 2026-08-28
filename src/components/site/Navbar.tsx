@@ -95,7 +95,7 @@ export function Navbar() {
               href="/quote"
               className="hidden rounded-[2px] bg-accent px-5 py-2.5 text-[0.72rem] font-semibold tracking-[0.14em] text-navy uppercase transition-all duration-300 hover:bg-navy hover:text-onnavy shadow-[0_2px_10px_rgba(14,165,233,0.3)] md:inline-flex"
             >
-              Enquiry
+              Get a Quote
             </Link>
 
             {/* Mobile Menu Button */}

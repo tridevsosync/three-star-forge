@@ -82,17 +82,17 @@ export default function CapabilitiesPage() {
     <>
       <PageHero
         index="05"
-        eyebrow="Technical Capabilities"
-        title="Engineering capability, stated in verified specifications."
-        intro="The technical parameters below are drawn directly from our delivered equipment programmes in Pune. Custom parameters and tooling geometries are engineered on demand."
+        eyebrow="Capabilities"
+        title="Technical Capabilities & Machine Specifications"
+        intro="Here are the machine types, sizes, and technical features we regularly build in our Pune workshop. Every specification can be customized to match your exact production needs."
         image={IMAGES.pageCapabilities}
         action={
           <div className="flex flex-wrap gap-4">
-            <Btn to="/contact" variant="primary">
-              Discuss Technical Specs
+            <Btn to="/quote" variant="primary">
+              Ask About Specifications
             </Btn>
             <Btn to="/projects" variant="light">
-              View Case Studies
+              See Real Projects
             </Btn>
           </div>
         }
@@ -103,9 +103,9 @@ export default function CapabilitiesPage() {
         <InView>
           <SectionHead
             index="5.1"
-            eyebrow="Machine Engineering"
-            title="Induction Hardening Machine Specifications"
-            intro="Induction hardening machines engineered, built, and commissioned for shaft, tube, pin, and crankshaft applications with precision heating and quench cycles."
+            eyebrow="Machines We Build"
+            title="Induction Hardening Machine Models"
+            intro="Custom induction hardening machines built for shafts, tubes, gears, pins, and automotive crankshafts with precision temperature and quench controls."
           />
         </InView>
 
@@ -124,7 +124,7 @@ export default function CapabilitiesPage() {
                   <p className="mt-3 text-xs leading-relaxed text-muted">{m.short}</p>
                   
                   <div className="mt-6 border-t border-line pt-4 bg-surface-soft p-4 rounded-sm">
-                    <TechLabel tone="dark">Technical Parameters</TechLabel>
+                    <TechLabel tone="dark">Machine Specifications</TechLabel>
                     <div className="mt-2">
                       <SpecTable specs={m.specs} />
                     </div>
@@ -133,7 +133,7 @@ export default function CapabilitiesPage() {
 
                 <div className="mt-6 pt-4 border-t border-line flex items-center justify-between">
                   <Btn to={`/projects/${m.id}`} variant="outline" className="text-xs py-2.5">
-                    View Project Record →
+                    View Full Details →
                   </Btn>
                 </div>
               </article>
@@ -148,9 +148,9 @@ export default function CapabilitiesPage() {
           <SectionHead
             dark
             index="5.2"
-            eyebrow="Scope Map"
-            title="What We Design, Build, and Commission"
-            intro="Five core technical domains covering machinery, material handling, tooling, and refurbishment."
+            eyebrow="What We Build"
+            title="Our Full Range of Industrial Equipment"
+            intro="Five key areas covering custom machines, conveyor lines, inspection stations, automation cells, and machine repairs."
           />
         </InView>
 
@@ -161,7 +161,7 @@ export default function CapabilitiesPage() {
                 <div>
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-sm text-accent font-bold">{g.code}</span>
-                    <Badge variant="navy">Domain</Badge>
+                    <Badge variant="navy">Category</Badge>
                   </div>
                   <h3 className="mt-4 font-display text-lg font-bold text-onnavy">{g.title}</h3>
                   <p className="mt-3 text-xs leading-relaxed text-onnavy-muted">{g.body}</p>
@@ -188,13 +188,13 @@ export default function CapabilitiesPage() {
             <figure className="corner-marks relative aspect-[4/3] overflow-hidden border border-line bg-navy shadow-xl">
               <img
                 src={IMAGES.metrology}
-                alt="Dimensional inspection and metrology of machined components"
+                alt="Dimensional inspection and testing of machined components"
                 loading="lazy"
                 className="h-full w-full object-cover transition-transform duration-[1200ms] hover:scale-[1.04]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent opacity-60" />
               <figcaption className="absolute bottom-4 left-4">
-                <Badge variant="accent">Metrology Bay • Pune</Badge>
+                <Badge variant="accent">Testing Bay • Pune</Badge>
               </figcaption>
             </figure>
           </InView>
@@ -202,25 +202,25 @@ export default function CapabilitiesPage() {
           <InView delay={120}>
             <SectionHead
               index="5.3"
-              eyebrow="Quality Assurance"
-              title="Measured, trialled, and verified prior to handover"
-              intro="All machinery undergo rigorous FAT (Factory Acceptance Testing) with customer production parts. Setup parameters, cycle times, heating depth, and tolerances are proven on our shop floor before dispatch."
+              eyebrow="Quality Testing"
+              title="Tested and Proven Before Leaving Our Workshop"
+              intro="We assemble and test every machine with your actual production components in Pune. Speeds, cycle times, heating depth, and precision dimensions are verified and approved before dispatch."
             />
             
             <div className="mt-8 space-y-4">
               <div className="border border-line bg-surface p-5">
-                <h4 className="font-semibold text-foreground text-sm">Dimensional & Runout Inspection</h4>
-                <p className="mt-1 text-xs text-muted">Precision dial indicators and micrometer calibration verifying tolerances within 0.005mm.</p>
+                <h4 className="font-semibold text-foreground text-sm">Dimension & Alignment Check</h4>
+                <p className="mt-1 text-xs text-muted">Precision micrometer and dial gauges verify that parts fit and move with exact tolerances.</p>
               </div>
               <div className="border border-line bg-surface p-5">
-                <h4 className="font-semibold text-foreground text-sm">Hardness Testing & Case Depth Verification</h4>
-                <p className="mt-1 text-xs text-muted">Hardness profiling (HRC / HV) confirming thermal transition zones adhere strictly to drawing requirements.</p>
+                <h4 className="font-semibold text-foreground text-sm">Hardness & Heat Treatment Testing</h4>
+                <p className="mt-1 text-xs text-muted">Hardness testing confirms that heat-treated zones meet your drawing requirements perfectly.</p>
               </div>
             </div>
 
             <div className="mt-8">
-              <Btn to="/contact" variant="primary">
-                Consult With QA Lead
+              <Btn to="/quote" variant="primary">
+                Get a Machine Quote
               </Btn>
             </div>
           </InView>
