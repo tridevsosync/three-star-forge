@@ -47,8 +47,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ success: false, error: "Item not found" }, { status: 404 });
     }
 
-    // If replacing with a new cloudinary image, clean up the old one
-    if (body.cloudinaryPublicId && existing.cloudinaryPublicId && body.cloudinaryPublicId !== existing.cloudinaryPublicId) {
+    // If removing or replacing with a new cloudinary image, clean up the old one
+    if (existing.cloudinaryPublicId && (!body.image || (body.cloudinaryPublicId && body.cloudinaryPublicId !== existing.cloudinaryPublicId))) {
       await deleteFromCloudinary(existing.cloudinaryPublicId).catch(() => {});
     }
 
@@ -56,18 +56,18 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const updateData = {
       title: body.title !== undefined ? body.title : existing.title,
       category: body.category !== undefined ? body.category : existing.category,
-      image: body.image !== undefined ? body.image : existing.image,
-      cloudinaryPublicId: body.cloudinaryPublicId !== undefined ? body.cloudinaryPublicId : existing.cloudinaryPublicId,
+      image: body.image !== undefined ? (body.image || "").trim() : existing.image,
+      cloudinaryPublicId: body.image ? (body.cloudinaryPublicId !== undefined ? body.cloudinaryPublicId : existing.cloudinaryPublicId) : "",
       description: body.description !== undefined ? body.description : existing.description,
       featured: body.featured !== undefined ? body.featured : existing.featured,
       order: body.order !== undefined ? body.order : existing.order,
     };
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      updated = await Gallery.findByIdAndUpdate(id, updateData, { new: true, runValidators: true }).lean();
+      updated = await Gallery.findByIdAndUpdate(id, updateData, { returnDocument: "after", runValidators: false }).lean();
     }
     if (!updated) {
-      updated = await Gallery.findOneAndUpdate({ $or: [{ _id: id }, { id }] }, updateData, { new: true, runValidators: true }).lean();
+      updated = await Gallery.findOneAndUpdate({ $or: [{ _id: id }, { id }] }, updateData, { returnDocument: "after", runValidators: false }).lean();
     }
 
     return NextResponse.json({

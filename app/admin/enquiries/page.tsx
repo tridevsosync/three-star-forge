@@ -42,6 +42,11 @@ export default function AdminEnquiriesPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [flashMsg, setFlashMsg] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
+  const [expandedIds, setExpandedIds] = useState({});
+
+  const toggleExpand = (id) => {
+    setExpandedIds((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const flash = (msg) => {
     setFlashMsg(msg);
@@ -267,16 +272,16 @@ export default function AdminEnquiriesPage() {
                 <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-5">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="font-display text-lg font-bold text-foreground">
+                      <h3 className="font-display text-lg font-bold text-foreground line-clamp-1 max-w-sm break-words" title={e.name}>
                         {e.name}
                       </h3>
 
-                      <span className="border border-line bg-background px-2.5 py-0.5 font-mono text-xs font-bold text-foreground">
+                      <span className="border border-line bg-background px-2.5 py-0.5 font-mono text-xs font-bold text-foreground truncate max-w-xs" title={e.company}>
                         {e.company || "Independent Client"}
                       </span>
 
                       {isUnread && (
-                        <span className="border border-accent/40 bg-accent/15 px-2 py-0.5 font-mono text-[0.65rem] font-bold text-accent uppercase animate-pulse">
+                        <span className="border border-accent/40 bg-accent/15 px-2 py-0.5 font-mono text-[0.65rem] font-bold text-accent uppercase animate-pulse shrink-0">
                           ★ New RFQ
                         </span>
                       )}
@@ -414,22 +419,31 @@ export default function AdminEnquiriesPage() {
                 {/* Scope Description & Specifications */}
                 <div className="mt-4 border border-line bg-background/50 p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="tech-label text-accent text-[0.68rem] uppercase font-bold">
+                    <span className="tech-label text-accent text-[0.68rem] uppercase font-bold truncate max-w-md">
                       Technical Scope & Engineering Sizing Parameters:
                     </span>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(e.message, itemId)}
-                      className="inline-flex items-center gap-1 font-mono text-[0.65rem] text-muted hover:text-accent transition-colors"
+                      className="inline-flex items-center gap-1 font-mono text-[0.65rem] text-muted hover:text-accent transition-colors shrink-0"
                       title="Copy engineering specifications"
                     >
                       {isCopied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
                       <span>{isCopied ? "Copied" : "Copy specs"}</span>
                     </button>
                   </div>
-                  <p className="text-xs font-mono text-foreground leading-relaxed whitespace-pre-wrap">
+                  <p className={`text-xs font-mono text-foreground leading-relaxed whitespace-pre-wrap break-words ${expandedIds[itemId] ? "" : "line-clamp-4"}`}>
                     {e.message}
                   </p>
+                  {e.message && e.message.length > 200 && (
+                    <button
+                      type="button"
+                      onClick={() => toggleExpand(itemId)}
+                      className="mt-2.5 inline-flex items-center gap-1 font-mono text-[0.7rem] font-bold text-accent hover:underline uppercase tracking-wider cursor-pointer"
+                    >
+                      {expandedIds[itemId] ? "▲ Show Less" : `▼ Read Full Specs (${e.message.length} chars)`}
+                    </button>
+                  )}
                 </div>
               </article>
             );

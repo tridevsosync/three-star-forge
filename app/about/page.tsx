@@ -91,17 +91,17 @@ export default function AboutPage() {
       {/* INTRODUCTION & INFRASTRUCTURE */}
       <Section grid>
         <div className="grid gap-14 lg:grid-cols-12 lg:gap-16 items-start">
-          <div className="lg:col-span-7 space-y-8">
+          <div className="lg:col-span-7 space-y-8 min-w-0">
             <InView>
               <SectionHead
                 index="1.1"
                 eyebrow="Our Story"
                 title="A full machine design and manufacturing facility in Pune"
               />
-              <p className="mt-7 text-base leading-relaxed text-muted sm:text-lg">
+              <p className="mt-7 text-base leading-relaxed text-muted sm:text-lg break-words">
                 {company.description}
               </p>
-              <p className="mt-5 text-base leading-relaxed text-muted">
+              <p className="mt-5 text-base leading-relaxed text-muted break-words">
                 We work side-by-side with plant engineers, factory owners, and technical directors.
                 We review your goals, create clean 3D CAD blueprints, source certified parts, and build the machine
                 in our Pune workshop. Because the people designing the machine are working directly with the people
@@ -166,7 +166,7 @@ export default function AboutPage() {
           </div>
 
           {/* Plant Facility HUD Card */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-5 min-w-0">
             <InView delay={120}>
               <div className="corner-marks border border-line bg-surface p-8 shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-accent/60 to-transparent" />

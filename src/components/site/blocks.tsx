@@ -83,14 +83,14 @@ export interface SpecTableProps {
 export function SpecTable({ specs }: SpecTableProps) {
   if (!specs || specs.length === 0) return null;
   return (
-    <dl className="divide-y divide-line">
+    <dl className="divide-y divide-line min-w-0">
       {specs.map((s, i) => (
         <div
           key={`${s.label}-${i}`}
-          className="grid grid-cols-1 gap-1 py-3 text-xs sm:grid-cols-[11rem_1fr] sm:gap-4 sm:text-sm"
+          className="grid grid-cols-1 gap-1 py-3 text-xs sm:grid-cols-[11rem_1fr] sm:gap-4 sm:text-sm min-w-0"
         >
-          <dt className="tech-label text-muted">{s.label}</dt>
-          <dd className="font-medium text-foreground">{s.value}</dd>
+          <dt className="tech-label text-muted break-words">{s.label}</dt>
+          <dd className="font-medium text-foreground break-words">{s.value}</dd>
         </div>
       ))}
     </dl>
@@ -106,15 +106,22 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
   return (
     <Link
       href={`/projects/${project.id || (project as any)._id}`}
-      className="group card-soft corner-marks flex h-full flex-col overflow-hidden bg-surface"
+      className="group card-soft corner-marks flex h-full flex-col overflow-hidden bg-surface min-w-0"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-navy">
-        <img
-          src={project.image}
-          alt={project.title}
-          loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-[1000ms] group-hover:scale-[1.06]"
-        />
+        {project.image ? (
+          <img
+            src={project.image}
+            alt={project.title}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-[1000ms] group-hover:scale-[1.06]"
+          />
+        ) : (
+          <div className="blueprint-grid-dark flex h-full w-full flex-col items-center justify-center p-4 text-center font-mono text-xs text-onnavy-muted bg-navy-deep">
+            <span className="text-accent font-bold text-xs tracking-wider uppercase">{project.category || "Precision SPM"}</span>
+            <span className="mt-1 text-[0.68rem] text-onnavy-muted">Shop-Floor Engineering Build</span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
         <div className="absolute top-3 left-3 flex flex-wrap gap-2">
           <Badge variant="navy">{project.category}</Badge>
@@ -125,13 +132,13 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col justify-between p-6 sm:p-7">
-        <div>
-          <span className="tech-label text-accent">{project.industry}</span>
-          <h3 className="mt-2 font-display text-xl leading-snug font-bold text-foreground transition-colors group-hover:text-accent">
+      <div className="flex flex-1 flex-col justify-between p-6 sm:p-7 min-w-0">
+        <div className="min-w-0">
+          <span className="tech-label text-accent break-words">{project.industry}</span>
+          <h3 className="mt-2 font-display text-xl leading-snug font-bold text-foreground transition-colors group-hover:text-accent break-words">
             {project.title}
           </h3>
-          <p className="mt-3 text-sm leading-relaxed text-muted line-clamp-2">
+          <p className="mt-3 text-sm leading-relaxed text-muted line-clamp-2 break-words">
             {project.summary || project.overview}
           </p>
         </div>

@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IGallery extends Document {
   title: string;
   category: string;
-  image: string;
+  image?: string;
   cloudinaryPublicId?: string;
   description?: string;
   featured?: boolean;
@@ -27,7 +27,8 @@ const GallerySchema = new Schema<IGallery>(
     },
     image: {
       type: String,
-      required: [true, "Please provide an image URL"],
+      default: "",
+      trim: true,
     },
     cloudinaryPublicId: {
       type: String,

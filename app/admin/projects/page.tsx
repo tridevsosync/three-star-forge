@@ -83,26 +83,63 @@ export default function AdminProjectsPage() {
   const [confirmClear, setConfirmClear] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
+  const formRef = useRef<HTMLDivElement>(null);
+
+  const startEditingProject = (p: any, tab: string = "core") => {
+    setEditing(p);
+    setEditTab(tab);
+    setViewing(null);
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  };
 
   const flash = (msg) => {
     setFeedback(msg);
     setTimeout(() => setFeedback(""), 3500);
   };
 
-  const industryNames = useMemo(
-    () => [
-      "All",
-      ...Array.from(
-        new Set([...industries.map((i) => i.name), ...projects.map((p) => p.industry)]),
-      ),
-    ],
-    [industries, projects],
-  );
+const DEFAULT_INDUSTRIES = [
+  "Material Handling",
+  "Industrial Automation",
+  "Pharmaceutical",
+  "Automotive & Ancillary",
+  "Heavy Engineering",
+  "Defence & Aerospace",
+  "Energy & Electrical",
+  "Food Processing & Packaging",
+  "Forging & Foundry",
+  "General Manufacturing",
+];
 
-  const categoryNames = useMemo(
-    () => ["All", ...Array.from(new Set(projects.map((p) => p.category)))],
-    [projects],
-  );
+const DEFAULT_CATEGORIES = [
+  "Induction Hardening Machines",
+  "Special Purpose Machines (SPM)",
+  "Conveyor & Material Handling Systems",
+  "Industrial Automation & Robotic Cells",
+  "Hydraulic & Pneumatic Presses",
+  "Leak Testing & Assembly Fixtures",
+  "Custom Engineering Systems",
+];
+
+  const industryNames = useMemo(() => {
+    const list = [
+      ...DEFAULT_INDUSTRIES,
+      ...(Array.isArray(industries)
+        ? industries.map((i: any) => i?.name || i?.title).filter(Boolean)
+        : []),
+      ...(Array.isArray(projects) ? projects.map((p: any) => p?.industry).filter(Boolean) : []),
+    ];
+    return ["All", ...Array.from(new Set(list))];
+  }, [industries, projects]);
+
+  const categoryNames = useMemo(() => {
+    const list = [
+      ...DEFAULT_CATEGORIES,
+      ...(Array.isArray(projects) ? projects.map((p: any) => p?.category).filter(Boolean) : []),
+    ];
+    return ["All", ...Array.from(new Set(list))];
+  }, [projects]);
 
   const filtered = useMemo(() => {
     return projects.filter((p) => {
@@ -129,27 +166,32 @@ export default function AdminProjectsPage() {
       alert("Please specify a project title.");
       return;
     }
-    const exists = projects.some((p) => p.id === editing.id);
+    const editId = editing._id || editing.id;
+    const exists = projects.some((p) => (p.id && p.id === editId) || (p._id && p._id === editId));
     try {
-      const response = await fetch(exists ? `/api/projects/${editing.id}` : "/api/projects", {
+      const response = await fetch(exists ? `/api/projects/${encodeURIComponent(editId)}` : "/api/projects", {
         method: exists ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editing),
+        body: JSON.stringify({
+          ...editing,
+          image: editing.image || "",
+        }),
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
         flash(data.error || "Could not save project");
         return;
       }
+      const savedData = data.data || { ...editing, id: editId };
       update(
         "projects",
         exists
-          ? projects.map((p) => (p.id === editing.id ? data.data : p))
-          : [data.data, ...projects],
+          ? projects.map((p) => (p.id === editId || p._id === editId ? savedData : p))
+          : [savedData, ...projects],
       );
       setEditing(null);
       flash(`✓ Saved project "${editing.title}" to database`);
-    } catch (err) {
+    } catch (err: any) {
       flash(err.message || "Save failed");
     }
   };
@@ -304,10 +346,7 @@ export default function AdminProjectsPage() {
             )}
             <MiniBtn
               tone="primary"
-              onClick={() => {
-                setEditing(emptyProject());
-                setEditTab("core");
-              }}
+              onClick={() => startEditingProject(emptyProject(), "core")}
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add New Project Build</span>
@@ -459,21 +498,22 @@ export default function AdminProjectsPage() {
 
       {/* Project Builder / Editor Panel */}
       {editing ? (
-        <Panel
-          title={
-            projects.some((p) => p.id === editing.id)
-              ? `Edit Project Specification: "${editing.title || "Untitled"}"`
-              : "Create New Machine Build Specification"
-          }
-          action={
-            <div className="flex items-center gap-2">
-              <MiniBtn tone="primary" onClick={save}>
-                ✓ Save Project
-              </MiniBtn>
-              <MiniBtn onClick={() => setEditing(null)}>Cancel</MiniBtn>
-            </div>
-          }
-        >
+        <div ref={formRef} className="scroll-mt-6">
+          <Panel
+            title={
+              projects.some((p) => p.id === editing.id)
+                ? `Edit Project Specification: "${editing.title || "Untitled"}"`
+                : "Create New Machine Build Specification"
+            }
+            action={
+              <div className="flex items-center gap-2">
+                <MiniBtn tone="primary" onClick={save}>
+                  ✓ Save Project
+                </MiniBtn>
+                <MiniBtn onClick={() => setEditing(null)}>Cancel</MiniBtn>
+              </div>
+            }
+          >
           {/* Sub-tabs within Editor */}
           <div className="flex border-b border-line mb-6 gap-2">
             {[
@@ -513,6 +553,8 @@ export default function AdminProjectsPage() {
                 value={editing.industry}
                 options={industryNames.filter((n) => n !== "All")}
                 onChange={(v) => setEditing({ ...editing, industry: v })}
+                placeholder="-- Select Target Industry --"
+                required
               />
 
               <TextField
@@ -526,12 +568,23 @@ export default function AdminProjectsPage() {
                 <span className="tech-label text-muted text-xs block mb-2">Cover Photograph</span>
                 <div className="flex flex-wrap items-start gap-6 border border-line bg-background p-4">
                   {editing.image ? (
-                    <div className="relative h-32 w-48 shrink-0 overflow-hidden border border-line">
+                    <div className="relative h-32 w-48 shrink-0 overflow-hidden border border-line group">
                       <img
                         src={editing.image}
                         alt="Project preview"
                         className="h-full w-full object-cover"
                       />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditing({ ...editing, image: "" });
+                          if (fileInputRef.current) fileInputRef.current.value = "";
+                        }}
+                        className="absolute top-1 right-1 bg-danger text-white p-1 text-xs hover:opacity-90 transition-opacity shadow"
+                        title="Remove image"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   ) : (
                     <div className="flex h-32 w-48 shrink-0 items-center justify-center border border-dashed border-line bg-surface text-muted text-xs font-mono">
@@ -540,15 +593,30 @@ export default function AdminProjectsPage() {
                   )}
 
                   <div className="flex-1 min-w-[240px] space-y-3">
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploading}
-                        className="border border-accent bg-accent/15 px-4 py-2 font-mono text-xs font-bold text-accent uppercase tracking-wider hover:bg-accent hover:text-navy transition-colors disabled:opacity-50"
+                        className="border border-accent bg-accent/15 px-4 py-2 font-mono text-xs font-bold text-accent uppercase tracking-wider hover:bg-accent hover:text-navy transition-colors disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                       >
-                        {uploading ? "Uploading..." : "Upload Cover Image"}
+                        <Upload className="h-3.5 w-3.5" />
+                        <span>{uploading ? "Uploading..." : "Upload Cover Image"}</span>
                       </button>
+                      {editing.image && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditing({ ...editing, image: "" });
+                            if (fileInputRef.current) fileInputRef.current.value = "";
+                          }}
+                          className="border border-danger/40 bg-danger/10 px-3 py-2 font-mono text-xs font-bold text-danger uppercase tracking-wider hover:bg-danger hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+                          title="Clear attached image"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span>Remove Image</span>
+                        </button>
+                      )}
                       <input
                         ref={fileInputRef}
                         type="file"
@@ -770,6 +838,7 @@ export default function AdminProjectsPage() {
             </span>
           </div>
         </Panel>
+      </div>
       ) : null}
 
       {/* Main Content Display */}
@@ -779,7 +848,7 @@ export default function AdminProjectsPage() {
           title="No Project Builds Found"
           description="No projects match your active search and filter parameters. Try clearing your filters or create a new machine build."
           action={
-            <MiniBtn tone="primary" onClick={() => setEditing(emptyProject())}>
+            <MiniBtn tone="primary" onClick={() => startEditingProject(emptyProject(), "core")}>
               + Create New Project
             </MiniBtn>
           }
@@ -828,17 +897,17 @@ export default function AdminProjectsPage() {
                 </div>
 
                 {/* Body Content */}
-                <div className="flex flex-1 flex-col p-5">
-                  <div className="flex items-center justify-between text-xs font-mono text-muted mb-1.5">
-                    <span className="text-accent uppercase font-semibold">{p.category}</span>
-                    <span>{p.specs?.length || 0} Specs</span>
+                <div className="flex flex-1 flex-col p-5 min-w-0">
+                  <div className="flex items-center justify-between text-xs font-mono text-muted mb-1.5 min-w-0">
+                    <span className="text-accent uppercase font-semibold truncate">{p.category}</span>
+                    <span className="shrink-0">{p.specs?.length || 0} Specs</span>
                   </div>
 
-                  <h3 className="font-display text-base font-bold text-foreground group-hover:text-accent transition-colors leading-snug">
+                  <h3 className="font-display text-base font-bold text-foreground group-hover:text-accent transition-colors leading-snug break-words">
                     {p.title}
                   </h3>
 
-                  <p className="mt-2 flex-1 text-xs text-muted leading-relaxed line-clamp-2">
+                  <p className="mt-2 flex-1 text-xs text-muted leading-relaxed line-clamp-2 break-words">
                     {p.short || p.overview || "No description provided."}
                   </p>
 
@@ -860,10 +929,7 @@ export default function AdminProjectsPage() {
                         <span>View</span>
                       </MiniBtn>
                       <MiniBtn
-                        onClick={() => {
-                          setEditing(p);
-                          setEditTab("core");
-                        }}
+                        onClick={() => startEditingProject(p, "core")}
                         title="Edit project"
                       >
                         <Edit className="h-3 w-3" />
@@ -881,7 +947,7 @@ export default function AdminProjectsPage() {
         </div>
       ) : (
         /* Detailed Table View */
-        <div className="border border-line bg-surface shadow-sm overflow-hidden">
+        <div className="border border-line bg-surface shadow-sm overflow-hidden min-w-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] border-collapse text-left">
               <thead>
@@ -906,8 +972,8 @@ export default function AdminProjectsPage() {
               <tbody className="divide-y divide-line">
                 {filtered.map((p) => (
                   <tr key={p.id} className="transition-colors hover:bg-background/80">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
+                    <td className="px-6 py-4 max-w-sm min-w-0">
+                      <div className="flex items-center gap-4 min-w-0">
                         <div className="h-12 w-16 shrink-0 overflow-hidden border border-line bg-navy cursor-pointer" onClick={() => setViewing(p)}>
                           {p.image ? (
                             <img
@@ -916,23 +982,27 @@ export default function AdminProjectsPage() {
                               className="h-full w-full object-cover"
                               loading="lazy"
                             />
-                          ) : null}
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center font-mono text-[0.6rem] text-onnavy-muted">
+                              No Img
+                            </div>
+                          )}
                         </div>
-                        <div>
-                          <span
-                            className="font-display text-sm font-bold text-foreground cursor-pointer hover:text-accent"
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className="font-display text-sm font-bold text-foreground hover:text-accent cursor-pointer transition-colors break-words"
                             onClick={() => setViewing(p)}
                           >
                             {p.title}
-                          </span>
+                          </p>
                           <span className="block text-xs font-mono text-muted truncate max-w-xs">
                             {p.short || "No description"}
                           </span>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-mono text-xs text-muted">{p.industry}</td>
-                    <td className="px-6 py-4 font-mono text-xs text-accent">{p.category}</td>
+                    <td className="px-6 py-4 font-mono text-xs text-muted break-words">{p.industry}</td>
+                    <td className="px-6 py-4 font-mono text-xs text-accent break-words">{p.category}</td>
                     <td className="px-6 py-4 text-center">
                       <button
                         type="button"
@@ -950,10 +1020,7 @@ export default function AdminProjectsPage() {
                           <Eye className="h-3 w-3" />
                         </MiniBtn>
                         <MiniBtn
-                          onClick={() => {
-                            setEditing(p);
-                            setEditTab("core");
-                          }}
+                          onClick={() => startEditingProject(p, "core")}
                           title="Edit project"
                         >
                           <Edit className="h-3 w-3" />
@@ -1012,11 +1079,7 @@ export default function AdminProjectsPage() {
                 </a>
                 <MiniBtn
                   tone="accent"
-                  onClick={() => {
-                    setEditing(viewing);
-                    setEditTab("core");
-                    setViewing(null);
-                  }}
+                  onClick={() => startEditingProject(viewing, "core")}
                 >
                   <Edit className="h-3.5 w-3.5" />
                   <span>Edit Project</span>

@@ -190,10 +190,6 @@ export default function AdminGalleryPage() {
       alert("Please provide a title for the photograph.");
       return;
     }
-    if (!editing.image) {
-      alert("Please select, paste or upload an image.");
-      return;
-    }
 
     const finalCategory =
       isAddingNewCat && customCat.trim() ? customCat.trim() : editing.category || "Machines";
@@ -201,8 +197,8 @@ export default function AdminGalleryPage() {
       ...editing,
       title: editing.title.trim(),
       category: finalCategory,
-      image: editing.image.trim(),
-      cloudinaryPublicId: editing.cloudinaryPublicId || "",
+      image: (editing.image || "").trim(),
+      cloudinaryPublicId: editing.image ? (editing.cloudinaryPublicId || "") : "",
     };
 
     setIsSaving(true);
@@ -227,7 +223,7 @@ export default function AdminGalleryPage() {
           alert("Failed to create photograph: " + (res.error || ""));
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       alert("Save error: " + err.message);
     } finally {
       setIsSaving(false);
@@ -721,9 +717,23 @@ export default function AdminGalleryPage() {
                       )}
                     </div>
                     {editing.image && (
-                      <div className="p-2 border border-success/30 bg-success/10 flex items-center justify-between text-xs font-mono text-success">
-                        <span>✓ Image Attached</span>
-                        <span className="truncate max-w-xs">{editing.image}</span>
+                      <div className="p-2.5 border border-success/30 bg-success/10 flex items-center justify-between gap-2 text-xs font-mono text-success">
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="shrink-0 font-bold">✓ Attached:</span>
+                          <span className="truncate max-w-[200px] text-foreground/80">{editing.image}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditing({ ...editing, image: "", cloudinaryPublicId: "" });
+                            if (fileInputRef.current) fileInputRef.current.value = "";
+                          }}
+                          className="shrink-0 px-2.5 py-1 border border-danger/40 bg-danger/10 text-danger hover:bg-danger hover:text-white transition-colors text-[0.68rem] font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer"
+                          title="Remove attached image"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                          <span>Remove Image</span>
+                        </button>
                       </div>
                     )}
                   </div>
@@ -731,15 +741,27 @@ export default function AdminGalleryPage() {
 
                 {/* Custom URL */}
                 {imageMode === "url" && (
-                  <div className="mt-3">
-                    <input
-                      type="url"
-                      value={editing.image}
-                      onChange={(e) => setEditing({ ...editing, image: e.target.value, cloudinaryPublicId: "" })}
-                      placeholder="https://example.com/photo.jpg"
-                      className="w-full border border-line bg-background px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-accent"
-                    />
-                    <p className="mt-1 text-[0.68rem] text-muted">Paste any valid public image link (HTTPS).</p>
+                  <div className="mt-3 space-y-1.5">
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={editing.image}
+                        onChange={(e) => setEditing({ ...editing, image: e.target.value, cloudinaryPublicId: "" })}
+                        placeholder="https://example.com/photo.jpg"
+                        className="w-full border border-line bg-background px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-accent"
+                      />
+                      {editing.image && (
+                        <button
+                          type="button"
+                          onClick={() => setEditing({ ...editing, image: "", cloudinaryPublicId: "" })}
+                          className="shrink-0 border border-danger/40 bg-danger/10 px-3 py-2 text-xs font-mono font-bold text-danger hover:bg-danger hover:text-white transition-colors cursor-pointer"
+                          title="Clear URL"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-[0.68rem] text-muted">Paste any valid public image link (HTTPS).</p>
                   </div>
                 )}
               </div>
@@ -764,13 +786,27 @@ export default function AdminGalleryPage() {
                     </span>
                   )}
                 </div>
-                <div className="mt-3 relative aspect-[4/3] w-full overflow-hidden border border-line bg-navy flex items-center justify-center corner-marks">
+                <div className="mt-3 relative aspect-[4/3] w-full overflow-hidden border border-line bg-navy flex items-center justify-center corner-marks group">
                   {editing.image ? (
-                    <img
-                      src={editing.image}
-                      alt={editing.title}
-                      className="h-full w-full object-cover"
-                    />
+                    <>
+                      <img
+                        src={editing.image}
+                        alt={editing.title}
+                        className="h-full w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditing({ ...editing, image: "", cloudinaryPublicId: "" });
+                          if (fileInputRef.current) fileInputRef.current.value = "";
+                        }}
+                        className="absolute top-2 left-2 border border-danger/40 bg-danger/90 text-white font-mono text-[0.65rem] font-bold uppercase tracking-wider px-2.5 py-1 hover:bg-danger transition-colors flex items-center gap-1 shadow-md cursor-pointer"
+                        title="Remove this photo"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        <span>Remove Image</span>
+                      </button>
+                    </>
                   ) : (
                     <span className="text-xs text-muted">No Image Selected</span>
                   )}
@@ -869,12 +905,18 @@ export default function AdminGalleryPage() {
                   >
                     {/* Image Area */}
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-navy">
-                      <img
-                        src={g.image}
-                        alt={g.title}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        loading="lazy"
-                      />
+                      {g.image ? (
+                        <img
+                          src={g.image}
+                          alt={g.title}
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center font-mono text-xs text-onnavy-muted">
+                          No Image Attached
+                        </div>
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-transparent to-transparent opacity-60" />
 
                       {/* Checkbox */}
@@ -926,15 +968,15 @@ export default function AdminGalleryPage() {
                     </div>
 
                     {/* Card Details */}
-                    <div className="p-4 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-accent transition-colors">
+                    <div className="p-4 flex-1 flex flex-col justify-between min-w-0">
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-accent transition-colors break-words">
                           {g.title}
                         </h3>
                         {g.description ? (
-                          <p className="mt-1 text-xs text-muted line-clamp-2 leading-relaxed">{g.description}</p>
+                          <p className="mt-1 text-xs text-muted line-clamp-2 leading-relaxed break-words">{g.description}</p>
                         ) : (
-                          <p className="mt-1 text-[0.7rem] font-mono text-muted/60">ID: {itemId}</p>
+                          <p className="mt-1 text-[0.7rem] font-mono text-muted/60 truncate">ID: {itemId}</p>
                         )}
                       </div>
 
@@ -1040,12 +1082,21 @@ export default function AdminGalleryPage() {
                         </td>
                         <td className="px-4 py-3 font-mono text-xs text-muted">{globalIndex + 1}</td>
                         <td className="px-4 py-3">
-                          <img
-                            src={g.image}
-                            alt=""
-                            className="h-12 w-16 object-cover border border-line bg-navy cursor-pointer"
-                            onClick={() => setViewingPhoto(g)}
-                          />
+                          {g.image ? (
+                            <img
+                              src={g.image}
+                              alt=""
+                              className="h-12 w-16 object-cover border border-line bg-navy cursor-pointer"
+                              onClick={() => setViewingPhoto(g)}
+                            />
+                          ) : (
+                            <div
+                              className="h-12 w-16 border border-line bg-navy flex items-center justify-center font-mono text-[0.6rem] text-onnavy-muted cursor-pointer"
+                              onClick={() => setViewingPhoto(g)}
+                            >
+                              No Img
+                            </div>
+                          )}
                         </td>
                         <td className="px-4 py-3 font-medium text-foreground">
                           <div>

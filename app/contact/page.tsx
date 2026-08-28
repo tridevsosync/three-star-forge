@@ -41,6 +41,17 @@ export default function ContactPage() {
       setError("Please provide your name, email address, and message.");
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (form.phone && form.phone.trim()) {
+      const cleanPhone = form.phone.replace(/[\s\-\(\)\.]/g, "");
+      if (!/^\+?\d{7,15}$/.test(cleanPhone)) {
+        setError("Please enter a valid phone number (7 to 15 digits, e.g. +91 9823463655).");
+        return;
+      }
+    }
     setError("");
     setSubmitting(true);
 
@@ -186,10 +197,16 @@ export default function ContactPage() {
 
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
-                      <label className="tech-label text-muted block mb-2">Your Name *</label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">Your Name *</label>
+                        {form.name ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.name.length}/80</span>
+                        ) : null}
+                      </div>
                       <input
                         type="text"
                         required
+                        maxLength={80}
                         value={form.name}
                         onChange={(e) => set("name", e.target.value)}
                         placeholder="e.g. Rajesh Patil"
@@ -198,10 +215,16 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">Email Address *</label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">Email Address *</label>
+                        {form.email ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.email.length}/100</span>
+                        ) : null}
+                      </div>
                       <input
                         type="email"
                         required
+                        maxLength={100}
                         value={form.email}
                         onChange={(e) => set("email", e.target.value)}
                         placeholder="e.g. r.patil@company.com"
@@ -212,20 +235,32 @@ export default function ContactPage() {
 
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
-                      <label className="tech-label text-muted block mb-2">Phone Number</label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">Phone Number</label>
+                        {form.phone ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.phone.length}/16</span>
+                        ) : null}
+                      </div>
                       <input
                         type="tel"
+                        maxLength={16}
                         value={form.phone}
-                        onChange={(e) => set("phone", e.target.value)}
+                        onChange={(e) => set("phone", e.target.value.replace(/[^0-9+\s\-()]/g, ""))}
                         placeholder="+91 98XXX XXXXX"
                         className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent font-mono"
                       />
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">Company / Organization</label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">Company / Organization</label>
+                        {form.company ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.company.length}/100</span>
+                        ) : null}
+                      </div>
                       <input
                         type="text"
+                        maxLength={100}
                         value={form.company}
                         onChange={(e) => set("company", e.target.value)}
                         placeholder="e.g. Tata Motors / Bharat Forge"
@@ -250,10 +285,16 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="tech-label text-muted block mb-2">Message *</label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="tech-label text-muted block">Message *</label>
+                      <span className="font-mono text-[0.68rem] text-muted">
+                        {form.message.length} / 1500
+                      </span>
+                    </div>
                     <textarea
                       required
                       rows={5}
+                      maxLength={1500}
                       value={form.message}
                       onChange={(e) => set("message", e.target.value)}
                       placeholder="Write your inquiry or message here..."

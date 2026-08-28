@@ -59,38 +59,38 @@ export default function ServicesPage() {
         <div className="mt-16 space-y-12">
           {services.map((s, i) => (
             <InView key={s.id} delay={Math.min(i, 4) * 70}>
-              <article className="card-soft corner-marks grid gap-8 p-8 lg:grid-cols-12 lg:gap-12 items-start">
+              <article className="card-soft corner-marks grid gap-8 p-8 lg:grid-cols-12 lg:gap-12 items-start min-w-0">
                 <div className="lg:col-span-1">
                   <span className="font-mono text-2xl font-bold text-accent">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                 </div>
 
-                <div className="lg:col-span-4">
+                <div className="lg:col-span-4 min-w-0">
                   <Badge variant="accent">Service Line</Badge>
-                  <h3 className="mt-3 font-display text-2xl leading-tight font-bold text-foreground">
+                  <h3 className="mt-3 font-display text-2xl leading-tight font-bold text-foreground break-words">
                     {s.title}
                   </h3>
                   <div className="mt-4 h-0.5 w-12 bg-accent" />
-                  <p className="mt-4 text-sm leading-relaxed text-muted">{s.summary}</p>
+                  <p className="mt-4 text-sm leading-relaxed text-muted break-words">{s.summary}</p>
                 </div>
 
-                <div className="lg:col-span-4">
+                <div className="lg:col-span-4 min-w-0">
                   <TechLabel tone="dark">What's Included</TechLabel>
-                  <ul className="mt-4 space-y-2.5">
+                  <ul className="mt-4 space-y-2.5 min-w-0">
                     {s.points.map((item) => (
-                      <li key={item} className="flex gap-3 text-sm text-foreground">
+                      <li key={item} className="flex gap-3 text-sm text-foreground min-w-0 items-start">
                         <span className="mt-[0.55rem] h-1.5 w-1.5 shrink-0 bg-accent rounded-full" />
-                        <span className="leading-relaxed">{item}</span>
+                        <span className="leading-relaxed break-words min-w-0">{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="lg:col-span-3">
-                  <div className="border border-line bg-surface-soft p-6">
+                <div className="lg:col-span-3 min-w-0">
+                  <div className="border border-line bg-surface-soft p-6 min-w-0">
                     <TechLabel tone="accent">What You Get</TechLabel>
-                    <p className="mt-3 text-xs leading-relaxed text-muted font-medium">{s.outcome}</p>
+                    <p className="mt-3 text-xs leading-relaxed text-muted font-medium break-words">{s.outcome}</p>
                     <div className="mt-6 pt-4 border-t border-line">
                       <Btn to="/quote" variant="outline" className="w-full text-center text-xs py-2.5">
                         Ask for Pricing

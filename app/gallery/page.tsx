@@ -395,12 +395,18 @@ export default function GalleryPage() {
                           : "aspect-[4/3]"
                       }`}
                     >
-                      <img
-                        src={g.image}
-                        alt={g.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-108"
-                      />
+                      {g.image ? (
+                        <img
+                          src={g.image}
+                          alt={g.title}
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-108"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center font-mono text-xs text-onnavy-muted">
+                          Three Star Works
+                        </div>
+                      )}
                       
                       {/* Gradient Ambient Overlays */}
                       <div className="absolute inset-0 bg-gradient-to-t from-navy/95 via-navy/35 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-95" />

@@ -30,17 +30,18 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     await connectToDatabase();
     const { id } = await params;
     const body = await request.json();
+    const { _id, id: bodyId, ...updateData } = body;
     let project: any = null;
     if (mongoose.Types.ObjectId.isValid(id)) {
-      project = await Project.findByIdAndUpdate(id, body, {
-        new: true,
-        runValidators: true,
+      project = await Project.findByIdAndUpdate(id, updateData, {
+        returnDocument: "after",
+        runValidators: false,
       });
     }
     if (!project) {
-      project = await Project.findOneAndUpdate({ $or: [{ _id: id }, { id }] }, body, {
-        new: true,
-        runValidators: true,
+      project = await Project.findOneAndUpdate({ $or: [{ _id: id }, { id }] }, updateData, {
+        returnDocument: "after",
+        runValidators: false,
       });
     }
     if (!project)

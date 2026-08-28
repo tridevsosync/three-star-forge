@@ -1,4 +1,12 @@
 import mongoose, { Mongoose } from "mongoose";
+import dns from "node:dns";
+
+// Fix for Node.js querySrv ECONNREFUSED on Windows / ISP DNS resolvers
+try {
+  dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+} catch {
+  // Ignore in environments where custom DNS servers cannot be set
+}
 
 const MONGODB_URI = process.env.MONGODB_URI;
 

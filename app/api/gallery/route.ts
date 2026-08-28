@@ -2,12 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import Gallery from "@/models/Gallery";
+import { DEMO_GALLERY } from "@/data/site";
 import { deleteFromCloudinary } from "@/lib/cloudinary";
 
 export async function GET() {
   try {
     await connectToDatabase();
-    const items = await Gallery.find({}).sort({ order: 1, createdAt: -1 }).lean();
+    let items = await Gallery.find({}).sort({ order: 1, createdAt: -1 }).lean();
+    if (!items || items.length === 0) {
+      const seeded = await Gallery.insertMany(
+        DEMO_GALLERY.map((g: any, idx: number) => ({
+          title: g.title,
+          category: g.category,
+          image: g.image,
+          featured: Boolean(g.featured),
+          order: idx,
+        })),
+      );
+      items = seeded.map((s: any) => s.toObject());
+    }
 
     const normalized = items.map((item: any) => ({
       ...item,
@@ -34,9 +47,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { title, category, image, cloudinaryPublicId, description, featured, order } = body;
 
-    if (!title || !image) {
+    if (!title) {
       return NextResponse.json(
-        { success: false, error: "Title and image are required" },
+        { success: false, error: "Title is required" },
         { status: 400 },
       );
     }
@@ -44,7 +57,7 @@ export async function POST(request: NextRequest) {
     const newItem = await Gallery.create({
       title: title.trim(),
       category: category ? category.trim() : "Machines",
-      image: image.trim(),
+      image: (image || "").trim(),
       cloudinaryPublicId: cloudinaryPublicId || "",
       description: description ? description.trim() : "",
       featured: Boolean(featured),

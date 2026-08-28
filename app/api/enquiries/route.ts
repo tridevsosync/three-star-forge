@@ -44,6 +44,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const cleanPhone = phone.replace(/[\s\-\(\)\.]/g, "");
+    if (!/^\+?\d{7,15}$/.test(cleanPhone)) {
+      return NextResponse.json(
+        { success: false, error: "Please enter a valid phone or mobile number (7 to 15 digits)." },
+        { status: 400 },
+      );
+    }
+
     const newEnquiry = await Enquiry.create({
       name: name.trim(),
       email: email.trim(),

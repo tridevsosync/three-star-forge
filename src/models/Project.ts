@@ -4,7 +4,7 @@ export interface IProject extends Document {
   title: string;
   industry: string;
   category: string;
-  image: string;
+  image?: string;
   short?: string;
   featured?: boolean;
   overview?: string;
@@ -22,7 +22,7 @@ const ProjectSchema = new Schema<IProject>(
     title: { type: String, required: true, trim: true },
     industry: { type: String, required: true, trim: true },
     category: { type: String, required: true, trim: true },
-    image: { type: String, required: true, trim: true },
+    image: { type: String, default: "", trim: true },
     short: { type: String, default: "", trim: true },
     featured: { type: Boolean, default: false },
     overview: { type: String, default: "", trim: true },

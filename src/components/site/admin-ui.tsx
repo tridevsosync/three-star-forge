@@ -89,6 +89,7 @@ export interface TextFieldProps {
   helper?: string;
   type?: string;
   required?: boolean;
+  maxLength?: number;
 }
 
 export function TextField({
@@ -100,28 +101,45 @@ export function TextField({
   helper,
   type = "text",
   required = false,
+  maxLength,
 }: TextFieldProps) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    let val = e.target.value;
+    if (type === "tel") {
+      val = val.replace(/[^0-9+\s\-()]/g, "");
+    }
+    onChange(val);
+  };
+
   return (
     <label className="block">
       <div className="flex items-center justify-between">
         <span className="tech-label text-muted text-xs">
           {label} {required ? <span className="text-danger">*</span> : null}
         </span>
-        {helper ? <span className="font-mono text-[0.68rem] text-muted">{helper}</span> : null}
+        {helper ? (
+          <span className="font-mono text-[0.68rem] text-muted">{helper}</span>
+        ) : maxLength && value ? (
+          <span className="font-mono text-[0.68rem] text-muted">
+            {value.length} / {maxLength}
+          </span>
+        ) : null}
       </div>
       {rows ? (
         <textarea
           rows={rows}
+          maxLength={maxLength}
           value={value ?? ""}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={handleChange}
           placeholder={placeholder}
           className={inputBaseCls}
         />
       ) : (
         <input
           type={type}
+          maxLength={maxLength}
           value={value ?? ""}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={handleChange}
           placeholder={placeholder}
           className={inputBaseCls}
         />
@@ -136,13 +154,25 @@ export interface SelectFieldProps {
   options: Array<string | { label: string; value: string }>;
   onChange: (val: string) => void;
   helper?: string;
+  placeholder?: string;
+  required?: boolean;
 }
 
-export function SelectField({ label, value, options, onChange, helper }: SelectFieldProps) {
+export function SelectField({
+  label,
+  value,
+  options,
+  onChange,
+  helper,
+  placeholder = "-- Select Option --",
+  required = false,
+}: SelectFieldProps) {
   return (
     <label className="block">
       <div className="flex items-center justify-between">
-        <span className="tech-label text-muted text-xs">{label}</span>
+        <span className="tech-label text-muted text-xs">
+          {label} {required ? <span className="text-danger">*</span> : null}
+        </span>
         {helper ? <span className="font-mono text-[0.68rem] text-muted">{helper}</span> : null}
       </div>
       <select
@@ -150,6 +180,11 @@ export function SelectField({ label, value, options, onChange, helper }: SelectF
         onChange={(e) => onChange(e.target.value)}
         className={`${inputBaseCls} font-mono`}
       >
+        {placeholder ? (
+          <option value="" disabled={required}>
+            {placeholder}
+          </option>
+        ) : null}
         {options.map((o) => {
           const val = typeof o === "object" ? o.value : o;
           const lbl = typeof o === "object" ? o.label : o;
@@ -421,7 +456,7 @@ export function AdminModal({
                 {eyebrow}
               </span>
             ) : null}
-            <h3 className="font-display text-lg sm:text-xl font-bold tracking-tight text-foreground mt-0.5">
+            <h3 className="font-display text-lg sm:text-xl font-bold tracking-tight text-foreground mt-0.5 break-words">
               {title}
             </h3>
           </div>
@@ -438,7 +473,7 @@ export function AdminModal({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto flex-1 space-y-4 font-sans text-sm text-foreground">
+        <div className="p-6 overflow-y-auto flex-1 space-y-4 font-sans text-sm text-foreground min-w-0">
           {children}
         </div>
 

@@ -48,11 +48,11 @@ export default function HomePage() {
                 <span className="text-onnavy-muted hidden sm:inline">Design • Manufacturing • Testing</span>
               </div>
 
-              <h1 className="mt-8 font-display text-4xl leading-[1.05] font-extrabold tracking-tight sm:text-6xl lg:text-[4.2rem]">
+              <h1 className="mt-8 font-display text-4xl leading-[1.05] font-extrabold tracking-tight sm:text-6xl lg:text-[4.2rem] break-words">
                 {home.heroTitle || "We Turn Engineering Ideas Into Reliable Machines."}
               </h1>
 
-              <p className="mt-6 max-w-2xl text-base leading-relaxed text-onnavy-muted sm:text-xl">
+              <p className="mt-6 max-w-2xl text-base leading-relaxed text-onnavy-muted sm:text-xl break-words">
                 {home.heroSubtitle ||
                   "Custom machine design, complete in-house manufacturing, and live testing for factories and equipment makers worldwide."}
               </p>
@@ -182,17 +182,17 @@ export default function HomePage() {
                     <span className="font-mono text-sm text-accent font-bold">{String(i + 1).padStart(2, "0")}</span>
                     <Badge variant="navy">Complete Service</Badge>
                   </div>
-                  <h3 className="mt-4 font-display text-xl font-bold text-onnavy group-hover:text-accent transition-colors">
+                  <h3 className="mt-4 font-display text-xl font-bold text-onnavy group-hover:text-accent transition-colors break-words">
                     {s.title}
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-onnavy-muted">
+                  <p className="mt-3 text-sm leading-relaxed text-onnavy-muted break-words">
                     {s.summary}
                   </p>
                   <ul className="mt-5 space-y-2 text-xs text-onnavy-muted">
                     {s.points.slice(0, 3).map((pt) => (
-                      <li key={pt} className="flex items-center gap-2">
-                        <span className="h-1 w-1 bg-accent rounded-full" />
-                        <span>{pt}</span>
+                      <li key={pt} className="flex items-center gap-2 min-w-0">
+                        <span className="h-1 w-1 bg-accent rounded-full shrink-0" />
+                        <span className="break-words min-w-0">{pt}</span>
                       </li>
                     ))}
                   </ul>
@@ -298,13 +298,13 @@ export default function HomePage() {
                 <div className="border border-line bg-surface transition-all">
                   <button
                     onClick={() => setActiveFaq(isOpen ? null : idx)}
-                    className="w-full p-6 text-left flex items-center justify-between gap-4 font-display font-semibold text-foreground sm:text-lg hover:text-accent transition-colors"
+                    className="w-full p-6 text-left flex items-center justify-between gap-4 font-display font-semibold text-foreground sm:text-lg hover:text-accent transition-colors min-w-0"
                   >
-                    <span>{faq.q || faq.question}</span>
-                    <span className="text-accent font-mono text-xl">{isOpen ? "−" : "+"}</span>
+                    <span className="break-words min-w-0 flex-1">{faq.q || faq.question}</span>
+                    <span className="text-accent font-mono text-xl shrink-0">{isOpen ? "−" : "+"}</span>
                   </button>
                   {isOpen && (
-                    <div className="px-6 pb-6 pt-2 text-sm leading-relaxed text-muted border-t border-line">
+                    <div className="px-6 pb-6 pt-2 text-sm leading-relaxed text-muted border-t border-line break-words">
                       {faq.a || faq.answer}
                     </div>
                   )}

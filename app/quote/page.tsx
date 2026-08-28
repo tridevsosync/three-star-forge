@@ -79,6 +79,15 @@ function QuoteForm() {
       );
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    const cleanPhone = form.phone.replace(/[\s\-\(\)\.]/g, "");
+    if (!/^\+?\d{7,15}$/.test(cleanPhone)) {
+      setError("Please enter a valid phone or mobile number (7 to 15 digits, e.g. +91 9823463655).");
+      return;
+    }
     setError("");
     setSubmitting(true);
 
@@ -212,10 +221,16 @@ function QuoteForm() {
                   </div>
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
-                      <label className="tech-label text-muted block mb-2">Full Name *</label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">Full Name *</label>
+                        {form.name ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.name.length}/80</span>
+                        ) : null}
+                      </div>
                       <input
                         type="text"
                         required
+                        maxLength={80}
                         value={form.name}
                         onChange={(e) => set("name", e.target.value)}
                         placeholder="e.g. Vikram Sharma"
@@ -224,9 +239,15 @@ function QuoteForm() {
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">Designation / Role</label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">Designation / Role</label>
+                        {form.designation ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.designation.length}/80</span>
+                        ) : null}
+                      </div>
                       <input
                         type="text"
+                        maxLength={80}
                         value={form.designation}
                         onChange={(e) => set("designation", e.target.value)}
                         placeholder="e.g. VP Operations / Chief Engineer"
@@ -235,12 +256,16 @@ function QuoteForm() {
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">
-                        Work Email Address *
-                      </label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">Work Email Address *</label>
+                        {form.email ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.email.length}/100</span>
+                        ) : null}
+                      </div>
                       <input
                         type="email"
                         required
+                        maxLength={100}
                         value={form.email}
                         onChange={(e) => set("email", e.target.value)}
                         placeholder="e.g. v.sharma@company.com"
@@ -249,26 +274,34 @@ function QuoteForm() {
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">
-                        Direct Phone / Mobile *
-                      </label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">Direct Phone / Mobile *</label>
+                        {form.phone ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.phone.length}/16</span>
+                        ) : null}
+                      </div>
                       <input
                         type="tel"
                         required
+                        maxLength={16}
                         value={form.phone}
-                        onChange={(e) => set("phone", e.target.value)}
+                        onChange={(e) => set("phone", e.target.value.replace(/[^0-9+\s\-()]/g, ""))}
                         placeholder="+91 98234 XXXXX"
                         className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent font-mono"
                       />
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">
-                        Company / Enterprise Name *
-                      </label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">Company / Enterprise Name *</label>
+                        {form.company ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.company.length}/100</span>
+                        ) : null}
+                      </div>
                       <input
                         type="text"
                         required
+                        maxLength={100}
                         value={form.company}
                         onChange={(e) => set("company", e.target.value)}
                         placeholder="e.g. Precision Components Ltd."
@@ -277,11 +310,15 @@ function QuoteForm() {
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">
-                        Plant Location / City
-                      </label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">Plant Location / City</label>
+                        {form.location ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.location.length}/100</span>
+                        ) : null}
+                      </div>
                       <input
                         type="text"
+                        maxLength={100}
                         value={form.location}
                         onChange={(e) => set("location", e.target.value)}
                         placeholder="e.g. Pune / Chennai / Gurgaon / International"
@@ -332,11 +369,17 @@ function QuoteForm() {
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="tech-label text-muted block mb-2">
-                        Target Production Volume / Part Geometry / Cycle Time
-                      </label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">
+                          Target Production Volume / Part Geometry / Cycle Time
+                        </label>
+                        {form.targetVolume ? (
+                          <span className="font-mono text-[0.68rem] text-muted">{form.targetVolume.length}/150</span>
+                        ) : null}
+                      </div>
                       <input
                         type="text"
+                        maxLength={150}
                         value={form.targetVolume}
                         onChange={(e) => set("targetVolume", e.target.value)}
                         placeholder="e.g. 500 parts/shift, shaft length 400mm, dia 45mm, case depth 2.5mm"
@@ -345,12 +388,18 @@ function QuoteForm() {
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="tech-label text-muted block mb-2">
-                        Technical Specifications & Scope Details *
-                      </label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="tech-label text-muted block">
+                          Technical Specifications & Scope Details *
+                        </label>
+                        <span className="font-mono text-[0.68rem] text-muted">
+                          {form.message.length} / 3000
+                        </span>
+                      </div>
                       <textarea
                         required
                         rows={6}
+                        maxLength={3000}
                         value={form.message}
                         onChange={(e) => set("message", e.target.value)}
                         placeholder="Describe your technical requirements, component drawings, PLC/CNC preferences, hardening depth tolerances, or turnkey assembly scope..."

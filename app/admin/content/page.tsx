@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   AdminHead,
   MiniBtn,
@@ -27,10 +27,12 @@ import {
   CheckCircle2,
   RotateCw,
   ExternalLink,
+  Upload,
+  Image as ImageIcon,
 } from "lucide-react";
 
 export default function AdminContentPage() {
-  const { company, home, services, industries, faqs, testimonials, update, fetchContent } = useSite();
+  const { company, home, services, industries, faqs, testimonials, update, fetchContent, uploadToCloudinary } = useSite();
   const [activeTab, setActiveTab] = useState("company"); // 'company' | 'home' | 'services' | 'industries' | 'faqs' | 'testimonials'
   const [saved, setSaved] = useState(null);
   const [editing, setEditing] = useState(null);
@@ -41,6 +43,9 @@ export default function AdminContentPage() {
   const [confirmClear, setConfirmClear] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [savingSection, setSavingSection] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const setCompany = (key, value) => update("company", { ...company, [key]: value });
   const setHome = (key, value) => update("home", { ...home, [key]: value });
@@ -121,12 +126,50 @@ export default function AdminContentPage() {
 
   const values = { services, industries, faqs, testimonials };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, keyName: string = "image") => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const res = await uploadToCloudinary(file, "content");
+      if (!res.success || !res.url) throw new Error(res.error || "Upload failed");
+      setDraft((prev: any) => ({ ...prev, [keyName]: res.url }));
+      flash("✓ Image uploaded successfully to Cloudinary");
+    } catch (err: any) {
+      flash("Upload error: " + err.message);
+    } finally {
+      setUploadingImage(false);
+      if (imageInputRef.current) imageInputRef.current.value = "";
+    }
+  };
+
   const createItem = (section, fields, hasEnabled) => {
     setDraftSection(section);
+    setEditing(null);
     setDraft({
       ...Object.fromEntries(fields.map((field) => [field.key, field.array ? [] : ""])),
       ...(hasEnabled ? { enabled: true } : {}),
     });
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  };
+
+  const startEditItem = (key, item, fields, enabled) => {
+    setEditing({ ...item, section: key });
+    setDraftSection(key);
+    setDraft({
+      ...Object.fromEntries(
+        fields.map((field) => [
+          field.key,
+          field.array ? item[field.key] || [] : item[field.key] || "",
+        ]),
+      ),
+      ...(enabled ? { enabled: item.enabled !== false } : {}),
+    });
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
   };
 
   const saveItem = async (section) => {
@@ -499,7 +542,7 @@ export default function AdminContentPage() {
           >
             {/* Draft Form Builder */}
             {draft && draftSection === key ? (
-              <div className="mb-8 border border-accent bg-background p-6 shadow-md">
+              <div ref={formRef} className="mb-8 border border-accent bg-background p-6 shadow-md scroll-mt-6">
                 <div className="flex items-center justify-between border-b border-line pb-3 mb-5">
                   <span className="font-mono text-xs font-bold text-accent uppercase tracking-wider">
                     {editing ? `Edit ${singular}: "${draft.title || draft.name || draft.question || draft.author || "Item"}"` : `New ${singular} Entry`}
@@ -508,31 +551,102 @@ export default function AdminContentPage() {
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-2">
-                  {fields.map((field) => (
-                    <div
-                      key={field.key}
-                      className={field.rows && field.rows >= 3 ? "sm:col-span-2" : ""}
-                    >
-                      <TextField
-                        label={field.label}
-                        placeholder={field.placeholder}
-                        value={
-                          field.array
-                            ? (draft[field.key] || []).join("\n")
-                            : draft[field.key] || ""
-                        }
-                        onChange={(value) =>
-                          setDraft({
-                            ...draft,
-                            [field.key]: field.array
-                              ? value.split("\n").filter((item) => item.trim())
-                              : value,
-                          })
-                        }
-                        rows={field.rows}
-                      />
-                    </div>
-                  ))}
+                  {fields.map((field) =>
+                    field.key === "image" ? (
+                      <div key={field.key} className="sm:col-span-2">
+                        <span className="tech-label text-muted text-xs block mb-2">{field.label}</span>
+                        <div className="flex flex-wrap items-start gap-4 border border-line bg-surface p-4">
+                          {draft[field.key] ? (
+                            <div className="relative h-24 w-36 shrink-0 overflow-hidden border border-line bg-navy">
+                              <img
+                                src={draft[field.key]}
+                                alt="Preview"
+                                className="h-full w-full object-cover"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setDraft({ ...draft, [field.key]: "" })}
+                                className="absolute top-1 right-1 bg-danger text-white p-1 text-xs hover:opacity-90 transition-opacity"
+                                title="Remove image"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex h-24 w-36 shrink-0 items-center justify-center border border-dashed border-line bg-background text-muted text-xs font-mono">
+                              No Image Set
+                            </div>
+                          )}
+
+                          <div className="flex-1 min-w-[240px] space-y-3">
+                            <div className="flex flex-wrap items-center gap-3">
+                              <button
+                                type="button"
+                                onClick={() => imageInputRef.current?.click()}
+                                disabled={uploadingImage}
+                                className="border border-accent bg-accent/15 px-3 py-1.5 font-mono text-xs font-bold text-accent uppercase tracking-wider hover:bg-accent hover:text-navy transition-colors disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                              >
+                                <Upload className="h-3.5 w-3.5" />
+                                <span>{uploadingImage ? "Uploading to Cloudinary..." : "Upload Image File"}</span>
+                              </button>
+                              {draft[field.key] && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setDraft({ ...draft, [field.key]: "" });
+                                    if (imageInputRef.current) imageInputRef.current.value = "";
+                                  }}
+                                  className="border border-danger/40 bg-danger/10 px-3 py-1.5 font-mono text-xs font-bold text-danger uppercase tracking-wider hover:bg-danger hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+                                  title="Clear attached image"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                  <span>Remove Image</span>
+                                </button>
+                              )}
+                              <input
+                                ref={imageInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleImageUpload(e, field.key)}
+                                className="hidden"
+                              />
+                              <span className="text-[0.68rem] font-mono text-muted">Supports Cloudinary CDN upload</span>
+                            </div>
+                            <TextField
+                              label="Or Direct Image URL"
+                              placeholder={field.placeholder || "https://..."}
+                              value={draft[field.key] || ""}
+                              onChange={(value) => setDraft({ ...draft, [field.key]: value })}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        key={field.key}
+                        className={field.rows && field.rows >= 3 ? "sm:col-span-2" : ""}
+                      >
+                        <TextField
+                          label={field.label}
+                          placeholder={field.placeholder}
+                          value={
+                            field.array
+                              ? (draft[field.key] || []).join("\n")
+                              : draft[field.key] || ""
+                          }
+                          onChange={(value) =>
+                            setDraft({
+                              ...draft,
+                              [field.key]: field.array
+                                ? value.split("\n").filter((item) => item.trim())
+                                : value,
+                            })
+                          }
+                          rows={field.rows}
+                        />
+                      </div>
+                    ),
+                  )}
 
                   {enabled ? (
                     <div className="sm:col-span-2">
@@ -589,29 +703,29 @@ export default function AdminContentPage() {
                       key={item.id || idx}
                       className="flex flex-wrap items-center justify-between gap-4 p-5 transition-colors hover:bg-background/80"
                     >
-                      <div className="max-w-2xl">
-                        <div className="flex items-center gap-3">
-                          <span className="font-mono text-xs text-accent font-bold">
+                      <div className="max-w-2xl min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="font-mono text-xs text-accent font-bold shrink-0">
                             #{String(idx + 1).padStart(2, "0")}
                           </span>
                           <p
-                            className="font-display font-bold text-foreground text-base cursor-pointer hover:text-accent"
+                            className="font-display font-bold text-foreground text-base cursor-pointer hover:text-accent break-words"
                             onClick={() => setViewing({ sectionKey: key, item, config: { label, singular, fields, enabled } })}
                           >
                             {itemTitle}
                           </p>
                           {item.code && (
-                            <span className="border border-line bg-background px-2 py-0.5 font-mono text-[0.65rem] text-muted">
+                            <span className="border border-line bg-background px-2 py-0.5 font-mono text-[0.65rem] text-muted shrink-0">
                               {item.code}
                             </span>
                           )}
                           {enabled && item.enabled === false && (
-                            <span className="border border-danger/30 bg-danger/10 px-2 py-0.5 font-mono text-[0.65rem] text-danger uppercase">
+                            <span className="border border-danger/30 bg-danger/10 px-2 py-0.5 font-mono text-[0.65rem] text-danger uppercase shrink-0">
                               Draft (Hidden)
                             </span>
                           )}
                         </div>
-                        <p className="mt-1 line-clamp-2 text-xs font-mono text-muted leading-relaxed">
+                        <p className="mt-1 line-clamp-2 text-xs font-mono text-muted leading-relaxed break-words">
                           {item.summary || item.description || item.answer || item.quote || item.role}
                         </p>
                       </div>
@@ -626,19 +740,7 @@ export default function AdminContentPage() {
                           <span>View</span>
                         </MiniBtn>
                         <MiniBtn
-                          onClick={() => {
-                            setEditing({ ...item, section: key });
-                            setDraftSection(key);
-                            setDraft({
-                              ...Object.fromEntries(
-                                fields.map((field) => [
-                                  field.key,
-                                  field.array ? item[field.key] || [] : item[field.key] || "",
-                                ]),
-                              ),
-                              ...(enabled ? { enabled: item.enabled !== false } : {}),
-                            });
-                          }}
+                          onClick={() => startEditItem(key, item, fields, enabled)}
                           title="Edit item"
                         >
                           <Edit className="h-3 w-3" />

@@ -79,6 +79,27 @@
     overflow-x: hidden;
   }
 
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  span,
+  a,
+  li,
+  dt,
+  dd,
+  td,
+  th,
+  article,
+  section,
+  div {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
   h1,
   h2,
   h3,

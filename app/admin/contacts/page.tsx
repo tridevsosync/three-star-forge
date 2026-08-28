@@ -37,6 +37,11 @@ export default function AdminContactsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [flashMsg, setFlashMsg] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
+  const [expandedIds, setExpandedIds] = useState({});
+
+  const toggleExpand = (id) => {
+    setExpandedIds((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const flash = (msg) => {
     setFlashMsg(msg);
@@ -257,11 +262,11 @@ export default function AdminContactsPage() {
 
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-display text-base font-bold text-foreground">
+                          <h3 className="font-display text-base font-bold text-foreground line-clamp-1 max-w-sm break-words" title={c.name}>
                             {c.name}
                           </h3>
                           {isUnread && (
-                            <span className="border border-accent/50 bg-accent/15 px-2 py-0.5 font-mono text-[0.65rem] font-bold text-accent uppercase animate-pulse">
+                            <span className="border border-accent/50 bg-accent/15 px-2 py-0.5 font-mono text-[0.65rem] font-bold text-accent uppercase animate-pulse shrink-0">
                               ★ New Message
                             </span>
                           )}
@@ -349,22 +354,31 @@ export default function AdminContactsPage() {
                 {/* Message Body */}
                 <div className="mt-4 border border-line bg-background/60 p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="tech-label text-accent text-[0.68rem] uppercase font-bold">
+                    <span className="tech-label text-accent text-[0.68rem] uppercase font-bold truncate max-w-md">
                       Subject: {c.subject || "General Inquiry"}
                     </span>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(c.message, itemId)}
-                      className="inline-flex items-center gap-1 font-mono text-[0.65rem] text-muted hover:text-accent transition-colors"
+                      className="inline-flex items-center gap-1 font-mono text-[0.65rem] text-muted hover:text-accent transition-colors shrink-0"
                       title="Copy message content"
                     >
                       {isCopied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
                       <span>{isCopied ? "Copied" : "Copy text"}</span>
                     </button>
                   </div>
-                  <p className="text-sm font-sans text-foreground leading-relaxed whitespace-pre-wrap">
+                  <p className={`text-sm font-sans text-foreground leading-relaxed whitespace-pre-wrap break-words ${expandedIds[itemId] ? "" : "line-clamp-4"}`}>
                     {c.message}
                   </p>
+                  {c.message && c.message.length > 200 && (
+                    <button
+                      type="button"
+                      onClick={() => toggleExpand(itemId)}
+                      className="mt-2.5 inline-flex items-center gap-1 font-mono text-[0.7rem] font-bold text-accent hover:underline uppercase tracking-wider cursor-pointer"
+                    >
+                      {expandedIds[itemId] ? "▲ Show Less" : `▼ Read Full Message (${c.message.length} chars)`}
+                    </button>
+                  )}
                 </div>
               </article>
             );

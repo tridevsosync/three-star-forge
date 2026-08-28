@@ -37,7 +37,7 @@ export function InView({ children, delay = 0, className = "" }: InViewProps) {
   return (
     <div
       ref={ref}
-      className={`inview ${visible ? "inview-on" : ""} ${className}`}
+      className={`inview min-w-0 ${visible ? "inview-on" : ""} ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}

@@ -24,11 +24,13 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
     <>
       {/* HERO BANNER */}
       <section className="relative overflow-hidden bg-navy pt-32 pb-16 text-onnavy sm:pt-40 sm:pb-24">
-        <img
-          src={project.image}
-          alt={`${project.title} manufactured by Three Star Enterprises`}
-          className="absolute inset-0 h-full w-full object-cover opacity-25"
-        />
+        {project.image ? (
+          <img
+            src={project.image}
+            alt={`${project.title} manufactured by Three Star Enterprises`}
+            className="absolute inset-0 h-full w-full object-cover opacity-25"
+          />
+        ) : null}
         <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/95 to-navy/70" />
         <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-60" />
 
@@ -68,52 +70,52 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
       <Section>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16 items-start">
           {/* Main Info */}
-          <InView className="lg:col-span-7 space-y-12">
-            <div>
+          <InView className="lg:col-span-7 space-y-12 min-w-0">
+            <div className="min-w-0">
               <TechLabel tone="accent">Executive Summary</TechLabel>
-              <p className="mt-4 text-lg leading-relaxed text-foreground font-medium sm:text-xl">
+              <p className="mt-4 text-lg leading-relaxed text-foreground font-medium sm:text-xl break-words">
                 {project.overview || project.summary}
               </p>
             </div>
 
             {/* Architecture: Challenge vs Solution */}
-            <div className="grid gap-8 sm:grid-cols-2 bg-surface p-8 border border-line shadow-sm">
-              <div>
+            <div className="grid gap-8 sm:grid-cols-2 bg-surface p-8 border border-line shadow-sm min-w-0">
+              <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-danger" />
+                  <span className="h-2 w-2 rounded-full bg-danger shrink-0" />
                   <h2 className="font-display text-lg font-bold text-foreground">Engineering Challenge</h2>
                 </div>
                 <div className="mt-3 h-0.5 w-10 bg-line-strong" />
-                <p className="mt-4 text-xs leading-relaxed text-muted">{project.challenge}</p>
+                <p className="mt-4 text-xs leading-relaxed text-muted break-words">{project.challenge}</p>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-success" />
+                  <span className="h-2 w-2 rounded-full bg-success shrink-0" />
                   <h2 className="font-display text-lg font-bold text-foreground">Engineered Solution</h2>
                 </div>
                 <div className="mt-3 h-0.5 w-10 bg-accent" />
-                <p className="mt-4 text-xs leading-relaxed text-muted">{project.solution}</p>
+                <p className="mt-4 text-xs leading-relaxed text-muted break-words">{project.solution}</p>
               </div>
             </div>
 
             {/* Application */}
             {project.application && (
-              <div className="border-l-2 border-accent pl-6 py-2">
+              <div className="border-l-2 border-accent pl-6 py-2 min-w-0">
                 <TechLabel tone="dark">Production Application</TechLabel>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{project.application}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted break-words">{project.application}</p>
               </div>
             )}
 
             {/* Highlights */}
             {project.highlights && project.highlights.length > 0 && (
-              <div>
+              <div className="min-w-0">
                 <TechLabel tone="accent">Technical Capabilities & Scope</TechLabel>
-                <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                <ul className="mt-4 grid gap-3 sm:grid-cols-2 min-w-0">
                   {project.highlights.map((h) => (
-                    <li key={h} className="flex gap-3 text-sm text-foreground items-start">
+                    <li key={h} className="flex gap-3 text-sm text-foreground items-start min-w-0">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-accent rounded-full" />
-                      <span className="leading-relaxed">{h}</span>
+                      <span className="leading-relaxed break-words min-w-0">{h}</span>
                     </li>
                   ))}
                 </ul>
@@ -122,8 +124,8 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
           </InView>
 
           {/* Right Column: Spec Sheet */}
-          <InView delay={120} className="lg:col-span-5 space-y-8">
-            <div className="border border-line bg-surface shadow-md">
+          <InView delay={120} className="lg:col-span-5 space-y-8 min-w-0">
+            <div className="border border-line bg-surface shadow-md min-w-0">
               <div className="border-b border-line bg-surface-soft px-7 py-5 flex items-center justify-between">
                 <TechLabel tone="dark">Technical Datasheet</TechLabel>
                 <Badge variant="accent">VERIFIED</Badge>

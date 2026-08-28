@@ -352,13 +352,19 @@ export function Lightbox({
           className={`relative max-h-[68vh] w-full flex items-center justify-center overflow-auto p-1 transition-all ${zoom ? "cursor-zoom-out" : "cursor-zoom-in"}`}
           onClick={() => setZoom(!zoom)}
         >
-          <img
-            src={displayImage}
-            alt={displayTitle}
-            className={`object-contain transition-all duration-300 ${
-              zoom ? "max-h-none max-w-none scale-125 my-auto" : "max-h-[68vh] max-w-full"
-            }`}
-          />
+          {displayImage ? (
+            <img
+              src={displayImage}
+              alt={displayTitle}
+              className={`object-contain transition-all duration-300 ${
+                zoom ? "max-h-none max-w-none scale-125 my-auto" : "max-h-[68vh] max-w-full"
+              }`}
+            />
+          ) : (
+            <div className="flex h-48 w-full items-center justify-center font-mono text-xs text-onnavy-muted">
+              No Image Available
+            </div>
+          )}
         </div>
       </div>
 
@@ -396,7 +402,13 @@ export function Lightbox({
                     : "border-onnavy/20 opacity-50 hover:opacity-100"
                 }`}
               >
-                <img src={it.image} alt={it.title} className="h-full w-full object-cover" />
+                {it.image ? (
+                  <img src={it.image} alt={it.title} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center font-mono text-[0.6rem] text-onnavy-muted">
+                    No Img
+                  </div>
+                )}
               </button>
             ))}
           </div>

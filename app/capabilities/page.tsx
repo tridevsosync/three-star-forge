@@ -112,20 +112,20 @@ export default function CapabilitiesPage() {
         <div className="mt-16 grid gap-8 lg:grid-cols-2">
           {inductionMachines.map((m, i) => (
             <InView key={m.id} delay={Math.min(i, 3) * 90}>
-              <article className="corner-marks h-full border border-line bg-surface p-8 transition-all duration-400 hover:border-accent hover:shadow-xl flex flex-col justify-between">
-                <div>
+              <article className="corner-marks h-full border border-line bg-surface p-8 transition-all duration-400 hover:border-accent hover:shadow-xl flex flex-col justify-between min-w-0">
+                <div className="min-w-0">
                   <div className="flex items-center justify-between gap-4">
                     <Badge variant="accent">{`IH-0${i + 1}`}</Badge>
                     <span className="tech-label text-muted">{m.industry}</span>
                   </div>
-                  <h3 className="mt-4 font-display text-xl leading-snug font-bold text-foreground">
+                  <h3 className="mt-4 font-display text-xl leading-snug font-bold text-foreground break-words">
                     {m.title}
                   </h3>
-                  <p className="mt-3 text-xs leading-relaxed text-muted">{m.short}</p>
+                  <p className="mt-3 text-xs leading-relaxed text-muted break-words">{m.short}</p>
                   
-                  <div className="mt-6 border-t border-line pt-4 bg-surface-soft p-4 rounded-sm">
+                  <div className="mt-6 border-t border-line pt-4 bg-surface-soft p-4 rounded-sm min-w-0">
                     <TechLabel tone="dark">Machine Specifications</TechLabel>
-                    <div className="mt-2">
+                    <div className="mt-2 min-w-0">
                       <SpecTable specs={m.specs} />
                     </div>
                   </div>
