@@ -1,46 +1,50 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { IMAGES } from "@/data/images";
 import { useSite } from "@/store/site-store";
-import { Reveal, SectionHead, TechLabel, Badge, Btn } from "@/components/site/ui";
-import { CtaBand, PageHero, ProjectCard, Section } from "@/components/site/blocks";
+import { Reveal, Badge, Btn, Container, Lightbox } from "@/components/site/ui";
+import { CtaBand, Section } from "@/components/site/blocks";
 import { InView } from "@/components/site/reveal";
 import {
   Search,
   SlidersHorizontal,
   Factory,
-  Cpu,
   RotateCcw,
   X,
   ChevronDown,
   Sparkles,
+  Maximize2,
+  ArrowUpRight,
+  CheckCircle2,
+  Layers,
+  Wrench,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
 
 export default function ProjectsPage() {
+  const router = useRouter();
   const { projects } = useSite();
-  const [industry, setIndustry] = useState("All");
-  const [category, setCategory] = useState("All");
-  const [query, setQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedIndustry, setSelectedIndustry] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+  // Extract unique industries & categories dynamically
   const industries = useMemo(
     () => ["All", ...Array.from(new Set(projects.map((p) => p.industry).filter(Boolean)))],
     [projects],
   );
+
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(projects.map((p) => p.category).filter(Boolean)))],
     [projects],
   );
 
-  // Counts map for quick tags
-  const industryCounts = useMemo(() => {
-    const map: Record<string, number> = { All: projects.length };
-    projects.forEach((p) => {
-      if (p.industry) map[p.industry] = (map[p.industry] || 0) + 1;
-    });
-    return map;
-  }, [projects]);
-
+  // Counts mapping
   const categoryCounts = useMemo(() => {
     const map: Record<string, number> = { All: projects.length };
     projects.forEach((p) => {
@@ -49,320 +53,627 @@ export default function ProjectsPage() {
     return map;
   }, [projects]);
 
-  const hasActiveFilters = industry !== "All" || category !== "All" || Boolean(query.trim());
+  const industryCounts = useMemo(() => {
+    const map: Record<string, number> = { All: projects.length };
+    projects.forEach((p) => {
+      if (p.industry) map[p.industry] = (map[p.industry] || 0) + 1;
+    });
+    return map;
+  }, [projects]);
+
+  const hasActiveFilters =
+    selectedCategory !== "All" || selectedIndustry !== "All" || Boolean(searchQuery.trim());
 
   const resetFilters = () => {
-    setIndustry("All");
-    setCategory("All");
-    setQuery("");
+    setSelectedCategory("All");
+    setSelectedIndustry("All");
+    setSearchQuery("");
   };
 
-  const filtered = projects.filter((p) => {
-    const okInd = industry === "All" || p.industry === industry;
-    const okCat = category === "All" || p.category === category;
-    const q = query.trim().toLowerCase();
-    const okQ =
-      !q || `${p.title} ${p.short} ${p.category} ${p.industry}`.toLowerCase().includes(q);
-    return okInd && okCat && okQ;
-  });
+  // Filtered builds
+  const filtered = useMemo(() => {
+    return projects.filter((p) => {
+      const okCat = selectedCategory === "All" || p.category === selectedCategory;
+      const okInd = selectedIndustry === "All" || p.industry === selectedIndustry;
+      const q = searchQuery.trim().toLowerCase();
+      const okQ =
+        !q ||
+        `${p.title} ${p.short || ""} ${p.category || ""} ${p.industry || ""} ${p.summary || ""}`
+          .toLowerCase()
+          .includes(q);
+      return okCat && okInd && okQ;
+    });
+  }, [projects, selectedCategory, selectedIndustry, searchQuery]);
+
+  // Featured project for Hero preview (explicitly featured in hero header)
+  const featuredProject = useMemo(() => {
+    return projects.find((p) => p.featuredInHero) || null;
+  }, [projects]);
+
+  // Lightbox items mapping
+  const lightboxItems = useMemo(() => {
+    return filtered.map((p, idx) => ({
+      id: p.id || String(idx),
+      image: p.image || IMAGES.verticalInduction || IMAGES.pageProjects,
+      title: p.title,
+      category: `${p.category || "SPM"} • ${p.industry || "General Industry"}`,
+      description: p.summary || p.overview || p.short || "Shop-floor manufactured special purpose machinery.",
+    }));
+  }, [filtered]);
 
   return (
     <>
-      <PageHero
-        index="04"
-        eyebrow="Equipment Portfolio"
-        title="Industrial machines, automated lines, and custom tooling delivered."
-        intro="A comprehensive portfolio of machinery and automation systems engineered in Pune for OEM clients. Explore technical parameters, challenge solutions, and verified specs."
-        image={IMAGES.pageProjects}
-        action={
-          <Btn to="/contact" variant="primary">
-            Submit Custom Specification
-          </Btn>
-        }
-      />
+      {/* ========================================================================= */}
+      {/* 1. ATMOSPHERIC HERO SECTION — VISUAL-FIRST MACHINERY PORTFOLIO */}
+      {/* ========================================================================= */}
+      <section className="relative overflow-hidden bg-navy pt-28 pb-20 text-onnavy sm:pt-36 sm:pb-28 lg:pt-40 lg:pb-32">
+        <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-30" />
+        <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-accent/15 blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 -right-40 h-[450px] w-[450px] rounded-full bg-accent/10 blur-[100px] pointer-events-none" />
 
-      <Section grid>
-        <InView>
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <SectionHead
-              index="4.1"
-              eyebrow="Portfolio Directory"
-              title="Filter & Search Delivered Builds"
-              intro="Refine the directory by sector, machine category, or keyword."
-            />
-            <div className="flex items-center gap-3">
-              <Badge variant="accent">
-                {String(filtered.length).padStart(2, "0")} / {String(projects.length).padStart(2, "0")} MACHINES
-              </Badge>
+        <Container className="relative">
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-14 items-center">
+            {/* Left Narrative */}
+            <div className={featuredProject ? "lg:col-span-7" : "lg:col-span-12 max-w-5xl"}>
+              <Reveal>
+                {/* Live Telemetry Pill */}
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-xs font-semibold text-accent backdrop-blur-md shadow-xs">
+                  <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
+                  <span>PUNE ENGINEERING WORKS • EQUIPMENT PORTFOLIO</span>
+                  <span className="h-3 w-px bg-accent/40" />
+                  <span className="text-onnavy-muted font-normal hidden sm:inline">
+                    {projects.length} Industrial Builds Delivered
+                  </span>
+                </div>
+
+                <h1 className="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
+                  Precision Machinery & SPM Automation <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent-hover to-white">
+                    Engineered for High&#8209;Throughput Manufacturing.
+                  </span>
+                </h1>
+
+                <p className="mt-5 max-w-3xl text-base sm:text-lg text-onnavy-muted leading-relaxed font-sans">
+                  Explore our comprehensive portfolio of custom induction hardening scanners, automated conveyor lines, special purpose drilling & tapping machines, and heavy structural tooling manufactured and 100% FAT-tested at our Pune facility.
+                </p>
+
+                {/* Hero CTAs */}
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <Btn
+                    to="/quote#quote-form"
+                    variant="primary"
+                    className="text-sm px-7 py-3.5 font-bold shadow-lg shadow-accent/25"
+                  >
+                    Request a Custom Machine Quote
+                  </Btn>
+                  <Btn to="/gallery" variant="light" className="text-sm px-7 py-3.5 font-semibold">
+                    Explore Shop-Floor Gallery
+                  </Btn>
+                </div>
+
+                {/* Trust Badges Strip */}
+                <div className="mt-10 flex flex-wrap items-center gap-6 border-t border-onnavy/15 pt-6 text-xs text-onnavy-muted">
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent" />
+                    <span>{projects.length} Verified Turnkey Builds</span>
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent" />
+                    <span>100% FAT Trials with Client Parts</span>
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent" />
+                    <span>In-House CAD, CNC & Assembly Bay</span>
+                  </span>
+                </div>
+              </Reveal>
+            </div>
+
+            {/* Right Hero: Featured Build Spotlight Card */}
+            {featuredProject ? (
+              <div className="lg:col-span-5">
+                <InView delay={120}>
+                  <div
+                    onClick={() => router.push(`/projects/${featuredProject.id || (featuredProject as any)._id}`)}
+                    className="group relative rounded-3xl border border-onnavy/20 bg-surface/5 p-4 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:border-accent/50 cursor-pointer"
+                  >
+                    {/* Photo Container */}
+                    <div className="relative aspect-[16/11] w-full overflow-hidden rounded-2xl bg-navy">
+                      <img
+                        src={featuredProject.image || IMAGES.pageProjects}
+                        alt={featuredProject.title}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/30 to-transparent" />
+
+                      {/* Zoom Trigger */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setLightboxIndex(0);
+                        }}
+                        className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-navy/80 px-3 py-1.5 text-xs font-semibold text-accent backdrop-blur-md border border-accent/30 shadow-lg hover:bg-accent hover:text-navy transition-all cursor-pointer z-10"
+                      >
+                        <Maximize2 className="h-3.5 w-3.5" />
+                        <span>Inspect Machine</span>
+                      </button>
+
+                      {/* Overlay Telemetry */}
+                      <div className="absolute bottom-4 left-4 right-4 text-onnavy">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block rounded-full bg-accent/20 border border-accent/40 px-2.5 py-0.5 text-[0.65rem] font-bold text-accent uppercase">
+                            Featured Engineering Build
+                          </span>
+                          <span className="text-[0.65rem] text-onnavy-muted font-sans">
+                            {featuredProject.industry}
+                          </span>
+                        </div>
+                        <h3 className="mt-1 font-display text-base font-bold text-onnavy leading-snug group-hover:text-accent transition-colors">
+                          {featuredProject.title}
+                        </h3>
+                        <p className="mt-0.5 text-xs text-onnavy-muted leading-relaxed">
+                          {featuredProject.summary || featuredProject.overview}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Quick Facts Grid */}
+                    <div className="mt-3.5 grid grid-cols-3 gap-2 text-center text-xs">
+                      <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
+                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Category</span>
+                        <strong className="font-display text-xs font-bold text-onnavy truncate block">
+                          {featuredProject.category || "SPM Build"}
+                        </strong>
+                      </div>
+                      <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
+                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Verification</span>
+                        <strong className="font-display text-xs font-bold text-accent">100% FAT</strong>
+                      </div>
+                      <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
+                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Origin</span>
+                        <strong className="font-display text-xs font-bold text-onnavy">Pune Works</strong>
+                      </div>
+                    </div>
+                  </div>
+                </InView>
+              </div>
+            ) : null}
+          </div>
+        </Container>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 2. LIVE CAPABILITY METRICS STRIP */}
+      {/* ========================================================================= */}
+      <div className="border-y border-line bg-surface py-8">
+        <Container>
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+            <div className="flex items-center gap-4">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent shrink-0">
+                <Factory className="h-6 w-6" />
+              </span>
+              <div>
+                <div className="font-display text-2xl font-extrabold text-foreground">{projects.length}+ Builds</div>
+                <div className="text-xs text-muted">Delivered & Commissioned</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent shrink-0">
+                <ShieldCheck className="h-6 w-6" />
+              </span>
+              <div>
+                <div className="font-display text-2xl font-extrabold text-foreground">100% FAT</div>
+                <div className="text-xs text-muted">Shop-Floor Trial Signoff</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent shrink-0">
+                <Zap className="h-6 w-6" />
+              </span>
+              <div>
+                <div className="font-display text-2xl font-extrabold text-foreground">±0.005mm</div>
+                <div className="text-xs text-muted">Precision CNC Tolerance</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent shrink-0">
+                <Wrench className="h-6 w-6" />
+              </span>
+              <div>
+                <div className="font-display text-2xl font-extrabold text-foreground">SolidWorks</div>
+                <div className="text-xs text-muted">Parametric 3D CAD Bureau</div>
+              </div>
             </div>
           </div>
-        </InView>
+        </Container>
+      </div>
 
-        {/* Precision Engineering Filter Bar */}
-        <InView delay={80}>
-          <div className="mt-10 border border-line bg-surface shadow-md overflow-hidden">
-            {/* Top Accent Strip */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line bg-background/60 px-6 py-3.5">
-              <div className="flex items-center gap-2.5">
-                <SlidersHorizontal className="h-4 w-4 text-accent" />
-                <span className="tech-label font-bold text-foreground text-xs uppercase tracking-wider">
-                  Specification Filter & Search Suite
-                </span>
+      {/* ========================================================================= */}
+      {/* 3. INTERACTIVE VISUAL FILTER & SEARCH SUITE */}
+      {/* ========================================================================= */}
+      <Section grid className="scroll-mt-12" id="portfolio-grid">
+        <InView>
+          <div className="flex flex-wrap items-end justify-between gap-6 border-b border-line pb-8">
+            <div>
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-accent uppercase tracking-wider mb-2">
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                <span>Machinery Directory</span>
               </div>
-
-              <div className="flex items-center gap-3">
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={resetFilters}
-                    className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-accent hover:text-foreground uppercase tracking-wider transition-colors"
-                  >
-                    <RotateCcw className="h-3 w-3" />
-                    <span>Reset All</span>
-                  </button>
-                )}
-                <span className="font-mono text-xs text-muted">
-                  Showing <strong className="text-foreground">{filtered.length}</strong> matching systems
-                </span>
-              </div>
+              <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+                Filter & Explore Delivered Machinery
+              </h2>
+              <p className="mt-2 text-sm text-muted max-w-xl">
+                Browse our real-world special purpose machines, hardening rigs, and automation assemblies by category, industry sector, or keyword.
+              </p>
             </div>
 
-            {/* Main 3-Column Controls Strip */}
-            <div className="p-6 sm:p-7">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {/* Column 1: Industry Sector */}
-                <div className="space-y-2">
-                  <label className="flex items-center justify-between text-xs font-mono">
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-muted">
-                      <Factory className="h-3.5 w-3.5 text-accent" />
-                      Industry Sector
-                    </span>
-                    <span className="text-[0.68rem] text-muted">
-                      {industries.length - 1} Sectors
-                    </span>
-                  </label>
-
-                  <div className="relative">
-                    <select
-                      value={industry}
-                      onChange={(e) => setIndustry(e.target.value)}
-                      className="w-full appearance-none border border-line bg-background px-4 py-2.5 pr-10 text-xs font-mono font-semibold uppercase tracking-wider text-foreground outline-none transition-all focus:border-accent focus:ring-1 focus:ring-accent hover:border-line-strong cursor-pointer"
-                    >
-                      {industries.map((ind) => (
-                        <option key={ind} value={ind} className="bg-surface text-foreground py-1">
-                          {ind === "All" ? "All Industry Sectors" : ind} {ind !== "All" && industryCounts[ind] ? `(${industryCounts[ind]})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
-                  </div>
-
-                  {/* Quick Pills */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {industries.slice(0, 4).map((ind) => {
-                      const isActive = industry === ind;
-                      return (
-                        <button
-                          key={ind}
-                          type="button"
-                          onClick={() => setIndustry(ind)}
-                          className={`border px-2.5 py-1 text-[0.65rem] font-mono font-semibold uppercase tracking-wider transition-all ${
-                            isActive
-                              ? "border-accent bg-accent text-navy font-bold shadow-sm"
-                              : "border-line bg-background/60 text-muted hover:border-accent hover:text-foreground"
-                          }`}
-                        >
-                          {ind}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Column 2: Machine Category */}
-                <div className="space-y-2">
-                  <label className="flex items-center justify-between text-xs font-mono">
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-muted">
-                      <Cpu className="h-3.5 w-3.5 text-accent" />
-                      Machine Category
-                    </span>
-                    <span className="text-[0.68rem] text-muted">
-                      {categories.length - 1} Categories
-                    </span>
-                  </label>
-
-                  <div className="relative">
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="w-full appearance-none border border-line bg-background px-4 py-2.5 pr-10 text-xs font-mono font-semibold uppercase tracking-wider text-foreground outline-none transition-all focus:border-accent focus:ring-1 focus:ring-accent hover:border-line-strong cursor-pointer"
-                    >
-                      {categories.map((cat) => (
-                        <option key={cat} value={cat} className="bg-surface text-foreground py-1">
-                          {cat === "All" ? "All Machine Categories" : cat} {cat !== "All" && categoryCounts[cat] ? `(${categoryCounts[cat]})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
-                  </div>
-
-                  {/* Quick Pills */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {categories.slice(0, 4).map((cat) => {
-                      const isActive = category === cat;
-                      return (
-                        <button
-                          key={cat}
-                          type="button"
-                          onClick={() => setCategory(cat)}
-                          className={`border px-2.5 py-1 text-[0.65rem] font-mono font-semibold uppercase tracking-wider transition-all ${
-                            isActive
-                              ? "border-accent bg-accent text-navy font-bold shadow-sm"
-                              : "border-line bg-background/60 text-muted hover:border-accent hover:text-foreground"
-                          }`}
-                        >
-                          {cat}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Column 3: Keyword Search */}
-                <div className="space-y-2 md:col-span-2 lg:col-span-1">
-                  <label className="flex items-center justify-between text-xs font-mono">
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-muted">
-                      <Search className="h-3.5 w-3.5 text-accent" />
-                      Search Keyword
-                    </span>
-                    <span className="text-[0.68rem] text-muted">Real-time Search</span>
-                  </label>
-
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder="e.g. hardening, conveyor, spindle..."
-                      aria-label="Search machinery specifications"
-                      className="w-full border border-line bg-background pl-9 pr-16 py-2.5 text-xs font-mono text-foreground outline-none transition-all placeholder:text-muted focus:border-accent focus:ring-1 focus:ring-accent"
-                    />
-                    <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted" />
-                    {query && (
-                      <button
-                        type="button"
-                        onClick={() => setQuery("")}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 px-2 py-0.5 font-mono text-[0.65rem] font-bold text-muted hover:text-foreground hover:bg-line/40 rounded transition-colors"
-                      >
-                        ✕ CLEAR
-                      </button>
-                    )}
-                  </div>
-
-                  <p className="pt-1 text-[0.68rem] font-mono text-muted">
-                    Filter across titles, technical descriptions, and tooling categories.
-                  </p>
-                </div>
-              </div>
-
-              {/* Active Filter Tags Strip */}
+            {/* Results Pill */}
+            <div className="flex items-center gap-3">
+              <Badge variant="accent">
+                {filtered.length} of {projects.length} MACHINES
+              </Badge>
               {hasActiveFilters && (
-                <div className="mt-5 flex flex-wrap items-center gap-2 pt-4 border-t border-line/60">
-                  <span className="font-mono text-[0.68rem] uppercase font-bold text-muted mr-1">
-                    Active Filters:
-                  </span>
-
-                  {industry !== "All" && (
-                    <span className="inline-flex items-center gap-1.5 border border-accent/40 bg-accent/10 px-2.5 py-1 font-mono text-xs font-semibold text-accent">
-                      <span>Sector: {industry}</span>
-                      <button
-                        type="button"
-                        onClick={() => setIndustry("All")}
-                        className="hover:text-foreground"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  )}
-
-                  {category !== "All" && (
-                    <span className="inline-flex items-center gap-1.5 border border-accent/40 bg-accent/10 px-2.5 py-1 font-mono text-xs font-semibold text-accent">
-                      <span>Category: {category}</span>
-                      <button
-                        type="button"
-                        onClick={() => setCategory("All")}
-                        className="hover:text-foreground"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  )}
-
-                  {query.trim() && (
-                    <span className="inline-flex items-center gap-1.5 border border-accent/40 bg-accent/10 px-2.5 py-1 font-mono text-xs font-semibold text-accent">
-                      <span>Keyword: "{query}"</span>
-                      <button
-                        type="button"
-                        onClick={() => setQuery("")}
-                        className="hover:text-foreground"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={resetFilters}
-                    className="ml-auto font-mono text-xs font-bold text-accent hover:underline uppercase tracking-wider"
-                  >
-                    Clear All Filters
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline cursor-pointer"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  <span>Reset Filters</span>
+                </button>
               )}
             </div>
           </div>
         </InView>
 
-        {/* Project Grid */}
-        {filtered.length === 0 ? (
-          <div className="mt-14 border border-dashed border-line bg-surface p-10 sm:p-14 text-center shadow-sm relative overflow-hidden">
-            {/* Top Accent Line */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent" />
+        {/* Filter Controls Strip */}
+        <InView delay={60}>
+          <div className="mt-8 space-y-6">
+            {/* Category Pills Bar */}
+            <div className="flex flex-wrap gap-2.5">
+              {categories.map((cat) => {
+                const count = categoryCounts[cat] || 0;
+                const isActive = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                      isActive
+                        ? "border-accent bg-accent text-navy font-bold shadow-md shadow-accent/25"
+                        : "border-line bg-surface text-muted hover:border-accent hover:text-foreground"
+                    }`}
+                  >
+                    <span>{cat === "All" ? "All Categories" : cat}</span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[0.65rem] font-bold ${
+                        isActive ? "bg-navy text-accent" : "bg-background text-muted"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-line bg-background shadow-inner text-accent">
+            {/* Secondary Controls Bar: Sector Selector + Search */}
+            <div className="grid gap-4 sm:grid-cols-12 items-center bg-surface border border-line p-4 rounded-2xl shadow-xs">
+              {/* Sector Dropdown */}
+              <div className="sm:col-span-5 relative">
+                <select
+                  value={selectedIndustry}
+                  onChange={(e) => setSelectedIndustry(e.target.value)}
+                  className="w-full appearance-none rounded-xl border border-line bg-background px-4 py-2.5 pr-10 text-xs font-semibold text-foreground outline-none transition-all focus:border-accent hover:border-line-strong cursor-pointer"
+                >
+                  {industries.map((ind) => (
+                    <option key={ind} value={ind}>
+                      {ind === "All" ? "All Industry Sectors" : ind} {ind !== "All" && industryCounts[ind] ? `(${industryCounts[ind]})` : ""}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
+              </div>
+
+              {/* Keyword Search Input */}
+              <div className="sm:col-span-7 relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search machine models, specs, PLC controls, cycle times..."
+                  className="w-full rounded-xl border border-line bg-background pl-9 pr-16 py-2.5 text-xs text-foreground placeholder:text-muted/60 outline-none transition-all focus:border-accent"
+                />
+                <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted" />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 px-2 py-0.5 text-[0.65rem] font-bold text-muted hover:text-foreground hover:bg-line/40 rounded transition-colors"
+                  >
+                    ✕ CLEAR
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Active Filters Pill Strip */}
+            {hasActiveFilters && (
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                <span className="text-muted font-medium mr-1">Active Filters:</span>
+                {selectedCategory !== "All" && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                    <span>Category: {selectedCategory}</span>
+                    <button type="button" onClick={() => setSelectedCategory("All")} className="hover:text-foreground">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                {selectedIndustry !== "All" && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                    <span>Sector: {selectedIndustry}</span>
+                    <button type="button" onClick={() => setSelectedIndustry("All")} className="hover:text-foreground">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                {searchQuery.trim() && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                    <span>Keyword: "{searchQuery}"</span>
+                    <button type="button" onClick={() => setSearchQuery("")} className="hover:text-foreground">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="ml-auto text-xs font-bold text-accent hover:underline"
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            )}
+          </div>
+        </InView>
+
+        {/* ========================================================================= */}
+        {/* 4. IMAGE-RICH PROJECTS SHOWCASE GRID */}
+        {/* ========================================================================= */}
+        {filtered.length === 0 ? (
+          <div className="mt-14 rounded-3xl border border-dashed border-line bg-surface p-12 text-center shadow-sm">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
               <Search className="h-6 w-6" />
             </div>
-            <TechLabel tone="accent">No Matches Found</TechLabel>
-            <h3 className="mt-3 font-display text-xl sm:text-2xl font-bold text-foreground">
-              No machinery projects match the active filters
-            </h3>
-            <p className="mt-2.5 max-w-lg mx-auto text-xs sm:text-sm text-muted leading-relaxed">
-              We design and build bespoke induction machines and automation systems for OEM requirements. Try clearing your search keyword, switching category, or request a custom build specification.
+            <h3 className="font-display text-xl font-bold text-foreground">No machinery builds match your active filters</h3>
+            <p className="mt-2 text-xs text-muted max-w-md mx-auto">
+              We design and manufacture bespoke special purpose machines for custom client requirements. Try clearing your filters or contact our engineering team directly.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <Btn onClick={resetFilters} variant="primary">
                 Reset All Filters
               </Btn>
-              <Btn to="/contact" variant="outline">
+              <Btn to="/quote" variant="outline">
                 Request Custom Machinery Build
               </Btn>
             </div>
           </div>
         ) : (
-          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((p, i) => (
-              <InView key={p.id} delay={Math.min(i % 3, 3) * 90}>
-                <ProjectCard project={p} index={projects.indexOf(p)} />
-              </InView>
-            ))}
+          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((p, idx) => {
+              const projectId = p.id || (p as any)._id;
+              return (
+                <InView key={projectId} delay={Math.min(idx % 3, 3) * 90}>
+                  <div
+                    onClick={() => router.push(`/projects/${projectId}`)}
+                    className="group flex h-full flex-col overflow-hidden bg-surface rounded-3xl min-w-0 border border-line transition-all duration-300 hover:shadow-2xl hover:border-accent/40 hover:-translate-y-1 cursor-pointer"
+                  >
+                    {/* Machine Photo Banner with Zoom Trigger */}
+                    <div className="relative aspect-[16/10] overflow-hidden bg-navy">
+                      <img
+                        src={p.image || IMAGES.verticalInduction || IMAGES.pageProjects}
+                        alt={p.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent" />
+
+                      {/* Top Badges */}
+                      <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                        <span className="rounded-full bg-navy/90 border border-onnavy/20 px-3 py-1 text-[0.68rem] font-bold text-onnavy backdrop-blur-md">
+                          {p.category || "Custom SPM"}
+                        </span>
+                        {p.featured ? (
+                          <span className="rounded-full bg-accent px-2.5 py-0.5 text-[0.65rem] font-bold text-navy shadow-md flex items-center gap-1">
+                            <Sparkles className="h-3 w-3 fill-navy" />
+                            <span>Featured</span>
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {/* Lightbox Quick-Inspect Action */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setLightboxIndex(idx);
+                        }}
+                        className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-navy/80 px-2.5 py-1 text-[0.68rem] font-semibold text-accent backdrop-blur-md border border-accent/30 shadow-lg hover:bg-accent hover:text-navy transition-all cursor-pointer z-10"
+                        title="Inspect Machine Photos"
+                      >
+                        <Maximize2 className="h-3 w-3" />
+                        <span>Inspect</span>
+                      </button>
+
+                      {/* Bottom Overlay on Photo */}
+                      <div className="absolute bottom-3 left-3 right-3 text-onnavy">
+                        <span className="font-sans text-[0.68rem] font-bold text-accent uppercase tracking-wider block">
+                          {p.industry || "Custom Machine"}
+                        </span>
+                        <h3 className="font-display text-base font-bold text-onnavy leading-snug group-hover:text-accent transition-colors">
+                          {p.title}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Card Body */}
+                    <div className="flex flex-1 flex-col justify-between p-5 sm:p-6 min-w-0">
+                      <div className="min-w-0">
+                        <p className="text-xs leading-relaxed text-muted break-words">
+                          {p.summary || p.overview || p.short}
+                        </p>
+
+                        {/* Technical Spec Chips */}
+                        <div className="mt-3.5 flex flex-wrap gap-1.5">
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-background border border-line px-2 py-0.5 text-[0.68rem] text-foreground font-medium">
+                            <CheckCircle2 className="h-2.5 w-2.5 text-accent" />
+                            <span>100% FAT Tested</span>
+                          </span>
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-background border border-line px-2 py-0.5 text-[0.68rem] text-foreground font-medium">
+                            <CheckCircle2 className="h-2.5 w-2.5 text-accent" />
+                            <span>Pune Built</span>
+                          </span>
+                          {p.category && (
+                            <span className="rounded-lg bg-background border border-line px-2 py-0.5 text-[0.68rem] text-muted">
+                              {p.category}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Dual Action Buttons */}
+                      <div className="mt-5 pt-4 border-t border-line flex flex-wrap items-center justify-between gap-2">
+                        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-foreground group-hover:text-accent transition-colors">
+                          <span>Full Specs</span>
+                          <ArrowUpRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/quote?project=${encodeURIComponent(p.title)}#quote-form`);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-xl bg-accent/10 border border-accent/30 px-3 py-1.5 text-xs font-bold text-accent hover:bg-accent hover:text-navy transition-all shadow-xs cursor-pointer"
+                        >
+                          <span>Quote this Build</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </InView>
+              );
+            })}
           </div>
         )}
       </Section>
 
+      {/* ========================================================================= */}
+      {/* 5. "FROM CAD TO REALITY" 4-STAGE TECHNICAL BAY */}
+      {/* ========================================================================= */}
+      <Section dark tight grid>
+        <InView>
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3.5 py-1 text-xs font-bold text-accent">
+              <Layers className="h-3.5 w-3.5" />
+              <span>Full Lifecycle Engineering</span>
+            </span>
+            <h2 className="mt-3 font-display text-3xl sm:text-4xl font-extrabold text-onnavy">
+              From 3D Blueprint to Shop-Floor Reality
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-onnavy-muted leading-relaxed">
+              Every build in our portfolio follows a rigorous 4-stage engineering lifecycle under single-roof accountability in Pune.
+            </p>
+          </div>
+        </InView>
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <InView delay={60}>
+            <div className="h-full rounded-2xl border border-onnavy/15 bg-surface/5 p-6 backdrop-blur-md flex flex-col justify-between hover:border-accent/40 transition-colors">
+              <div>
+                <span className="font-display text-2xl font-extrabold text-accent">01</span>
+                <h3 className="mt-2 font-display text-base font-bold text-onnavy">3D SolidWorks CAD Design</h3>
+                <p className="mt-2 text-xs text-onnavy-muted leading-relaxed">
+                  Kinematic motion simulations, FEA stress modeling, and full 2D manufacturing blueprints for zero-collision assemblies.
+                </p>
+              </div>
+              <div className="mt-6 pt-3 border-t border-onnavy/10 text-[0.7rem] font-bold text-accent">
+                CAD BUREAU VERIFIED
+              </div>
+            </div>
+          </InView>
+
+          <InView delay={120}>
+            <div className="h-full rounded-2xl border border-onnavy/15 bg-surface/5 p-6 backdrop-blur-md flex flex-col justify-between hover:border-accent/40 transition-colors">
+              <div>
+                <span className="font-display text-2xl font-extrabold text-accent">02</span>
+                <h3 className="mt-2 font-display text-base font-bold text-onnavy">Precision CNC Machining</h3>
+                <p className="mt-2 text-xs text-onnavy-muted leading-relaxed">
+                  In-house structural frame fabrication, heavy CNC milling, turning, and stress-relieved bed machining to ±0.005mm.
+                </p>
+              </div>
+              <div className="mt-6 pt-3 border-t border-onnavy/10 text-[0.7rem] font-bold text-accent">
+                CNC WORKSHOP VERIFIED
+              </div>
+            </div>
+          </InView>
+
+          <InView delay={180}>
+            <div className="h-full rounded-2xl border border-onnavy/15 bg-surface/5 p-6 backdrop-blur-md flex flex-col justify-between hover:border-accent/40 transition-colors">
+              <div>
+                <span className="font-display text-2xl font-extrabold text-accent">03</span>
+                <h3 className="mt-2 font-display text-base font-bold text-onnavy">PLC & Servo Integration</h3>
+                <p className="mt-2 text-xs text-onnavy-muted leading-relaxed">
+                  Siemens/Delta PLC control panel wiring, multi-axis servo synchronization, pneumatic quench plumbing, and safety guards.
+                </p>
+              </div>
+              <div className="mt-6 pt-3 border-t border-onnavy/10 text-[0.7rem] font-bold text-accent">
+                CONTROL PANEL VERIFIED
+              </div>
+            </div>
+          </InView>
+
+          <InView delay={240}>
+            <div className="h-full rounded-2xl border border-onnavy/15 bg-surface/5 p-6 backdrop-blur-md flex flex-col justify-between hover:border-accent/40 transition-colors">
+              <div>
+                <span className="font-display text-2xl font-extrabold text-accent">04</span>
+                <h3 className="mt-2 font-display text-base font-bold text-onnavy">100% FAT Live Trials</h3>
+                <p className="mt-2 text-xs text-onnavy-muted leading-relaxed">
+                  Continuous high-speed dry and wet testing with actual client components before dispatch, with verified cycle times.
+                </p>
+              </div>
+              <div className="mt-6 pt-3 border-t border-onnavy/10 text-[0.7rem] font-bold text-accent">
+                CLIENT FAT SIGNOFF
+              </div>
+            </div>
+          </InView>
+        </div>
+      </Section>
+
+      {/* ========================================================================= */}
+      {/* 6. BOTTOM CTA BAND */}
+      {/* ========================================================================= */}
       <Reveal>
         <CtaBand />
       </Reveal>
+
+      {/* ========================================================================= */}
+      {/* 7. FULLSCREEN INTERACTIVE LIGHTBOX MODAL */}
+      {/* ========================================================================= */}
+      <Lightbox
+        isOpen={lightboxIndex !== null}
+        onClose={() => setLightboxIndex(null)}
+        items={lightboxItems}
+        currentIndex={lightboxIndex || 0}
+        onChangeIndex={(newIdx) => setLightboxIndex(newIdx)}
+      />
     </>
   );
 }

@@ -38,23 +38,22 @@ export function Navbar() {
         >
           {/* Brand Logo */}
           <Link href="/" className="group flex items-center gap-3.5">
-            <div className="relative flex h-10 w-10 items-center justify-center border border-accent bg-navy">
-              <span className="absolute inset-0.5 border border-accent/40" />
-              <span className="font-mono text-xs font-bold text-accent tracking-tighter">3S</span>
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-accent/60 bg-navy shadow-md shadow-accent/10 transition-transform group-hover:scale-105">
+              <span className="font-display text-sm font-extrabold text-accent tracking-tight">3S</span>
             </div>
             <div className="leading-none">
               <span
-                className={`block font-display text-sm font-bold tracking-[0.16em] sm:text-base ${
+                className={`block font-display text-base font-bold tracking-tight ${
                   scrolled || open ? "text-foreground" : "text-onnavy"
                 }`}
               >
                 THREE STAR
               </span>
-              <div className="mt-1 flex items-center gap-2">
-                <span className="tech-label text-accent font-semibold">ENTERPRISES</span>
+              <div className="mt-1 flex items-center gap-1.5">
+                <span className="font-sans text-[0.68rem] font-bold text-accent tracking-wider uppercase">ENTERPRISES</span>
                 <span className="hidden sm:inline-block h-1 w-1 rounded-full bg-accent" />
-                <span className="hidden sm:inline-block font-mono text-[0.62rem] text-muted tracking-wider uppercase">
-                  Pune, India
+                <span className="hidden sm:inline-block font-sans text-[0.68rem] text-muted">
+                  Pune Works
                 </span>
               </div>
             </div>
@@ -68,19 +67,19 @@ export function Navbar() {
                 <Link
                   key={l.to}
                   href={l.to}
-                  className={`relative py-1 text-[0.82rem] font-medium tracking-wider transition-colors duration-300 ${
+                  className={`relative py-1 text-sm font-medium transition-colors duration-200 ${
                     scrolled
                       ? active
                         ? "text-accent font-semibold"
                         : "text-steel hover:text-accent"
                       : active
                         ? "text-accent font-semibold"
-                        : "text-onnavy/80 hover:text-accent"
+                        : "text-onnavy/90 hover:text-accent"
                   }`}
                 >
                   {l.label}
                   <span
-                    className={`absolute -bottom-1 left-0 h-0.5 bg-accent transition-all duration-300 ${
+                    className={`absolute -bottom-1 left-0 h-0.5 rounded-full bg-accent transition-all duration-300 ${
                       active ? "w-full shadow-[0_0_8px_rgba(14,165,233,0.8)]" : "w-0 group-hover:w-full"
                     }`}
                   />
@@ -93,7 +92,7 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             <Link
               href="/quote"
-              className="hidden rounded-[2px] bg-accent px-5 py-2.5 text-[0.72rem] font-semibold tracking-[0.14em] text-navy uppercase transition-all duration-300 hover:bg-navy hover:text-onnavy shadow-[0_2px_10px_rgba(14,165,233,0.3)] md:inline-flex"
+              className="hidden rounded-xl bg-accent px-5 py-2.5 text-xs font-bold tracking-wide text-navy uppercase transition-all duration-300 hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/25 md:inline-flex"
             >
               Get a Quote
             </Link>
@@ -165,7 +164,7 @@ export function Navbar() {
             >
               Start an Enquiry
             </Link>
-            <p className="text-center font-mono text-[0.7rem] text-muted">
+            <p className="text-center text-xs text-muted">
               Direct Phone: +91 9823463655 / 8788848977
             </p>
           </div>

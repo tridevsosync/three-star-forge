@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { IMAGES } from "@/data/images";
 import { useSite } from "@/store/site-store";
 import { SectionHead, TechLabel, Badge, Btn } from "@/components/site/ui";
@@ -26,14 +27,39 @@ const emptyContactForm = {
   message: "",
 };
 
-export default function ContactPage() {
+function ContactPageInner() {
+  const searchParams = useSearchParams();
   const { company, createContact, openRfqModal } = useSite();
   const [form, setForm] = useState(emptyContactForm);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+  useEffect(() => {
+    const subjectParam = searchParams?.get("subject") || "";
+    const messageParam = searchParams?.get("message") || "";
+    if (subjectParam || messageParam) {
+      setForm((p) => ({
+        ...p,
+        subject: SUBJECT_OPTIONS.includes(subjectParam) ? subjectParam : "Partnership & Distribution",
+        message: messageParam || (subjectParam ? `Inquiry regarding: ${subjectParam}\n` : p.message),
+      }));
+    }
+    if (typeof window !== "undefined" && (subjectParam || messageParam || window.location.hash === "#contact-form")) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById("contact-form");
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const targetY = rect.top + scrollTop - 90;
+          window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+        }
+      }, 120);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
+
+  const set = (k: string, v: any) => setForm((p) => ({ ...p, [k]: v }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -144,7 +170,7 @@ export default function ContactPage() {
 
           {/* RIGHT: Contact Message Form */}
           <InView delay={100} className="lg:col-span-7">
-            <div className="corner-marks border border-line bg-surface shadow-lg">
+            <div id="contact-form" className="scroll-mt-28 corner-marks border border-line bg-surface shadow-lg">
               <div className="border-b border-line bg-surface-soft px-8 py-6 flex items-center justify-between">
                 <div>
                   <TechLabel tone="accent">General Inquiries</TechLabel>
@@ -321,5 +347,19 @@ export default function ContactPage() {
         </div>
       </Section>
     </>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+        </div>
+      }
+    >
+      <ContactPageInner />
+    </Suspense>
   );
 }

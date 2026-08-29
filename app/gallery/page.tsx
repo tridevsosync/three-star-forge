@@ -2,20 +2,45 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { GALLERY_CATEGORIES } from "@/data/site";
-import { Reveal, TechLabel, Btn, Lightbox } from "@/components/site/ui";
-import { CtaBand } from "@/components/site/blocks";
+import { IMAGES } from "@/data/images";
+import { Reveal, TechLabel, Btn, Lightbox, Badge, Container } from "@/components/site/ui";
+import { CtaBand, Section } from "@/components/site/blocks";
 import { InView } from "@/components/site/reveal";
 import { useSite } from "@/store/site-store";
+import {
+  Search,
+  Maximize2,
+  Sparkles,
+  SlidersHorizontal,
+  ArrowUpRight,
+  ShieldCheck,
+  CheckCircle2,
+  Activity,
+  Layers,
+  ArrowRight,
+  RotateCcw,
+  Camera,
+  Grid,
+  LayoutGrid,
+} from "lucide-react";
 
 export default function GalleryPage() {
+  const router = useRouter();
   const { gallery } = useSite();
   const [cat, setCat] = useState("All");
   const [search, setSearch] = useState("");
   const [onlyFeatured, setOnlyFeatured] = useState(false);
   const [sortBy, setSortBy] = useState("default");
-  const [layoutMode, setLayoutMode] = useState("masonry"); // 'masonry' | 'grid'
-  const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [layoutMode, setLayoutMode] = useState<"masonry" | "grid">("masonry");
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Dynamic featured photo for hero spotlight (prioritizes featuredInHero, then featured)
+  const featuredPhoto = useMemo(
+    () => gallery.find((g) => g.featuredInHero || (g as any).featuredInHeader) || gallery.find((g) => g.featured),
+    [gallery],
+  );
 
   // Dynamically extract all unique categories from the gallery items in store
   const allCategories = useMemo(() => {
@@ -28,7 +53,7 @@ export default function GalleryPage() {
 
   // Compute category count map
   const categoryCounts = useMemo(() => {
-    const counts = { All: gallery.length };
+    const counts: Record<string, number> = { All: gallery.length };
     gallery.forEach((g) => {
       counts[g.category] = (counts[g.category] || 0) + 1;
     });
@@ -61,109 +86,189 @@ export default function GalleryPage() {
 
   const featuredTotal = useMemo(() => gallery.filter((g) => g.featured).length, [gallery]);
 
+  // Prepare items for Lightbox
+  const lightboxItems = useMemo(
+    () =>
+      filteredItems.map((g, i) => ({
+        id: g.id || (g as any)._id || String(i),
+        image: g.image || "",
+        title: g.title,
+        category: `${g.category || "Machinery"} • Photo #${i + 1}`,
+        description: g.description,
+      })),
+    [filteredItems],
+  );
+
   return (
     <>
-      {/* Ultra-Premium Precision Hero */}
-      <div className="relative border-b border-line bg-navy text-onnavy blueprint-grid-dark overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/90 to-transparent z-0" />
-        
-        {/* Subtle Ambient Laser Glow */}
-        <div className="absolute -top-32 right-1/4 w-96 h-96 bg-accent/15 rounded-full blur-3xl pointer-events-none" />
+      {/* ========================================================================= */}
+      {/* 1. HERO SECTION — UNIFIED ATMOSPHERIC DARK HERO WITH SPOTLIGHT CARD */}
+      {/* ========================================================================= */}
+      <section className="relative overflow-hidden bg-navy pt-28 pb-20 text-onnavy sm:pt-36 sm:pb-28 lg:pt-40 lg:pb-32">
+        <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-30" />
+        <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-accent/15 blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 -right-40 h-[450px] w-[450px] rounded-full bg-accent/10 blur-[100px] pointer-events-none" />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-          <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-            {/* Hero Left Content */}
-            <div className="lg:col-span-7 space-y-6">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="font-mono text-xs font-semibold tracking-widest text-accent uppercase border border-accent/40 bg-accent/10 px-3 py-1">
-                  ARCHIVE // 06
-                </span>
-                <span className="font-mono text-xs text-onnavy-muted uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-                  ISO 9001:2015 Spec Verified
-                </span>
-              </div>
-
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-onnavy leading-[1.1]">
-                Shop-Floor Engineering & Machinery Archive.
-              </h1>
-
-              <p className="text-sm sm:text-base text-onnavy-muted leading-relaxed max-w-2xl">
-                A high-resolution visual record of custom induction hardening machines, precision fixtures, robotic tooling, and turnkey automation lines engineered and trialled in our Pune plant.
-              </p>
-
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-wrap items-center gap-4">
-                <Btn to="/contact" variant="primary">
-                  Submit Machinery RFQ
-                </Btn>
-                <a
-                  href="#gallery-grid"
-                  className="inline-flex items-center gap-2 border border-onnavy/30 bg-navy/80 hover:border-accent hover:text-accent px-5 py-3 font-mono text-xs uppercase tracking-wider transition-all"
-                >
-                  <span>Explore Gallery</span>
-                  <span>↓</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Hero Right Metrics Box */}
-            <div className="lg:col-span-5">
-              <div className="border border-onnavy/20 bg-navy-deep/80 backdrop-blur-md p-6 sm:p-8 corner-marks-dark shadow-2xl space-y-6">
-                <div className="flex items-center justify-between border-b border-onnavy/10 pb-4">
-                  <span className="tech-label text-accent">Visual Portfolio Status</span>
-                  <span className="font-mono text-xs text-success flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-success animate-ping" />
-                    Live Cloud Sync
+        <Container className="relative">
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-14 items-center">
+            {/* Left Content */}
+            <div className={featuredPhoto ? "lg:col-span-7" : "lg:col-span-12 max-w-5xl"}>
+              <Reveal>
+                {/* Live Telemetry Pill */}
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-xs font-semibold text-accent backdrop-blur-md shadow-xs">
+                  <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
+                  <span>SHOP-FLOOR VISUAL ARCHIVE</span>
+                  <span className="h-3 w-px bg-accent/40" />
+                  <span className="text-onnavy-muted font-normal hidden sm:inline">
+                    {gallery.length} High-Resolution Photographs
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="border border-onnavy/10 bg-navy/60 p-4">
-                    <span className="tech-label text-onnavy-muted text-[0.65rem]">Total Photographs</span>
-                    <p className="mt-1 font-display text-3xl font-bold text-onnavy">{gallery.length}</p>
-                    <span className="text-[0.68rem] font-mono text-accent">Shop Floor Records</span>
-                  </div>
-                  <div className="border border-onnavy/10 bg-navy/60 p-4">
-                    <span className="tech-label text-accent text-[0.65rem]">Featured Builds</span>
-                    <p className="mt-1 font-display text-3xl font-bold text-accent">{featuredTotal}</p>
-                    <span className="text-[0.68rem] font-mono text-onnavy-muted">Flagship Systems</span>
-                  </div>
-                </div>
+                <h1 className="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
+                  Precision Machinery &amp; Tooling <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent-hover to-white">
+                    High&#8209;Resolution Shop&#8209;Floor Archive.
+                  </span>
+                </h1>
 
-                <div className="pt-2 text-xs font-mono text-onnavy-muted flex items-center justify-between">
-                  <span>Categories: <strong className="text-onnavy">{allCategories.length - 1} Specializations</strong></span>
-                  <span>Media Quality: <strong className="text-accent">Ultra-HD 4K</strong></span>
+                <p className="mt-5 max-w-2xl text-base sm:text-lg text-onnavy-muted leading-relaxed font-sans">
+                  A comprehensive photographic record of custom induction hardening machines, automated material handling conveyors, robotic cells, and precision fixtures manufactured and FAT-trialled at our Pune works.
+                </p>
+
+                {/* Hero CTAs */}
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <Btn
+                    to="/quote#quote-form"
+                    variant="primary"
+                    className="text-xs sm:text-sm px-7 py-3.5 font-bold shadow-lg shadow-accent/25"
+                  >
+                    Submit Machinery RFQ
+                  </Btn>
+                  <a
+                    href="#gallery-grid"
+                    className="inline-flex items-center gap-2 rounded-xl border border-onnavy/30 bg-navy/80 hover:border-accent hover:text-accent px-5 py-3 text-xs sm:text-sm font-semibold transition-all"
+                  >
+                    <span>Explore Gallery Photos</span>
+                    <span>↓</span>
+                  </a>
                 </div>
-              </div>
+              </Reveal>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Showcase Section */}
+            {/* Right Column: Hero Spotlight Photo Card (Active when a photo is featured) */}
+            {featuredPhoto && (
+              <div className="lg:col-span-5">
+                <InView delay={120}>
+                  <div
+                    onClick={() => {
+                      const fIndex = filteredItems.findIndex(
+                        (item) => item.id === featuredPhoto.id || (item as any)._id === (featuredPhoto as any)._id,
+                      );
+                      setLightboxIndex(fIndex >= 0 ? fIndex : 0);
+                    }}
+                    className="group relative rounded-3xl border border-onnavy/20 bg-surface/5 p-4 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:border-accent/50 cursor-pointer"
+                  >
+                    {/* Photo Container */}
+                    <div className="relative aspect-[16/11] w-full overflow-hidden rounded-2xl bg-navy">
+                      <img
+                        src={featuredPhoto.image || IMAGES.verticalInduction}
+                        alt={featuredPhoto.title || "Featured Visual Build"}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = IMAGES.verticalInduction;
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/30 to-transparent" />
+
+                      {/* Zoom Trigger */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const fIndex = filteredItems.findIndex(
+                            (item) => item.id === featuredPhoto.id || (item as any)._id === (featuredPhoto as any)._id,
+                          );
+                          setLightboxIndex(fIndex >= 0 ? fIndex : 0);
+                        }}
+                        className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-navy/80 px-3 py-1.5 text-xs font-semibold text-accent backdrop-blur-md border border-accent/30 shadow-lg hover:bg-accent hover:text-navy transition-all cursor-pointer z-10"
+                      >
+                        <Maximize2 className="h-3.5 w-3.5" />
+                        <span>Inspect Photograph</span>
+                      </button>
+
+                      {/* Overlay Telemetry */}
+                      <div className="absolute bottom-4 left-4 right-4 text-onnavy">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block rounded-full bg-accent/20 border border-accent/40 px-2.5 py-0.5 text-[0.65rem] font-bold text-accent uppercase">
+                            Featured Visual Build
+                          </span>
+                          <span className="text-[0.65rem] text-onnavy-muted font-sans">
+                            {featuredPhoto.category}
+                          </span>
+                        </div>
+                        <h3 className="mt-1 font-display text-base font-bold text-onnavy leading-snug group-hover:text-accent transition-colors">
+                          {featuredPhoto.title}
+                        </h3>
+                        {featuredPhoto.description && (
+                          <p className="mt-0.5 text-xs text-onnavy-muted leading-relaxed">
+                            {featuredPhoto.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Quick Facts Grid */}
+                    <div className="mt-3.5 grid grid-cols-3 gap-2 text-center text-xs">
+                      <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
+                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Category</span>
+                        <strong className="font-display text-xs font-bold text-accent truncate block">
+                          {featuredPhoto.category || "Machinery"}
+                        </strong>
+                      </div>
+                      <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
+                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Facility</span>
+                        <strong className="font-display text-xs font-bold text-onnavy">Pune Works</strong>
+                      </div>
+                      <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
+                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Verification</span>
+                        <strong className="font-display text-xs font-bold text-onnavy">100% FAT</strong>
+                      </div>
+                    </div>
+                  </div>
+                </InView>
+              </div>
+            )}
+          </div>
+        </Container>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 2. MAIN GALLERY SECTION & INTERACTIVE FLOATING COMMAND DOCK */}
+      {/* ========================================================================= */}
       <div id="gallery-grid" className="scroll-mt-12 bg-background py-14 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
           {/* Section Header */}
           <InView>
             <div className="flex flex-wrap items-end justify-between gap-6 border-b border-line pb-6">
               <div>
-                <span className="tech-label text-accent">Engineering Visuals</span>
+                <TechLabel tone="accent">Engineering Visuals</TechLabel>
                 <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-foreground">
-                  Browse Machine & Tooling Archive
+                  Browse Machinery &amp; Tooling Records
                 </h2>
                 <p className="mt-1.5 text-xs sm:text-sm text-muted max-w-xl">
                   Select any category to inspect close-up machining tolerances, component assemblies, and surface finishes in full-resolution lightbox.
                 </p>
               </div>
 
-              {/* Badges */}
-              <div className="flex flex-wrap gap-2.5">
-                <span className="border border-line bg-surface px-3 py-1 font-mono text-xs font-semibold text-foreground">
-                  {String(filteredItems.length).padStart(2, "0")} / {String(gallery.length).padStart(2, "0")} DISPLAYED
+              {/* Status Chips */}
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-semibold text-foreground shadow-xs">
+                  {String(filteredItems.length).padStart(2, "0")} / {String(gallery.length).padStart(2, "0")} Photographs
                 </span>
-                <span className="border border-accent/40 bg-accent/10 px-3 py-1 font-mono text-xs font-semibold text-accent">
-                  ★ {featuredTotal} FEATURED
+                <span className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent shadow-xs flex items-center gap-1">
+                  <Sparkles className="h-3 w-3 fill-accent" />
+                  <span>{featuredTotal} Featured</span>
                 </span>
               </div>
             </div>
@@ -171,7 +276,7 @@ export default function GalleryPage() {
 
           {/* Interactive Floating Command & Filter Dock */}
           <InView delay={50}>
-            <div className="border border-line bg-surface shadow-md p-4 sm:p-5 space-y-4">
+            <div className="rounded-3xl border border-line bg-surface shadow-sm p-4 sm:p-5 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 {/* Search Input */}
                 <div className="relative flex-1 min-w-[260px] max-w-md">
@@ -180,26 +285,14 @@ export default function GalleryPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search machines, coils, fixtures, automation..."
-                    className="w-full border border-line bg-background pl-9 pr-8 py-2.5 text-xs text-foreground placeholder:text-muted outline-none transition-all focus:border-accent focus:ring-1 focus:ring-accent"
+                    className="w-full rounded-2xl border border-line bg-background pl-10 pr-9 py-2.5 text-xs font-medium text-foreground placeholder:text-muted outline-none transition-all focus:border-accent focus:ring-2 focus:ring-accent/20"
                   />
-                  <svg
-                    className="absolute left-3 top-3 h-4 w-4 text-muted"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
+                  <Search className="absolute left-3.5 top-3 h-4 w-4 text-muted" />
                   {search && (
                     <button
                       type="button"
                       onClick={() => setSearch("")}
-                      className="absolute right-2.5 top-2.5 text-xs text-muted hover:text-foreground p-0.5"
+                      className="absolute right-3 top-3 text-xs text-muted hover:text-foreground cursor-pointer p-0.5"
                     >
                       ✕
                     </button>
@@ -207,30 +300,32 @@ export default function GalleryPage() {
                 </div>
 
                 {/* Filter Controls & Layout Toggles */}
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2.5">
                   {/* Featured Button */}
                   <button
                     type="button"
                     onClick={() => setOnlyFeatured(!onlyFeatured)}
-                    className={`inline-flex items-center gap-2 border px-3.5 py-2 text-xs font-semibold tracking-wider uppercase transition-all ${
+                    className={`inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all cursor-pointer ${
                       onlyFeatured
                         ? "border-accent bg-accent text-navy font-bold shadow-sm"
                         : "border-line bg-background text-muted hover:border-line-strong hover:text-foreground"
                     }`}
                   >
-                    <span>★ Featured Only</span>
-                    <span className="font-mono text-[0.65rem]">({featuredTotal})</span>
+                    <Sparkles className={`h-3 w-3 ${onlyFeatured ? "fill-navy" : "text-accent"}`} />
+                    <span>Featured Only</span>
+                    <span className="rounded-md bg-navy/10 px-1.5 py-0.5 text-[0.65rem] font-bold">
+                      {featuredTotal}
+                    </span>
                   </button>
 
                   {/* Sort Dropdown */}
                   <div className="flex items-center gap-1.5">
-                    <span className="tech-label text-muted text-[0.65rem] hidden sm:inline">Sort:</span>
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="border border-line bg-background px-3 py-2 font-mono text-xs text-foreground outline-none focus:border-accent"
+                      className="rounded-xl border border-line bg-background px-3 py-2 text-xs font-medium text-foreground outline-none focus:border-accent cursor-pointer"
                     >
-                      <option value="default">Default Archive Order</option>
+                      <option value="default">Default Order</option>
                       <option value="featured">Featured First</option>
                       <option value="alpha">Title (A-Z)</option>
                       <option value="alpha-desc">Title (Z-A)</option>
@@ -238,33 +333,39 @@ export default function GalleryPage() {
                   </div>
 
                   {/* Layout Mode Switcher */}
-                  <div className="flex border border-line bg-background">
+                  <div className="flex rounded-xl border border-line bg-background p-0.5">
                     <button
                       type="button"
                       onClick={() => setLayoutMode("masonry")}
-                      className={`px-3 py-2 text-xs font-mono uppercase transition-colors ${
-                        layoutMode === "masonry" ? "bg-navy text-onnavy font-semibold" : "text-muted hover:text-foreground"
+                      className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
+                        layoutMode === "masonry"
+                          ? "bg-navy text-onnavy shadow-xs"
+                          : "text-muted hover:text-foreground"
                       }`}
                       title="Masonry Mosaic Layout"
                     >
-                      Mosaic
+                      <LayoutGrid className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">Mosaic</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setLayoutMode("grid")}
-                      className={`px-3 py-2 text-xs font-mono uppercase transition-colors ${
-                        layoutMode === "grid" ? "bg-navy text-onnavy font-semibold" : "text-muted hover:text-foreground"
+                      className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
+                        layoutMode === "grid"
+                          ? "bg-navy text-onnavy shadow-xs"
+                          : "text-muted hover:text-foreground"
                       }`}
-                      title="Uniform Technical Grid"
+                      title="Uniform Grid Layout"
                     >
-                      Grid
+                      <Grid className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">Grid</span>
                     </button>
                   </div>
                 </div>
               </div>
 
               {/* Dynamic Category Tabs */}
-              <div className="flex flex-wrap gap-2 pt-3 border-t border-line">
+              <div className="flex flex-wrap gap-1.5 pt-3 border-t border-line">
                 {allCategories.map((c) => {
                   const count = categoryCounts[c] || 0;
                   const active = cat === c;
@@ -276,16 +377,16 @@ export default function GalleryPage() {
                         setCat(c);
                         setLightboxIndex(null);
                       }}
-                      className={`inline-flex items-center gap-2 border px-3.5 py-1.5 text-xs font-semibold tracking-wider uppercase transition-all duration-200 ${
+                      className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
                         active
-                          ? "border-accent bg-navy text-accent shadow-sm ring-1 ring-accent"
-                          : "border-line text-muted hover:border-accent/60 hover:text-foreground bg-background"
+                          ? "border-accent bg-accent text-navy font-bold shadow-xs"
+                          : "border-line bg-background text-muted hover:border-accent hover:text-foreground"
                       }`}
                     >
                       <span>{c}</span>
                       <span
-                        className={`font-mono text-[0.65rem] px-1.5 py-0.5 rounded ${
-                          active ? "bg-accent/20 text-accent font-bold" : "bg-line text-muted"
+                        className={`rounded-full px-1.5 py-0.2 text-[0.65rem] font-bold ${
+                          active ? "bg-navy/15 text-navy" : "bg-line text-muted"
                         }`}
                       >
                         {count}
@@ -297,12 +398,13 @@ export default function GalleryPage() {
             </div>
           </InView>
 
-          {/* Active Filter Indicators / Clear */}
+          {/* Active Filter Summary Bar */}
           {(cat !== "All" || onlyFeatured || search) && (
-            <div className="flex items-center justify-between text-xs text-muted font-mono px-1">
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted px-1">
               <p>
-                Showing <strong className="text-foreground">{filteredItems.length}</strong> of {gallery.length} photographs
-                {cat !== "All" ? ` in "${cat}"` : ""}
+                Showing <strong className="text-foreground">{filteredItems.length}</strong> of{" "}
+                {gallery.length} photographs
+                {cat !== "All" ? ` in category "${cat}"` : ""}
                 {onlyFeatured ? " (Featured builds only)" : ""}
                 {search ? ` matching "${search}"` : ""}
               </p>
@@ -313,7 +415,7 @@ export default function GalleryPage() {
                   setOnlyFeatured(false);
                   setSearch("");
                 }}
-                className="text-accent underline hover:text-foreground text-xs uppercase tracking-wider font-semibold"
+                className="text-accent underline hover:text-foreground text-xs font-bold cursor-pointer"
               >
                 Reset All Filters
               </button>
@@ -322,35 +424,27 @@ export default function GalleryPage() {
 
           {/* Empty State */}
           {gallery.length === 0 ? (
-            <div className="border border-dashed border-line bg-surface p-16 text-center shadow-sm">
-              <div className="w-14 h-14 mx-auto border border-accent/40 bg-accent/10 flex items-center justify-center text-accent">
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+            <div className="rounded-3xl border border-dashed border-line bg-surface p-16 text-center shadow-sm">
+              <div className="w-14 h-14 mx-auto rounded-2xl border border-accent/40 bg-accent/10 flex items-center justify-center text-accent">
+                <Camera className="w-7 h-7" />
               </div>
               <h3 className="mt-4 font-display text-xl font-bold text-foreground">Archive is Updating</h3>
               <p className="mt-2 text-sm text-muted max-w-md mx-auto">
                 No photographs are currently published in this view. Contact our Pune engineering team to request customized project photographs and machine specifications.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <Link
-                  href="/contact"
-                  className="border border-accent bg-accent text-navy px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider hover:bg-accent-hover transition-colors"
-                >
+                <Btn to="/contact" variant="primary" className="text-xs px-6 py-3 font-bold">
                   Contact Our Engineering Team
-                </Link>
-                <Link
-                  href="/quote"
-                  className="border border-line bg-surface px-5 py-2.5 font-mono text-xs font-semibold text-foreground hover:border-accent transition-colors"
-                >
+                </Btn>
+                <Btn to="/quote" variant="light" className="text-xs px-6 py-3 font-semibold">
                   Request Machinery Quote →
-                </Link>
+                </Btn>
               </div>
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="border border-dashed border-line bg-surface p-14 text-center">
-              <TechLabel>No Match Found</TechLabel>
-              <h3 className="mt-3 font-display text-lg font-semibold text-foreground">
+            <div className="rounded-3xl border border-dashed border-line bg-surface p-14 text-center">
+              <TechLabel tone="accent">No Matches</TechLabel>
+              <h3 className="mt-3 font-display text-lg font-bold text-foreground">
                 No photographs match the active filter criteria.
               </h3>
               <p className="mt-1 text-xs text-muted">
@@ -363,13 +457,15 @@ export default function GalleryPage() {
                   setOnlyFeatured(false);
                   setSearch("");
                 }}
-                className="mt-5 border border-accent bg-accent/10 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wider text-accent hover:bg-accent hover:text-navy transition-colors"
+                className="mt-5 rounded-xl border border-accent bg-accent/10 px-5 py-2.5 text-xs font-bold text-accent hover:bg-accent hover:text-navy transition-colors cursor-pointer"
               >
                 Clear All Filters
               </button>
             </div>
           ) : (
-            /* Gallery Cards Presentation */
+            /* ========================================================================= */
+            /* 3. GALLERY CARDS PRESENTATION */
+            /* ========================================================================= */
             <div
               className={`${
                 layoutMode === "masonry"
@@ -378,14 +474,14 @@ export default function GalleryPage() {
               }`}
             >
               {filteredItems.map((g, i) => (
-                <InView key={g.id || g._id || i} delay={Math.min(i % 3, 3) * 70}>
+                <InView key={g.id || (g as any)._id || i} delay={Math.min(i % 3, 3) * 70}>
                   <figure
                     onClick={() => setLightboxIndex(i)}
-                    className="group relative cursor-pointer overflow-hidden border border-line bg-navy corner-marks shadow-md transition-all duration-500 hover:shadow-2xl hover:border-accent/80 hover:-translate-y-1"
+                    className="group relative cursor-pointer overflow-hidden rounded-3xl border border-line bg-surface shadow-xs transition-all duration-500 hover:shadow-2xl hover:border-accent/60 hover:-translate-y-1"
                   >
                     {/* Image Container */}
                     <div
-                      className={`relative w-full overflow-hidden bg-navy-deep ${
+                      className={`relative w-full overflow-hidden bg-navy ${
                         layoutMode === "grid"
                           ? "aspect-[16/11]"
                           : i % 5 === 0
@@ -395,76 +491,82 @@ export default function GalleryPage() {
                           : "aspect-[4/3]"
                       }`}
                     >
-                      {g.image ? (
+                      {g.image && g.image.trim() !== "" ? (
                         <img
                           src={g.image}
-                          alt={g.title}
+                          alt={g.title || "Shop-Floor Photograph"}
                           loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-108"
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = IMAGES.spindleHardening;
+                          }}
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center font-mono text-xs text-onnavy-muted">
-                          Three Star Works
+                        <div className="flex h-full w-full items-center justify-center text-xs text-onnavy-muted">
+                          Three Star Engineering
                         </div>
                       )}
-                      
-                      {/* Gradient Ambient Overlays */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-navy/95 via-navy/35 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-95" />
+
+                      {/* Ambient Gradient Overlays */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/25 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-95" />
 
                       {/* Top Badges */}
-                      <div className="absolute top-3 left-3 flex items-center gap-2">
-                        <span className="font-mono text-[0.62rem] text-onnavy border border-onnavy/30 bg-navy/80 px-2 py-0.5 backdrop-blur-sm">
+                      <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                        <span className="rounded-full border border-onnavy/30 bg-navy/80 px-2.5 py-0.5 text-[0.65rem] font-bold text-onnavy backdrop-blur-sm">
                           #{String(i + 1).padStart(2, "0")}
                         </span>
-                        <span className="font-mono text-[0.58rem] text-accent border border-accent/40 bg-navy/90 px-1.5 py-0.5 backdrop-blur-sm">
-                            HD SPEC
-                          </span>
+                        <span className="rounded-full border border-accent/40 bg-navy/90 px-2 py-0.5 text-[0.62rem] font-bold text-accent backdrop-blur-sm">
+                          SHOP BUILD
+                        </span>
                       </div>
 
                       {g.featured && (
-                        <span className="tech-label absolute top-3 right-3 border border-accent/70 bg-accent text-navy font-bold px-2 py-0.5 text-[0.65rem] shadow-sm">
-                          ★ Featured
+                        <span className="absolute top-3 right-3 rounded-full bg-accent text-navy font-bold px-2.5 py-0.5 text-[0.65rem] shadow-sm flex items-center gap-1">
+                          <Sparkles className="h-3 w-3 fill-navy" />
+                          <span>Featured</span>
                         </span>
                       )}
 
                       {/* Floating Inspection Trigger on Hover */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="border border-accent bg-navy/90 text-accent px-4 py-2 font-mono text-xs uppercase tracking-wider backdrop-blur-sm shadow-xl flex items-center gap-2">
+                        <div className="rounded-full border border-accent bg-navy/90 text-accent px-4 py-2 text-xs font-bold backdrop-blur-sm shadow-xl flex items-center gap-2">
+                          <Maximize2 className="h-3.5 w-3.5" />
                           <span>Inspect Full Resolution</span>
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-                          </svg>
                         </div>
                       </div>
                     </div>
 
                     {/* Figcaption Info Card */}
-                    <figcaption className="p-4 sm:p-5 border-t border-onnavy/10 bg-navy flex flex-col justify-between">
+                    <figcaption className="p-5 border-t border-line bg-surface flex flex-col justify-between">
                       <div>
-                        <div className="flex items-center justify-between">
-                          <span className="tech-label text-accent font-semibold text-[0.68rem] tracking-widest">
-                            {g.category}
-                          </span>
-                          <span className="font-mono text-[0.62rem] text-onnavy-muted/60">
-                            SPEC PROOF
-                          </span>
-                        </div>
-                        <h3 className="mt-1 text-sm sm:text-base font-bold text-onnavy leading-snug group-hover:text-accent transition-colors">
+                        <span className="text-[0.68rem] font-bold text-accent uppercase tracking-wider block">
+                          {g.category}
+                        </span>
+                        <h3 className="mt-1 font-display text-base font-bold text-foreground leading-snug group-hover:text-accent transition-colors">
                           {g.title}
                         </h3>
                         {g.description && (
-                          <p className="mt-1.5 text-xs text-onnavy-muted/85 line-clamp-2 leading-relaxed">
+                          <p className="mt-2 text-xs text-muted leading-relaxed break-words">
                             {g.description}
                           </p>
                         )}
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-onnavy/10 flex items-center justify-between text-[0.68rem] font-mono text-onnavy-muted">
-                        <span className="text-accent hover:underline flex items-center gap-1">
-                          <span>View Blueprint Details</span>
-                          <span>→</span>
+                      <div className="mt-4 pt-3.5 border-t border-line flex items-center justify-between text-xs">
+                        <span className="text-accent font-bold group-hover:underline flex items-center gap-1">
+                          <span>Inspect Photo</span>
+                          <ArrowUpRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                         </span>
-                        <span className="text-onnavy-muted/60">THREE STAR FORGE</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/quote?photo=${encodeURIComponent(g.title)}#quote-form`);
+                          }}
+                          className="rounded-lg bg-accent/10 border border-accent/30 px-2.5 py-1 text-[0.68rem] font-bold text-accent hover:bg-accent hover:text-navy transition-all cursor-pointer"
+                        >
+                          Request RFQ
+                        </button>
                       </div>
                     </figcaption>
                   </figure>
@@ -475,43 +577,73 @@ export default function GalleryPage() {
         </div>
       </div>
 
-      {/* Engineering Quality Validation Band */}
-      <div className="border-y border-line bg-surface py-12">
+      {/* ========================================================================= */}
+      {/* 4. QUALITY VALIDATION & STANDARDS GUARANTEE MATRIX */}
+      {/* ========================================================================= */}
+      <div className="border-y border-line bg-surface py-14 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="border-l-2 border-accent pl-4 space-y-1">
-              <span className="tech-label text-accent text-[0.65rem]">Verification Standard</span>
-              <h4 className="font-display text-sm font-bold text-foreground">3D Coordinate Measuring</h4>
+            <div className="rounded-3xl border border-line bg-background p-6 space-y-2 shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent/15 text-accent">
+                  <ShieldCheck className="h-4 w-4" />
+                </span>
+                <span className="text-xs font-bold text-accent uppercase tracking-wider">Metrology</span>
+              </div>
+              <h4 className="font-display text-base font-bold text-foreground">3D Coordinate Measuring</h4>
               <p className="text-xs text-muted leading-relaxed">Sub-micron dimensional accuracy check across all manufactured fixtures.</p>
             </div>
-            <div className="border-l-2 border-line-strong pl-4 space-y-1">
-              <span className="tech-label text-muted text-[0.65rem]">Heat Treat Depth</span>
-              <h4 className="font-display text-sm font-bold text-foreground">Ultrasonic NDT Scanning</h4>
+
+            <div className="rounded-3xl border border-line bg-background p-6 space-y-2 shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent/15 text-accent">
+                  <Activity className="h-4 w-4" />
+                </span>
+                <span className="text-xs font-bold text-accent uppercase tracking-wider">Heat Treatment</span>
+              </div>
+              <h4 className="font-display text-base font-bold text-foreground">Ultrasonic NDT Scanning</h4>
               <p className="text-xs text-muted leading-relaxed">Precise case hardening depth validation conforming to DIN/ISO norms.</p>
             </div>
-            <div className="border-l-2 border-line-strong pl-4 space-y-1">
-              <span className="tech-label text-muted text-[0.65rem]">Surface Finish</span>
-              <h4 className="font-display text-sm font-bold text-foreground">Ra &lt; 0.2µm Finish</h4>
-              <p className="text-xs text-muted leading-relaxed">High-precision CNC cylindrical & surface ground tool interfaces.</p>
+
+            <div className="rounded-3xl border border-line bg-background p-6 space-y-2 shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent/15 text-accent">
+                  <Layers className="h-4 w-4" />
+                </span>
+                <span className="text-xs font-bold text-accent uppercase tracking-wider">Precision Fit</span>
+              </div>
+              <h4 className="font-display text-base font-bold text-foreground">Ra &lt; 0.2µm Finish</h4>
+              <p className="text-xs text-muted leading-relaxed">High-precision CNC cylindrical and surface ground machine interfaces.</p>
             </div>
-            <div className="border-l-2 border-line-strong pl-4 space-y-1">
-              <span className="tech-label text-muted text-[0.65rem]">Turnkey Trials</span>
-              <h4 className="font-display text-sm font-bold text-foreground">100% In-House FAT</h4>
-              <p className="text-xs text-muted leading-relaxed">Full factory acceptance testing before equipment dispatch to client sites.</p>
+
+            <div className="rounded-3xl border border-line bg-background p-6 space-y-2 shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent/15 text-accent">
+                  <CheckCircle2 className="h-4 w-4" />
+                </span>
+                <span className="text-xs font-bold text-accent uppercase tracking-wider">Shop-Floor Trials</span>
+              </div>
+              <h4 className="font-display text-base font-bold text-foreground">100% In-House FAT</h4>
+              <p className="text-xs text-muted leading-relaxed">Full factory acceptance testing with client blanks before equipment dispatch.</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Lightbox Modal */}
+      {/* ========================================================================= */}
+      {/* 5. FULL-SCREEN LIGHTBOX MODAL */}
+      {/* ========================================================================= */}
       <Lightbox
         isOpen={lightboxIndex !== null}
         onClose={() => setLightboxIndex(null)}
-        items={filteredItems}
+        items={lightboxItems}
         currentIndex={lightboxIndex || 0}
         onChangeIndex={(idx) => setLightboxIndex(idx)}
       />
 
+      {/* ========================================================================= */}
+      {/* 6. CALL TO ACTION */}
+      {/* ========================================================================= */}
       <Reveal>
         <CtaBand />
       </Reveal>

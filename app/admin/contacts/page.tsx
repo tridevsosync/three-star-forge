@@ -128,7 +128,7 @@ export default function AdminContactsPage() {
         action={
           <div className="flex flex-wrap items-center gap-3">
             {flashMsg && (
-              <span className="border border-accent bg-accent/15 px-3 py-1.5 font-mono text-xs font-semibold text-accent animate-pulse shadow-sm">
+              <span className="rounded-xl border border-accent bg-accent/15 px-3 py-1.5 font-sans text-xs font-semibold text-accent animate-pulse shadow-sm">
                 {flashMsg}
               </span>
             )}
@@ -141,53 +141,53 @@ export default function AdminContactsPage() {
       />
 
       {/* Metrics HUD */}
-      <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-4 shadow-sm">
-        <div className="bg-surface p-5">
-          <span className="tech-label text-muted text-[0.65rem]">Total Inquiries</span>
-          <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-foreground">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs">
+          <span className="font-sans font-bold text-muted text-[0.68rem] uppercase tracking-wider block">Total Inquiries</span>
+          <p className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-foreground">
             {contacts.length}
           </p>
-          <span className="text-[0.68rem] font-mono text-muted">All-Time Messages</span>
+          <span className="text-xs font-sans text-muted">All-Time Messages</span>
         </div>
-        <div className="bg-surface p-5">
-          <span className="tech-label text-danger text-[0.65rem]">Unread Inquiries</span>
-          <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-danger">
+        <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs">
+          <span className="font-sans font-bold text-danger text-[0.68rem] uppercase tracking-wider block">Unread Inquiries</span>
+          <p className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-danger">
             {unreadCount}
           </p>
-          <span className="text-[0.68rem] font-mono text-muted">Awaiting Review</span>
+          <span className="text-xs font-sans text-muted">Awaiting Review</span>
         </div>
-        <div className="bg-surface p-5">
-          <span className="tech-label text-accent text-[0.65rem]">Under Discussion</span>
-          <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-accent">
+        <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs">
+          <span className="font-sans font-bold text-accent text-[0.68rem] uppercase tracking-wider block">Under Discussion</span>
+          <p className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-accent">
             {inProgressCount}
           </p>
-          <span className="text-[0.68rem] font-mono text-muted">In Progress</span>
+          <span className="text-xs font-sans text-muted">In Progress</span>
         </div>
-        <div className="bg-surface p-5">
-          <span className="tech-label text-success text-[0.65rem]">Resolved & Closed</span>
-          <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-success">
+        <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs">
+          <span className="font-sans font-bold text-success text-[0.68rem] uppercase tracking-wider block">Resolved & Closed</span>
+          <p className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-success">
             {resolvedCount}
           </p>
-          <span className="text-[0.68rem] font-mono text-muted">Completed Queries</span>
+          <span className="text-xs font-sans text-muted">Completed Queries</span>
         </div>
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border border-line bg-surface p-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-surface p-4 shadow-sm">
         <div className="relative flex-1 min-w-[260px] max-w-md">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by sender, email, company, or message..."
-            className="w-full border border-line bg-background pl-9 pr-8 py-2 text-xs font-mono text-foreground placeholder:text-muted outline-none focus:border-accent"
+            className="w-full rounded-xl border border-line bg-background pl-9 pr-8 py-2.5 text-xs font-sans text-foreground placeholder:text-muted outline-none focus:border-accent shadow-xs"
           />
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted" />
           {search && (
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="absolute right-2.5 top-2 text-xs text-muted hover:text-foreground"
+              className="absolute right-2.5 top-2.5 text-xs text-muted hover:text-foreground"
             >
               ✕
             </button>
@@ -205,15 +205,15 @@ export default function AdminContactsPage() {
               key={st.id}
               type="button"
               onClick={() => setFilterStatus(st.id)}
-              className={`border px-3.5 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider transition-all ${
+              className={`rounded-xl px-4 py-2 font-sans text-xs font-bold transition-all cursor-pointer ${
                 filterStatus === st.id
-                  ? "border-accent bg-accent text-navy font-bold shadow-sm"
-                  : "border-line bg-background text-muted hover:border-line-strong hover:text-foreground"
+                  ? "bg-accent text-navy font-bold shadow-md shadow-accent/20 scale-[1.02]"
+                  : "bg-background border border-line text-muted hover:border-accent hover:text-foreground"
               }`}
             >
               <span>{st.label}</span>
               {st.count > 0 ? (
-                <span className="ml-1.5 rounded bg-navy/20 px-1 py-0.2 text-[0.62rem] font-bold">
+                <span className="ml-1.5 rounded-full bg-navy/20 px-1.5 py-0.5 text-[0.65rem] font-bold">
                   {st.count}
                 </span>
               ) : null}
@@ -246,9 +246,9 @@ export default function AdminContactsPage() {
             return (
               <article
                 key={itemId}
-                className={`border bg-surface p-6 shadow-sm transition-all duration-200 ${
+                className={`rounded-2xl border bg-surface p-6 shadow-xs transition-all ${
                   isUnread
-                    ? "border-l-4 border-l-accent border-line"
+                    ? "border-accent shadow-md ring-1 ring-accent/30"
                     : "border-line hover:border-line-strong"
                 }`}
               >
@@ -256,7 +256,7 @@ export default function AdminContactsPage() {
                 <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-4">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-none border border-line bg-background font-display font-bold text-sm text-accent">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/10 font-display font-bold text-sm text-accent">
                         {c.name ? c.name.charAt(0).toUpperCase() : "U"}
                       </div>
 
@@ -266,12 +266,12 @@ export default function AdminContactsPage() {
                             {c.name}
                           </h3>
                           {isUnread && (
-                            <span className="border border-accent/50 bg-accent/15 px-2 py-0.5 font-mono text-[0.65rem] font-bold text-accent uppercase animate-pulse shrink-0">
+                            <span className="rounded-full border border-accent/50 bg-accent/15 px-2.5 py-0.5 text-[0.65rem] font-bold text-accent uppercase animate-pulse shrink-0">
                               ★ New Message
                             </span>
                           )}
                         </div>
-                        <p className="font-mono text-xs text-muted">
+                        <p className="text-xs text-muted font-sans">
                           {c.company ? `${c.company} · ` : ""}
                           <Clock className="inline h-3 w-3 mr-1" />
                           {new Date(c.createdAt).toLocaleString()}
@@ -294,7 +294,7 @@ export default function AdminContactsPage() {
                     <select
                       value={c.status || (c.read ? "resolved" : "new")}
                       onChange={(e) => handleStatusChange(itemId, e.target.value)}
-                      className="border border-line bg-background px-3 py-1.5 font-mono text-xs font-semibold text-foreground outline-none focus:border-accent"
+                      className="rounded-xl border border-line bg-background px-3 py-1.5 text-xs font-semibold text-foreground outline-none focus:border-accent font-sans"
                     >
                       <option value="new">Status: New</option>
                       <option value="in-progress">In Progress</option>
@@ -303,7 +303,7 @@ export default function AdminContactsPage() {
 
                     <a
                       href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject || "Your Inquiry to Three Star Enterprises")}`}
-                      className="inline-flex items-center gap-1.5 border border-accent/40 bg-accent/10 px-3.5 py-1.5 font-mono text-xs font-bold text-accent uppercase tracking-wider transition-colors hover:bg-accent hover:text-navy"
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-accent/40 bg-accent/10 px-3.5 py-1.5 text-xs font-bold text-accent uppercase tracking-wider transition-colors hover:bg-accent hover:text-navy font-sans"
                     >
                       <Send className="h-3 w-3" />
                       <span>Reply via Email</span>
@@ -320,11 +320,11 @@ export default function AdminContactsPage() {
                 </div>
 
                 {/* Metadata Row */}
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 font-mono text-xs border-b border-line pb-4">
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-xs border-b border-line pb-4 font-sans">
                   <div className="flex items-center gap-2">
                     <Mail className="h-3.5 w-3.5 text-muted shrink-0" />
                     <div>
-                      <span className="text-muted text-[0.65rem] uppercase block">Email Address:</span>
+                      <span className="text-muted text-[0.65rem] uppercase block font-semibold">Email Address:</span>
                       <a
                         href={`mailto:${c.email}`}
                         className="text-accent underline font-semibold hover:text-foreground"
@@ -337,30 +337,30 @@ export default function AdminContactsPage() {
                   <div className="flex items-center gap-2">
                     <Phone className="h-3.5 w-3.5 text-muted shrink-0" />
                     <div>
-                      <span className="text-muted text-[0.65rem] uppercase block">Contact Phone:</span>
-                      <span className="text-foreground">{c.phone || "Not provided"}</span>
+                      <span className="text-muted text-[0.65rem] uppercase block font-semibold">Contact Phone:</span>
+                      <span className="text-foreground font-medium">{c.phone || "Not provided"}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Building className="h-3.5 w-3.5 text-muted shrink-0" />
                     <div>
-                      <span className="text-muted text-[0.65rem] uppercase block">Organization:</span>
-                      <span className="text-foreground">{c.company || "Individual / Not specified"}</span>
+                      <span className="text-muted text-[0.65rem] uppercase block font-semibold">Organization:</span>
+                      <span className="text-foreground font-medium">{c.company || "Individual / Not specified"}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Message Body */}
-                <div className="mt-4 border border-line bg-background/60 p-4">
+                <div className="mt-4 rounded-xl border border-line bg-background/60 p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="tech-label text-accent text-[0.68rem] uppercase font-bold truncate max-w-md">
+                    <span className="text-accent text-[0.68rem] uppercase font-bold truncate max-w-md">
                       Subject: {c.subject || "General Inquiry"}
                     </span>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(c.message, itemId)}
-                      className="inline-flex items-center gap-1 font-mono text-[0.65rem] text-muted hover:text-accent transition-colors shrink-0"
+                      className="inline-flex items-center gap-1 text-[0.68rem] text-muted hover:text-accent transition-colors shrink-0 font-sans"
                       title="Copy message content"
                     >
                       {isCopied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
@@ -374,7 +374,7 @@ export default function AdminContactsPage() {
                     <button
                       type="button"
                       onClick={() => toggleExpand(itemId)}
-                      className="mt-2.5 inline-flex items-center gap-1 font-mono text-[0.7rem] font-bold text-accent hover:underline uppercase tracking-wider cursor-pointer"
+                      className="mt-2.5 inline-flex items-center gap-1 font-sans text-[0.72rem] font-bold text-accent hover:underline uppercase tracking-wider cursor-pointer"
                     >
                       {expandedIds[itemId] ? "▲ Show Less" : `▼ Read Full Message (${c.message.length} chars)`}
                     </button>
@@ -414,7 +414,7 @@ export default function AdminContactsPage() {
               <div className="flex items-center gap-2">
                 <a
                   href={`mailto:${viewingContact.email}?subject=Re: ${encodeURIComponent(viewingContact.subject || "Your Inquiry to Three Star Enterprises")}`}
-                  className="inline-flex items-center gap-1.5 border border-accent bg-accent px-4 py-2 font-mono text-xs font-bold text-navy uppercase tracking-wider transition-colors hover:bg-navy hover:text-onnavy shadow-sm"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-accent bg-accent px-4 py-2 font-sans text-xs font-bold text-navy uppercase tracking-wider transition-colors hover:bg-navy hover:text-onnavy shadow-sm"
                 >
                   <Send className="h-3.5 w-3.5" />
                   <span>Reply via Email ✉</span>
@@ -426,15 +426,15 @@ export default function AdminContactsPage() {
         >
           <div className="space-y-6">
             {/* Top Status Selector */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border border-line bg-background p-4">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-background p-4">
               <div className="flex items-center gap-3">
-                <span className="font-mono text-xs text-muted">Status:</span>
+                <span className="font-sans text-xs font-bold text-muted">Status:</span>
                 <select
                   value={viewingContact.status || (viewingContact.read ? "resolved" : "new")}
                   onChange={(e) =>
                     handleStatusChange(viewingContact.id || viewingContact._id, e.target.value)
                   }
-                  className="border border-line bg-surface px-3 py-1 font-mono text-xs font-semibold text-foreground outline-none focus:border-accent"
+                  className="rounded-xl border border-line bg-surface px-3 py-1.5 font-sans text-xs font-semibold text-foreground outline-none focus:border-accent"
                 >
                   <option value="new">Status: New</option>
                   <option value="in-progress">In Progress</option>
@@ -442,28 +442,28 @@ export default function AdminContactsPage() {
                 </select>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-xs text-muted">
+              <div className="flex items-center gap-2 font-sans text-xs text-muted">
                 <Clock className="h-3.5 w-3.5" />
                 <span>Received: {new Date(viewingContact.createdAt).toLocaleString()}</span>
               </div>
             </div>
 
             {/* Sender Info Card */}
-            <div className="grid gap-4 sm:grid-cols-2 border border-line bg-surface p-5 font-mono text-xs">
+            <div className="grid gap-4 sm:grid-cols-2 rounded-2xl border border-line bg-surface p-5 font-sans text-xs">
               <div>
-                <span className="text-muted block text-[0.68rem] uppercase">Sender Full Name</span>
+                <span className="text-muted block text-[0.68rem] uppercase font-bold">Sender Full Name</span>
                 <p className="text-foreground font-bold text-sm mt-0.5">{viewingContact.name}</p>
               </div>
 
               <div>
-                <span className="text-muted block text-[0.68rem] uppercase">Company / Organization</span>
+                <span className="text-muted block text-[0.68rem] uppercase font-bold">Company / Organization</span>
                 <p className="text-foreground font-bold text-sm mt-0.5">
                   {viewingContact.company || "Individual / Not specified"}
                 </p>
               </div>
 
               <div>
-                <span className="text-muted block text-[0.68rem] uppercase">Email Address</span>
+                <span className="text-muted block text-[0.68rem] uppercase font-bold">Email Address</span>
                 <a
                   href={`mailto:${viewingContact.email}`}
                   className="text-accent underline font-semibold mt-0.5 block"
@@ -473,7 +473,7 @@ export default function AdminContactsPage() {
               </div>
 
               <div>
-                <span className="text-muted block text-[0.68rem] uppercase">Phone Number</span>
+                <span className="text-muted block text-[0.68rem] uppercase font-bold">Phone Number</span>
                 <p className="text-foreground font-semibold mt-0.5">
                   {viewingContact.phone || "Not provided"}
                 </p>
@@ -481,10 +481,10 @@ export default function AdminContactsPage() {
             </div>
 
             {/* Subject & Full Message */}
-            <div className="border border-line bg-surface p-5 space-y-3">
+            <div className="rounded-2xl border border-line bg-surface p-5 space-y-3">
               <div className="flex items-center justify-between border-b border-line pb-2">
                 <div>
-                  <span className="text-muted text-[0.65rem] font-mono uppercase block">Subject Line:</span>
+                  <span className="text-muted text-[0.65rem] font-sans uppercase font-bold block">Subject Line:</span>
                   <h4 className="font-display font-bold text-foreground text-sm">
                     {viewingContact.subject || "General Inquiry"}
                   </h4>
@@ -492,14 +492,14 @@ export default function AdminContactsPage() {
                 <button
                   type="button"
                   onClick={() => copyToClipboard(viewingContact.message, viewingContact.id || viewingContact._id)}
-                  className="inline-flex items-center gap-1.5 border border-line bg-background px-3 py-1 font-mono text-[0.68rem] font-semibold text-muted hover:text-accent hover:border-accent transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-background px-3 py-1 font-sans text-[0.68rem] font-semibold text-muted hover:text-accent hover:border-accent transition-colors cursor-pointer"
                 >
                   <Copy className="h-3 w-3" />
                   <span>Copy Message</span>
                 </button>
               </div>
 
-              <div className="p-3 bg-background border border-line text-sm font-sans text-foreground leading-relaxed whitespace-pre-wrap max-h-64 overflow-y-auto">
+              <div className="p-3 bg-background rounded-xl border border-line text-sm font-sans text-foreground leading-relaxed whitespace-pre-wrap max-h-64 overflow-y-auto">
                 {viewingContact.message}
               </div>
             </div>

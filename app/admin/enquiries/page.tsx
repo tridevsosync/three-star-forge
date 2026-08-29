@@ -138,7 +138,7 @@ export default function AdminEnquiriesPage() {
         action={
           <div className="flex flex-wrap items-center gap-3">
             {flashMsg && (
-              <span className="border border-accent bg-accent/15 px-3 py-1.5 font-mono text-xs font-semibold text-accent animate-pulse shadow-sm">
+              <span className="rounded-xl border border-accent bg-accent/15 px-3 py-1.5 font-sans text-xs font-semibold text-accent animate-pulse shadow-sm">
                 {flashMsg}
               </span>
             )}
@@ -151,53 +151,53 @@ export default function AdminEnquiriesPage() {
       />
 
       {/* Metrics HUD */}
-      <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-4 shadow-sm">
-        <div className="bg-surface p-5">
-          <span className="tech-label text-muted text-[0.65rem]">Total RFQs</span>
-          <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-foreground">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs">
+          <span className="font-sans font-bold text-muted text-[0.68rem] uppercase tracking-wider block">Total RFQs</span>
+          <p className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-foreground">
             {enquiries.length}
           </p>
-          <span className="text-[0.68rem] font-mono text-muted">Quotations Received</span>
+          <span className="text-xs font-sans text-muted">Quotations Received</span>
         </div>
-        <div className="bg-surface p-5">
-          <span className="tech-label text-danger text-[0.65rem]">New & Unread</span>
-          <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-danger">
+        <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs">
+          <span className="font-sans font-bold text-danger text-[0.68rem] uppercase tracking-wider block">New & Unread</span>
+          <p className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-danger">
             {unreadCount}
           </p>
-          <span className="text-[0.68rem] font-mono text-muted">Awaiting Action</span>
+          <span className="text-xs font-sans text-muted">Awaiting Action</span>
         </div>
-        <div className="bg-surface p-5">
-          <span className="tech-label text-accent text-[0.65rem]">Engineering Review</span>
-          <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-accent">
+        <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs">
+          <span className="font-sans font-bold text-accent text-[0.68rem] uppercase tracking-wider block">Engineering Review</span>
+          <p className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-accent">
             {underReviewCount}
           </p>
-          <span className="text-[0.68rem] font-mono text-muted">Feasibility Sizing</span>
+          <span className="text-xs font-sans text-muted">Feasibility Sizing</span>
         </div>
-        <div className="bg-surface p-5">
-          <span className="tech-label text-success text-[0.65rem]">Proposals Issued</span>
-          <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-success">
+        <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs">
+          <span className="font-sans font-bold text-success text-[0.68rem] uppercase tracking-wider block">Proposals Issued</span>
+          <p className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-success">
             {quotedCount}
           </p>
-          <span className="text-[0.68rem] font-mono text-muted">Commercial Quotations</span>
+          <span className="text-xs font-sans text-muted">Commercial Quotations</span>
         </div>
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border border-line bg-surface p-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-surface p-4 shadow-sm">
         <div className="relative flex-1 min-w-[260px] max-w-md">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by client, company, machinery type, or specs..."
-            className="w-full border border-line bg-background pl-9 pr-8 py-2 text-xs font-mono text-foreground placeholder:text-muted outline-none focus:border-accent"
+            className="w-full rounded-xl border border-line bg-background pl-9 pr-8 py-2.5 text-xs font-sans text-foreground placeholder:text-muted outline-none focus:border-accent shadow-xs"
           />
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted" />
           {search && (
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="absolute right-2.5 top-2 text-xs text-muted hover:text-foreground"
+              className="absolute right-2.5 top-2.5 text-xs text-muted hover:text-foreground"
             >
               ✕
             </button>
@@ -217,15 +217,15 @@ export default function AdminEnquiriesPage() {
               key={st.id}
               type="button"
               onClick={() => setFilterStatus(st.id)}
-              className={`border px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider transition-all ${
+              className={`rounded-xl px-4 py-2 font-sans text-xs font-bold transition-all cursor-pointer ${
                 filterStatus === st.id
-                  ? "border-accent bg-accent text-navy font-bold shadow-sm"
-                  : "border-line bg-background text-muted hover:border-line-strong hover:text-foreground"
+                  ? "bg-accent text-navy font-bold shadow-md shadow-accent/20 scale-[1.02]"
+                  : "bg-background border border-line text-muted hover:border-accent hover:text-foreground"
               }`}
             >
               <span>{st.label}</span>
               {st.count > 0 ? (
-                <span className="ml-1.5 rounded bg-navy/20 px-1 py-0.2 text-[0.62rem] font-bold">
+                <span className="ml-1.5 rounded-full bg-navy/20 px-1.5 py-0.5 text-[0.65rem] font-bold">
                   {st.count}
                 </span>
               ) : null}
@@ -262,9 +262,9 @@ export default function AdminEnquiriesPage() {
             return (
               <article
                 key={itemId}
-                className={`border bg-surface p-6 sm:p-7 shadow-md transition-all duration-200 ${
+                className={`rounded-2xl border bg-surface p-6 sm:p-7 shadow-xs transition-all ${
                   isUnread
-                    ? "border-l-4 border-l-accent border-line"
+                    ? "border-accent shadow-md ring-1 ring-accent/30"
                     : "border-line hover:border-line-strong"
                 }`}
               >
@@ -276,12 +276,12 @@ export default function AdminEnquiriesPage() {
                         {e.name}
                       </h3>
 
-                      <span className="border border-line bg-background px-2.5 py-0.5 font-mono text-xs font-bold text-foreground truncate max-w-xs" title={e.company}>
+                      <span className="rounded-lg border border-line bg-background px-2.5 py-0.5 font-sans text-xs font-bold text-foreground truncate max-w-xs" title={e.company}>
                         {e.company || "Independent Client"}
                       </span>
 
                       {isUnread && (
-                        <span className="border border-accent/40 bg-accent/15 px-2 py-0.5 font-mono text-[0.65rem] font-bold text-accent uppercase animate-pulse shrink-0">
+                        <span className="rounded-full border border-accent/40 bg-accent/15 px-2.5 py-0.5 font-sans text-[0.65rem] font-bold text-accent uppercase animate-pulse shrink-0">
                           ★ New RFQ
                         </span>
                       )}
@@ -289,7 +289,7 @@ export default function AdminEnquiriesPage() {
                       {e.priority && <PriorityBadge priority={e.priority} />}
                     </div>
 
-                    <p className="mt-1 font-mono text-xs text-muted flex items-center gap-2">
+                    <p className="mt-1 font-sans text-xs text-muted flex items-center gap-2">
                       <Clock className="h-3 w-3 inline" />
                       <span>{new Date(e.createdAt).toLocaleString()}</span>
                       {e.location && (
@@ -301,7 +301,7 @@ export default function AdminEnquiriesPage() {
                         </>
                       )}
                       <span>·</span>
-                      <span>ID: {itemId.slice(-6).toUpperCase()}</span>
+                      <span className="font-medium">ID: {itemId.slice(-6).toUpperCase()}</span>
                     </p>
                   </div>
 
@@ -319,7 +319,7 @@ export default function AdminEnquiriesPage() {
                     <select
                       value={e.status || "new"}
                       onChange={(evt) => handleStatusChange(itemId, evt.target.value)}
-                      className="border border-line bg-background px-3 py-1.5 text-xs font-mono font-bold text-foreground outline-none focus:border-accent"
+                      className="rounded-xl border border-line bg-background px-3 py-1.5 text-xs font-sans font-bold text-foreground outline-none focus:border-accent"
                     >
                       <option value="new">Pipeline: New RFQ</option>
                       <option value="under-review">Under Review</option>
@@ -330,7 +330,7 @@ export default function AdminEnquiriesPage() {
                     <select
                       value={e.priority || "standard"}
                       onChange={(evt) => handlePriorityChange(itemId, evt.target.value)}
-                      className="border border-line bg-background px-2.5 py-1.5 text-xs font-mono text-muted outline-none focus:border-accent"
+                      className="rounded-xl border border-line bg-background px-2.5 py-1.5 text-xs font-sans text-muted outline-none focus:border-accent font-medium"
                     >
                       <option value="standard">Priority: Standard</option>
                       <option value="high">Priority: High</option>
@@ -339,7 +339,7 @@ export default function AdminEnquiriesPage() {
 
                     <a
                       href={`mailto:${e.email}?subject=Three Star Enterprises — Engineering Proposal for ${encodeURIComponent(e.machineType || "Machinery Build")}&body=Dear ${encodeURIComponent(e.name || "Client")},%0D%0A%0D%0AThank you for submitting your Request for Quotation (RFQ) for the ${encodeURIComponent(e.machineType || "custom machine build")}.%0D%0A%0D%0AWe have reviewed your project requirements and are pleased to provide the attached technical quotation.%0D%0A%0D%0ABest regards,%0D%0AThree Star Enterprises`}
-                      className="inline-flex items-center gap-1.5 border border-accent bg-accent/15 px-3.5 py-1.5 font-mono text-xs font-bold text-accent uppercase tracking-wider transition-colors hover:bg-accent hover:text-navy shadow-sm"
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-accent bg-accent/15 px-3.5 py-1.5 font-sans text-xs font-bold text-accent uppercase tracking-wider transition-colors hover:bg-accent hover:text-navy shadow-sm"
                     >
                       <Send className="h-3 w-3" />
                       <span>Issue Proposal ✉</span>
@@ -356,7 +356,7 @@ export default function AdminEnquiriesPage() {
                 </div>
 
                 {/* Pipeline Step Progress Visualizer */}
-                <div className="my-4 grid grid-cols-4 gap-1.5 font-mono text-[0.65rem] uppercase">
+                <div className="my-4 grid grid-cols-4 gap-2 font-sans text-xs">
                   {[
                     { key: "new", label: "1. Intake" },
                     { key: "under-review", label: "2. Engineering Sizing" },
@@ -368,12 +368,12 @@ export default function AdminEnquiriesPage() {
                     return (
                       <div
                         key={stg.key}
-                        className={`border p-1.5 text-center transition-all ${
+                        className={`rounded-xl p-2 text-center transition-all font-bold text-[0.72rem] ${
                           isCurrent
-                            ? "border-accent bg-accent text-navy font-bold shadow-sm"
+                            ? "bg-accent text-navy shadow-sm"
                             : isDone
-                              ? "border-accent/40 bg-accent/10 text-accent font-semibold"
-                              : "border-line bg-background text-muted/60"
+                              ? "border border-accent/40 bg-accent/10 text-accent font-semibold"
+                              : "border border-line bg-background text-muted/60"
                         }`}
                       >
                         {stg.label}
@@ -383,9 +383,9 @@ export default function AdminEnquiriesPage() {
                 </div>
 
                 {/* Technical Parameters Matrix */}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 border border-line bg-background p-4 font-mono text-xs">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 rounded-xl border border-line bg-background p-4 font-sans text-xs">
                   <div>
-                    <span className="text-muted block text-[0.65rem] uppercase">Target Machinery:</span>
+                    <span className="text-muted block text-[0.68rem] uppercase font-bold">Target Machinery:</span>
                     <span className="font-bold text-accent text-sm flex items-center gap-1 mt-0.5">
                       <Cpu className="h-3.5 w-3.5 shrink-0" />
                       {e.machineType || "Custom Machinery"}
@@ -393,7 +393,7 @@ export default function AdminEnquiriesPage() {
                   </div>
 
                   <div>
-                    <span className="text-muted block text-[0.65rem] uppercase">Project Delivery Timeline:</span>
+                    <span className="text-muted block text-[0.68rem] uppercase font-bold">Project Delivery Timeline:</span>
                     <span className="font-semibold text-foreground flex items-center gap-1 mt-0.5">
                       <Calendar className="h-3.5 w-3.5 text-muted shrink-0" />
                       {e.timeline || "1 – 3 Months"}
@@ -401,45 +401,45 @@ export default function AdminEnquiriesPage() {
                   </div>
 
                   <div>
-                    <span className="text-muted block text-[0.65rem] uppercase">Client Direct Contact:</span>
-                    <p className="text-foreground">{e.phone || "No phone provided"}</p>
-                    <a href={`mailto:${e.email}`} className="text-accent underline truncate block">
+                    <span className="text-muted block text-[0.68rem] uppercase font-bold">Client Direct Contact:</span>
+                    <p className="text-foreground font-medium">{e.phone || "No phone provided"}</p>
+                    <a href={`mailto:${e.email}`} className="text-accent underline truncate block font-medium">
                       {e.email}
                     </a>
                   </div>
 
                   <div>
-                    <span className="text-muted block text-[0.65rem] uppercase">Volume / Component Spec:</span>
-                    <span className="text-foreground block mt-0.5 font-medium">
+                    <span className="text-muted block text-[0.68rem] uppercase font-bold">Volume / Component Spec:</span>
+                    <span className="text-foreground block mt-0.5 font-semibold">
                       {e.targetVolume || "Bespoke production"}
                     </span>
                   </div>
                 </div>
 
                 {/* Scope Description & Specifications */}
-                <div className="mt-4 border border-line bg-background/50 p-4">
+                <div className="mt-4 rounded-xl border border-line bg-background/50 p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="tech-label text-accent text-[0.68rem] uppercase font-bold truncate max-w-md">
+                    <span className="text-accent text-[0.72rem] uppercase font-bold truncate max-w-md">
                       Technical Scope & Engineering Sizing Parameters:
                     </span>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(e.message, itemId)}
-                      className="inline-flex items-center gap-1 font-mono text-[0.65rem] text-muted hover:text-accent transition-colors shrink-0"
+                      className="inline-flex items-center gap-1 font-sans text-[0.68rem] text-muted hover:text-accent transition-colors shrink-0 cursor-pointer"
                       title="Copy engineering specifications"
                     >
                       {isCopied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
                       <span>{isCopied ? "Copied" : "Copy specs"}</span>
                     </button>
                   </div>
-                  <p className={`text-xs font-mono text-foreground leading-relaxed whitespace-pre-wrap break-words ${expandedIds[itemId] ? "" : "line-clamp-4"}`}>
+                  <p className={`text-xs font-sans text-foreground leading-relaxed whitespace-pre-wrap break-words ${expandedIds[itemId] ? "" : "line-clamp-4"}`}>
                     {e.message}
                   </p>
                   {e.message && e.message.length > 200 && (
                     <button
                       type="button"
                       onClick={() => toggleExpand(itemId)}
-                      className="mt-2.5 inline-flex items-center gap-1 font-mono text-[0.7rem] font-bold text-accent hover:underline uppercase tracking-wider cursor-pointer"
+                      className="mt-2.5 inline-flex items-center gap-1 font-sans text-[0.72rem] font-bold text-accent hover:underline uppercase tracking-wider cursor-pointer"
                     >
                       {expandedIds[itemId] ? "▲ Show Less" : `▼ Read Full Specs (${e.message.length} chars)`}
                     </button>
@@ -479,7 +479,7 @@ export default function AdminEnquiriesPage() {
               <div className="flex items-center gap-2">
                 <a
                   href={`mailto:${viewingEnquiry.email}?subject=Three Star Enterprises — Engineering Proposal for ${encodeURIComponent(viewingEnquiry.machineType || "Machinery Build")}&body=Dear ${encodeURIComponent(viewingEnquiry.name || "Client")},%0D%0A%0D%0AThank you for submitting your Request for Quotation (RFQ) for the ${encodeURIComponent(viewingEnquiry.machineType || "custom machine build")}.%0D%0A%0D%0AWe have reviewed your project requirements and are pleased to provide the attached technical quotation.%0D%0A%0D%0ABest regards,%0D%0AThree Star Enterprises`}
-                  className="inline-flex items-center gap-1.5 border border-accent bg-accent px-4 py-2 font-mono text-xs font-bold text-navy uppercase tracking-wider transition-colors hover:bg-navy hover:text-onnavy shadow-sm"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-accent bg-accent px-4 py-2 font-sans text-xs font-bold text-navy uppercase tracking-wider transition-colors hover:bg-navy hover:text-onnavy shadow-sm"
                 >
                   <Send className="h-3.5 w-3.5" />
                   <span>Issue Formal Proposal ✉</span>
@@ -491,15 +491,15 @@ export default function AdminEnquiriesPage() {
         >
           <div className="space-y-6">
             {/* Top Status & Pipeline Ribbon */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border border-line bg-background p-4">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-background p-4">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="font-mono text-xs text-muted">Pipeline Status:</span>
+                <span className="font-sans text-xs font-bold text-muted">Pipeline Status:</span>
                 <select
                   value={viewingEnquiry.status || "new"}
                   onChange={(evt) =>
                     handleStatusChange(viewingEnquiry.id || viewingEnquiry._id, evt.target.value)
                   }
-                  className="border border-line bg-surface px-3 py-1 text-xs font-mono font-bold text-foreground outline-none focus:border-accent"
+                  className="rounded-xl border border-line bg-surface px-3 py-1 text-xs font-sans font-bold text-foreground outline-none focus:border-accent"
                 >
                   <option value="new">New RFQ</option>
                   <option value="under-review">Under Review</option>
@@ -507,13 +507,13 @@ export default function AdminEnquiriesPage() {
                   <option value="closed">Closed / Won</option>
                 </select>
 
-                <span className="font-mono text-xs text-muted ml-2">Priority:</span>
+                <span className="font-sans text-xs font-bold text-muted ml-2">Priority:</span>
                 <select
                   value={viewingEnquiry.priority || "standard"}
                   onChange={(evt) =>
                     handlePriorityChange(viewingEnquiry.id || viewingEnquiry._id, evt.target.value)
                   }
-                  className="border border-line bg-surface px-3 py-1 text-xs font-mono text-foreground outline-none focus:border-accent"
+                  className="rounded-xl border border-line bg-surface px-3 py-1 text-xs font-sans text-foreground outline-none focus:border-accent font-medium"
                 >
                   <option value="standard">Standard</option>
                   <option value="high">High</option>
@@ -521,35 +521,35 @@ export default function AdminEnquiriesPage() {
                 </select>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-xs text-muted">
+              <div className="flex items-center gap-2 font-sans text-xs text-muted">
                 <Clock className="h-3.5 w-3.5" />
                 <span>Submitted: {new Date(viewingEnquiry.createdAt).toLocaleString()}</span>
               </div>
             </div>
 
             {/* Client Information Grid */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 border border-line bg-surface p-5 font-mono text-xs">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 rounded-2xl border border-line bg-surface p-5 font-sans text-xs">
               <div>
-                <span className="text-muted block text-[0.68rem] uppercase">Client Name</span>
+                <span className="text-muted block text-[0.68rem] uppercase font-bold">Client Name</span>
                 <p className="text-foreground font-bold text-sm mt-0.5">{viewingEnquiry.name}</p>
               </div>
 
               <div>
-                <span className="text-muted block text-[0.68rem] uppercase">Company / Organization</span>
+                <span className="text-muted block text-[0.68rem] uppercase font-bold">Company / Organization</span>
                 <p className="text-foreground font-bold text-sm mt-0.5">
                   {viewingEnquiry.company || "Independent Client"}
                 </p>
               </div>
 
               <div>
-                <span className="text-muted block text-[0.68rem] uppercase">Location / Plant Site</span>
-                <p className="text-foreground font-bold text-sm mt-0.5">
+                <span className="text-muted block text-[0.68rem] uppercase font-bold">Location / Plant Site</span>
+                <p className="text-foreground font-semibold text-sm mt-0.5">
                   {viewingEnquiry.location || "Not specified"}
                 </p>
               </div>
 
               <div>
-                <span className="text-muted block text-[0.68rem] uppercase">Email Address</span>
+                <span className="text-muted block text-[0.68rem] uppercase font-bold">Email Address</span>
                 <a
                   href={`mailto:${viewingEnquiry.email}`}
                   className="text-accent underline font-semibold mt-0.5 block"
@@ -559,14 +559,14 @@ export default function AdminEnquiriesPage() {
               </div>
 
               <div>
-                <span className="text-muted block text-[0.68rem] uppercase">Phone Number</span>
+                <span className="text-muted block text-[0.68rem] uppercase font-bold">Phone Number</span>
                 <p className="text-foreground font-semibold mt-0.5">
                   {viewingEnquiry.phone || "Not provided"}
                 </p>
               </div>
 
               <div>
-                <span className="text-muted block text-[0.68rem] uppercase">Target Delivery Timeline</span>
+                <span className="text-muted block text-[0.68rem] uppercase font-bold">Target Delivery Timeline</span>
                 <p className="text-foreground font-semibold mt-0.5">
                   {viewingEnquiry.timeline || "1 – 3 Months"}
                 </p>
@@ -574,45 +574,45 @@ export default function AdminEnquiriesPage() {
             </div>
 
             {/* Machinery Specifications & Target Machine */}
-            <div className="border border-line bg-background p-5 space-y-3">
+            <div className="rounded-2xl border border-line bg-background p-5 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="tech-label text-accent font-bold text-xs uppercase">
+                <span className="text-accent font-bold text-xs uppercase tracking-wider">
                   Target Machine Build & Volume Specs:
                 </span>
-                <span className="border border-accent/40 bg-accent/10 px-2 py-0.5 font-mono text-[0.65rem] text-accent font-bold uppercase">
+                <span className="rounded-lg border border-accent/40 bg-accent/10 px-2.5 py-0.5 font-sans text-[0.68rem] text-accent font-bold uppercase">
                   {viewingEnquiry.machineType || "Custom Equipment"}
                 </span>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2 pt-2 border-t border-line font-mono text-xs">
+              <div className="grid gap-3 sm:grid-cols-2 pt-2 border-t border-line font-sans text-xs">
                 <div>
-                  <span className="text-muted text-[0.68rem] uppercase block">Equipment Class:</span>
+                  <span className="text-muted text-[0.68rem] uppercase font-bold block">Equipment Class:</span>
                   <span className="font-bold text-foreground">{viewingEnquiry.machineType || "Bespoke Automation / Induction Machine"}</span>
                 </div>
                 <div>
-                  <span className="text-muted text-[0.68rem] uppercase block">Volume / Throughput Requirement:</span>
+                  <span className="text-muted text-[0.68rem] uppercase font-bold block">Volume / Throughput Requirement:</span>
                   <span className="font-bold text-foreground">{viewingEnquiry.targetVolume || "Custom batch size"}</span>
                 </div>
               </div>
             </div>
 
             {/* Full Technical Scope Description */}
-            <div className="border border-line bg-surface p-5 space-y-2">
+            <div className="rounded-2xl border border-line bg-surface p-5 space-y-2">
               <div className="flex items-center justify-between border-b border-line pb-2">
-                <span className="tech-label text-foreground font-bold text-xs uppercase">
+                <span className="text-foreground font-bold text-xs uppercase tracking-wider">
                   Complete Scope of Work & Engineering Parameters:
                 </span>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(viewingEnquiry.message, viewingEnquiry.id || viewingEnquiry._id)}
-                  className="inline-flex items-center gap-1.5 border border-line bg-background px-3 py-1 font-mono text-[0.68rem] font-semibold text-muted hover:text-accent hover:border-accent transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-background px-3 py-1 font-sans text-[0.68rem] font-semibold text-muted hover:text-accent hover:border-accent transition-colors cursor-pointer"
                 >
                   <Copy className="h-3 w-3" />
-                  <span>Copy Technical Scope</span>
+                  <span>Copy Full Specs</span>
                 </button>
               </div>
 
-              <div className="p-3 bg-background border border-line text-xs font-mono text-foreground leading-relaxed whitespace-pre-wrap max-h-60 overflow-y-auto">
+              <div className="p-3 bg-background rounded-xl border border-line text-xs font-sans text-foreground leading-relaxed whitespace-pre-wrap max-h-60 overflow-y-auto">
                 {viewingEnquiry.message}
               </div>
             </div>

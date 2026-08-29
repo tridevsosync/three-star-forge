@@ -35,7 +35,7 @@ export function Footer() {
       {/* Quality Standards Strip */}
       <div className="border-b border-onnavy/10 bg-navy-soft/60">
         <Container className="py-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-onnavy-muted">
+          <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-onnavy-muted">
             <div className="flex items-center gap-3">
               <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
               <span>FACILITY LOCATION: DEHU GAON, PUNE, MAHARASHTRA</span>
@@ -54,12 +54,11 @@ export function Footer() {
           {/* Brand Col */}
           <div className="lg:col-span-4">
             <div className="flex items-center gap-3.5">
-              <span className="relative flex h-10 w-10 items-center justify-center border border-accent bg-navy">
-                <span className="absolute inset-0.5 border border-accent/40" />
-                <span className="font-mono text-xs font-bold text-accent">3S</span>
+              <span className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-accent bg-navy">
+                <span className="text-xs font-bold text-accent">3S</span>
               </span>
               <span>
-                <span className="block font-display text-base font-bold tracking-[0.14em]">
+                <span className="block font-display text-base font-bold tracking-wide">
                   THREE STAR
                 </span>
                 <TechLabel tone="accent">ENTERPRISES</TechLabel>
@@ -123,7 +122,7 @@ export function Footer() {
             <address className="mt-5 space-y-3 text-sm leading-relaxed text-onnavy-muted not-italic">
               <p className="font-semibold text-onnavy">{company.contactPerson}</p>
               <p className="text-xs leading-relaxed">{company.address}</p>
-              <div className="pt-2 font-mono text-xs space-y-1">
+              <div className="pt-2 text-xs space-y-1">
                 <p>
                   <span className="text-onnavy-muted/70">Phone: </span>
                   <a href={`tel:${(company.phone.split("/")[0] ?? "").replace(/\s/g, "")}`} className="text-accent hover:underline">

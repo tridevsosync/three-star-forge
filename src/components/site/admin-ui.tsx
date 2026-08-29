@@ -18,7 +18,7 @@ export function AdminHead({ title, eyebrow = "Admin Console", intro, action, bre
 
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div className="max-w-3xl">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-mono">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-sans">
             <span className="flex items-center gap-1.5 font-bold tracking-wider text-accent uppercase">
               <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
               {eyebrow}
@@ -58,14 +58,14 @@ export interface PanelProps {
 
 export function Panel({ title, badge, action, children, className = "" }: PanelProps) {
   return (
-    <section className={`border border-line bg-surface shadow-sm overflow-hidden ${className}`}>
+    <section className={`border border-line bg-surface rounded-2xl shadow-sm overflow-hidden ${className}`}>
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-background/50 px-6 py-4">
         <div className="flex items-center gap-2.5">
-          <span className="tech-label font-bold text-foreground text-xs uppercase tracking-wider">
+          <span className="font-sans font-bold text-foreground text-sm tracking-wide">
             {title}
           </span>
           {badge ? (
-            <span className="border border-accent/40 bg-accent/10 px-2 py-0.5 font-mono text-[0.65rem] font-semibold text-accent uppercase">
+            <span className="border border-accent/40 bg-accent/10 px-2.5 py-0.5 font-sans text-[0.7rem] font-semibold text-accent rounded-full">
               {badge}
             </span>
           ) : null}
@@ -78,7 +78,7 @@ export function Panel({ title, badge, action, children, className = "" }: PanelP
 }
 
 const inputBaseCls =
-  "mt-2 w-full border border-line bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted/60 outline-none transition-all duration-200 focus:border-accent focus:ring-1 focus:ring-accent";
+  "mt-2 w-full rounded-xl border border-line bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted/60 outline-none transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20";
 
 export interface TextFieldProps {
   label: string;
@@ -118,9 +118,9 @@ export function TextField({
           {label} {required ? <span className="text-danger">*</span> : null}
         </span>
         {helper ? (
-          <span className="font-mono text-[0.68rem] text-muted">{helper}</span>
+          <span className="font-sans text-[0.7rem] text-muted">{helper}</span>
         ) : maxLength && value ? (
-          <span className="font-mono text-[0.68rem] text-muted">
+          <span className="font-sans text-[0.7rem] text-muted">
             {value.length} / {maxLength}
           </span>
         ) : null}
@@ -173,12 +173,12 @@ export function SelectField({
         <span className="tech-label text-muted text-xs">
           {label} {required ? <span className="text-danger">*</span> : null}
         </span>
-        {helper ? <span className="font-mono text-[0.68rem] text-muted">{helper}</span> : null}
+        {helper ? <span className="font-sans text-[0.7rem] text-muted">{helper}</span> : null}
       </div>
       <select
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}
-        className={`${inputBaseCls} font-mono`}
+        className={inputBaseCls}
       >
         {placeholder ? (
           <option value="" disabled={required}>
@@ -218,7 +218,7 @@ export function Toggle({ label, checked, onChange, description }: ToggleProps) {
           onChange(!checked);
         }
       }}
-      className={`group flex items-center justify-between gap-4 border p-3.5 transition-all duration-200 cursor-pointer select-none ${
+      className={`group flex items-center justify-between gap-4 border rounded-xl p-3.5 transition-all duration-200 cursor-pointer select-none ${
         checked
           ? "border-accent/60 bg-accent/5"
           : "border-line bg-background/50 hover:border-line-strong"
@@ -226,7 +226,7 @@ export function Toggle({ label, checked, onChange, description }: ToggleProps) {
     >
       <div>
         <span
-          className={`font-mono text-xs font-semibold uppercase tracking-wider transition-colors ${
+          className={`font-sans text-xs font-semibold uppercase tracking-wider transition-colors ${
             checked ? "text-accent" : "text-foreground"
           }`}
         >
@@ -269,11 +269,11 @@ export function MiniBtn({
   type = "button",
 }: MiniBtnProps) {
   const tones: Record<string, string> = {
-    default: "border-line-strong bg-surface text-foreground hover:border-navy hover:bg-navy hover:text-onnavy",
-    accent: "border-accent bg-accent/15 text-accent hover:bg-accent hover:text-navy font-bold",
-    primary: "border-accent bg-accent text-navy hover:bg-navy hover:text-onnavy font-bold shadow-sm",
-    danger: "border-danger/40 bg-danger/10 text-danger hover:bg-danger hover:text-white",
-    success: "border-success/40 bg-success/10 text-success hover:bg-success hover:text-navy",
+    default: "border-line-strong bg-surface text-foreground hover:border-accent hover:text-accent hover:bg-accent/5",
+    accent: "border-accent/60 bg-accent/15 text-accent hover:bg-accent hover:text-navy font-bold",
+    primary: "border-accent bg-accent text-navy hover:bg-accent-hover font-bold shadow-sm",
+    danger: "border-danger/40 bg-danger/10 text-danger hover:bg-danger hover:text-white font-semibold",
+    success: "border-success/40 bg-success/10 text-success hover:bg-success hover:text-navy font-semibold",
     light: "border-line bg-background text-muted hover:border-accent hover:text-foreground",
     ghost: "border-transparent text-muted hover:text-foreground hover:bg-line/40",
   };
@@ -284,7 +284,7 @@ export function MiniBtn({
       disabled={disabled}
       onClick={onClick}
       title={title}
-      className={`inline-flex items-center justify-center gap-2 border px-3.5 py-2 font-mono text-[0.7rem] font-semibold tracking-[0.1em] uppercase transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+      className={`inline-flex items-center justify-center gap-2 rounded-xl border px-3.5 py-2 font-sans text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
         tones[tone] || tones.default
       }`}
     >
@@ -317,15 +317,15 @@ export function Stat({ label, value, note, icon, tone = "default" }: StatProps) 
   };
 
   return (
-    <div className={`relative border p-6 transition-all duration-300 hover:border-line-strong hover:shadow-md ${toneClasses[tone] || toneClasses.default}`}>
+    <div className={`relative border rounded-2xl p-6 transition-all duration-300 hover:border-line-strong hover:shadow-md ${toneClasses[tone] || toneClasses.default}`}>
       <div className="flex items-center justify-between">
-        <span className="tech-label text-muted text-xs tracking-wider uppercase">{label}</span>
+        <span className="font-sans font-semibold text-muted text-xs tracking-wider uppercase">{label}</span>
         {icon ? <div className="text-muted/70">{icon}</div> : null}
       </div>
       <p className={`mt-3 font-display text-3xl sm:text-4xl font-bold tracking-tight ${textToneClasses[tone] || textToneClasses.default}`}>
         {value}
       </p>
-      {note ? <p className="mt-2 font-mono text-xs text-muted truncate">{note}</p> : null}
+      {note ? <p className="mt-2 font-sans text-xs text-muted truncate">{note}</p> : null}
     </div>
   );
 }
@@ -344,7 +344,7 @@ export function StatusBadge({ status }: { status: string }) {
   const item = map[status] || { bg: "bg-line text-muted border-line", label: status || "Unknown" };
 
   return (
-    <span className={`inline-flex items-center gap-1.5 border px-2.5 py-0.5 font-mono text-[0.65rem] font-bold uppercase tracking-wider ${item.bg}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-0.5 font-sans text-[0.7rem] font-semibold tracking-wide ${item.bg}`}>
       <span className="h-1.5 w-1.5 rounded-full bg-current" />
       {item.label}
     </span>
@@ -359,7 +359,7 @@ export function PriorityBadge({ priority }: { priority: string }) {
   };
 
   return (
-    <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[0.65rem] font-bold uppercase tracking-wider ${map[priority] || map.standard}`}>
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 font-sans text-[0.7rem] font-semibold tracking-wide ${map[priority] || map.standard}`}>
       {priority === "urgent" ? "🔥 Urgent" : priority === "high" ? "★ High" : "Standard"}
     </span>
   );
@@ -559,7 +559,7 @@ export function ConfirmDeleteModal({
           <p className="mt-3 text-xs text-muted leading-relaxed">{message}</p>
 
           {itemName ? (
-            <div className="mt-3.5 border border-line bg-background p-3 font-mono text-xs text-foreground flex items-center gap-2">
+            <div className="mt-3.5 border border-line bg-background p-3 font-sans text-xs text-foreground flex items-center gap-2 rounded-xl">
               <span className="text-muted shrink-0">Target:</span>
               <span className="font-bold text-danger truncate">{itemName}</span>
             </div>

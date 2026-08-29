@@ -1,18 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Content from "@/models/Content";
-import { COMPANY, FAQS, HOME_CONTENT, INDUSTRIES, SERVICES, TESTIMONIALS } from "@/data/site";
+import {
+  COMPANY,
+  CAPABILITIES,
+  DEFAULT_SERVICES_SPOTLIGHT,
+  ENGAGEMENT_MODELS,
+  FAQS,
+  HOME_CONTENT,
+  INDUSTRIES,
+  SERVICES,
+  TESTIMONIALS,
+} from "@/data/site";
 import { requireAdmin } from "@/lib/admin-auth";
 
 const defaults: Record<string, any> = {
   company: COMPANY,
   home: HOME_CONTENT,
   services: SERVICES,
+  engagementModels: ENGAGEMENT_MODELS,
   industries: INDUSTRIES,
+  capabilities: CAPABILITIES,
   faqs: FAQS,
   testimonials: TESTIMONIALS,
+  servicesSpotlight: DEFAULT_SERVICES_SPOTLIGHT,
 };
-const listSections = new Set(["services", "industries", "faqs", "testimonials"]);
+const listSections = new Set([
+  "services",
+  "engagementModels",
+  "industries",
+  "capabilities",
+  "faqs",
+  "testimonials",
+]);
 
 function normalizeItems(data: any) {
   return Array.isArray(data)
@@ -106,18 +126,19 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ section: string }> }) {
   try {
     const { section } = await params;
-    if (!(section in defaults) || listSections.has(section))
+    if (!(section in defaults))
       return NextResponse.json(
-        { success: false, error: "Only single-record sections support update" },
+        { success: false, error: "Unknown content section" },
         { status: 400 },
       );
     await connectToDatabase();
     const body = await request.json();
     let record: any = await Content.findOne({ section });
+    const normalizedData = normalizeItems(body);
     if (!record) {
-      record = new Content({ section, data: body });
+      record = new Content({ section, data: normalizedData });
     } else {
-      record.data = body;
+      record.data = normalizedData;
     }
     record.markModified("data");
     await record.save();

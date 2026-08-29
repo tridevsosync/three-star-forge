@@ -36,7 +36,7 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
 
         <Container className="relative">
           <Reveal>
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-mono text-onnavy-muted">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-sans font-semibold text-onnavy-muted">
               <Link href="/projects" className="transition-colors hover:text-accent">
                 PORTFOLIO
               </Link>
@@ -79,7 +79,7 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
             </div>
 
             {/* Architecture: Challenge vs Solution */}
-            <div className="grid gap-8 sm:grid-cols-2 bg-surface p-8 border border-line shadow-sm min-w-0">
+            <div className="grid gap-8 sm:grid-cols-2 bg-surface p-8 rounded-3xl border border-line shadow-sm min-w-0">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-danger shrink-0" />
@@ -125,7 +125,7 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
 
           {/* Right Column: Spec Sheet */}
           <InView delay={120} className="lg:col-span-5 space-y-8 min-w-0">
-            <div className="border border-line bg-surface shadow-md min-w-0">
+            <div className="rounded-3xl border border-line bg-surface overflow-hidden shadow-md min-w-0">
               <div className="border-b border-line bg-surface-soft px-7 py-5 flex items-center justify-between">
                 <TechLabel tone="dark">Technical Datasheet</TechLabel>
                 <Badge variant="accent">VERIFIED</Badge>
@@ -142,17 +142,17 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
             </div>
 
             {/* CTA Box */}
-            <div className="corner-marks border border-line bg-navy p-8 text-onnavy shadow-xl">
+            <div className="rounded-3xl border border-onnavy/20 bg-navy p-8 text-onnavy shadow-2xl">
               <TechLabel tone="accent">Bespoke Manufacturing</TechLabel>
               <h3 className="mt-3 font-display text-xl font-bold text-onnavy">Need Similar Equipment?</h3>
-              <p className="mt-2 text-xs leading-relaxed text-onnavy-muted">
+              <p className="mt-2 text-xs leading-relaxed text-onnavy-muted font-sans">
                 Our Pune facility can adapt coil geometry, stroke lengths, and automation to your part drawings.
               </p>
               <div className="mt-6">
                 <Btn
-                  to={`/quote?project=${encodeURIComponent(project.title)}&machine=${encodeURIComponent(project.title)}`}
+                  to={`/quote?project=${encodeURIComponent(project.title)}#quote-form`}
                   variant="primary"
-                  className="w-full text-center"
+                  className="w-full text-center font-bold shadow-md shadow-accent/25"
                 >
                   Request Quote for This Build
                 </Btn>
@@ -178,7 +178,7 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
                 <Link
                   key={r.id}
                   href={`/projects/${r.id}`}
-                  className="group bg-navy-soft border border-onnavy/15 p-6 flex flex-col justify-between transition-all duration-300 hover:border-accent hover:bg-navy"
+                  className="group rounded-2xl bg-navy-soft border border-onnavy/15 p-6 flex flex-col justify-between transition-all duration-300 hover:border-accent hover:bg-navy"
                 >
                   <div>
                     <span className="tech-label text-accent">{r.category}</span>

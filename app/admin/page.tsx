@@ -75,13 +75,13 @@ export default function AdminDashboardPage() {
     <div className="space-y-8">
       {/* Top Header */}
       <AdminHead
-        title="Executive Command Center"
-        eyebrow="Console Overview"
-        intro="Real-time operational dashboard for Three Star Enterprises. Monitor live client inquiries, industrial RFQ pipelines, project portfolios, and digital media assets."
+        title="Overview & Activity Dashboard"
+        eyebrow="Dashboard Overview"
+        intro="Welcome to the Three Star Enterprises Admin Panel. Review recent quotation requests, incoming client messages, portfolio machines, and workshop photos."
         action={
           <div className="flex flex-wrap items-center gap-3">
             {lastRefreshed && (
-              <span className="font-mono text-xs text-muted">
+              <span className="text-xs text-muted font-medium">
                 Synced at {lastRefreshed}
               </span>
             )}
@@ -93,17 +93,17 @@ export default function AdminDashboardPage() {
       />
 
       {/* KPI Metrics HUD */}
-      <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-2 lg:grid-cols-4 shadow-sm">
+      <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-2 lg:grid-cols-4 rounded-3xl overflow-hidden shadow-sm">
         <Stat
-          label="Enquiries"
+          label="Machine Quotes (RFQs)"
           value={stats ? stats.enquiries : enquiries.length}
-          note={`${unreadEnquiries} new / unread enquiries`}
+          note={`${unreadEnquiries} new / unread quotes`}
           icon={<FileSpreadsheet className="h-6 w-6 text-accent" />}
           tone={unreadEnquiries > 0 ? "danger" : "default"}
         />
 
         <Stat
-          label="Contacts"
+          label="Contact Messages"
           value={contacts?.length || 0}
           note={`${unreadContacts} unread messages`}
           icon={<Mail className="h-6 w-6 text-accent" />}
@@ -111,16 +111,16 @@ export default function AdminDashboardPage() {
         />
 
         <Stat
-          label="Machinery Projects"
+          label="Delivered Machines"
           value={stats ? stats.projects : projects.length}
-          note={`${featured} featured showcases`}
+          note={`${featured} featured in spotlight`}
           icon={<Briefcase className="h-6 w-6 text-accent" />}
         />
 
         <Stat
-          label="Gallery Archive"
+          label="Workshop Photos"
           value={gallery.length}
-          note="High-resolution shop photos"
+          note="High-resolution photos"
           icon={<ImageIcon className="h-6 w-6 text-accent" />}
         />
       </div>
@@ -128,7 +128,7 @@ export default function AdminDashboardPage() {
       {/* Dual Activity Streams Grid */}
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Left: Recent Enquiries */}
-        <div className="border border-line bg-surface shadow-sm overflow-hidden flex flex-col">
+        <div className="rounded-3xl border border-line bg-surface shadow-sm overflow-hidden flex flex-col">
           <header className="flex items-center justify-between border-b border-line bg-background/50 px-6 py-4">
             <div className="flex items-center gap-2">
               <FileSpreadsheet className="h-4 w-4 text-accent" />
@@ -138,7 +138,7 @@ export default function AdminDashboardPage() {
             </div>
             <Link
               href="/admin/enquiries"
-              className="inline-flex items-center gap-1 font-mono text-[0.68rem] font-bold text-accent uppercase tracking-wider hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-bold text-accent hover:underline"
             >
               <span>View All ({enquiries.length})</span>
               <ChevronRight className="h-3 w-3" />
@@ -147,7 +147,7 @@ export default function AdminDashboardPage() {
 
           <div className="divide-y divide-line p-0 flex-1">
             {recentEnquiries.length === 0 ? (
-              <div className="p-10 text-center text-sm font-mono text-muted">
+              <div className="p-10 text-center text-sm text-muted font-medium">
                 No quotation requests recorded yet.
               </div>
             ) : (
@@ -166,11 +166,11 @@ export default function AdminDashboardPage() {
                           <p className="font-display text-sm font-bold text-foreground">
                             {e.name}
                           </p>
-                          <span className="font-mono text-[0.65rem] text-muted font-medium">
+                          <span className="text-xs text-muted font-medium">
                             {e.company ? `(${e.company})` : ""}
                           </span>
                         </div>
-                        <p className="mt-1 text-xs font-mono text-accent font-semibold">
+                        <p className="mt-1 text-xs text-accent font-semibold">
                           Target: {e.machineType || "Custom Machinery Build"}
                         </p>
                       </div>
@@ -182,16 +182,16 @@ export default function AdminDashboardPage() {
                     </div>
 
                     {e.message && (
-                      <p className="mt-2 line-clamp-2 text-xs text-muted font-mono leading-relaxed">
+                      <p className="mt-2 line-clamp-2 text-xs text-muted leading-relaxed">
                         {e.message}
                       </p>
                     )}
 
-                    <div className="mt-3 flex items-center justify-between pt-2 border-t border-line/60 text-[0.68rem] font-mono text-muted">
+                    <div className="mt-3 flex items-center justify-between pt-2 border-t border-line/60 text-xs text-muted">
                       <span>{new Date(e.createdAt).toLocaleString()}</span>
                       <Link
                         href="/admin/enquiries"
-                        className="text-accent hover:underline font-semibold"
+                        className="text-accent hover:underline font-bold"
                       >
                         Inspect RFQ →
                       </Link>
@@ -204,7 +204,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Right: Recent Inbound Contacts */}
-        <div className="border border-line bg-surface shadow-sm overflow-hidden flex flex-col">
+        <div className="rounded-3xl border border-line bg-surface shadow-sm overflow-hidden flex flex-col">
           <header className="flex items-center justify-between border-b border-line bg-background/50 px-6 py-4">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-accent" />
@@ -214,7 +214,7 @@ export default function AdminDashboardPage() {
             </div>
             <Link
               href="/admin/contacts"
-              className="inline-flex items-center gap-1 font-mono text-[0.68rem] font-bold text-accent uppercase tracking-wider hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-bold text-accent hover:underline"
             >
               <span>View All ({contacts.length})</span>
               <ChevronRight className="h-3 w-3" />
@@ -223,7 +223,7 @@ export default function AdminDashboardPage() {
 
           <div className="divide-y divide-line p-0 flex-1">
             {recentContacts.length === 0 ? (
-              <div className="p-10 text-center text-sm font-mono text-muted">
+              <div className="p-10 text-center text-sm text-muted font-medium">
                 No contact submissions recorded yet.
               </div>
             ) : (
@@ -242,11 +242,11 @@ export default function AdminDashboardPage() {
                           <p className="font-display text-sm font-bold text-foreground">
                             {c.name}
                           </p>
-                          <span className="font-mono text-[0.65rem] text-muted">
+                          <span className="text-xs text-muted font-medium">
                             {c.company ? `· ${c.company}` : ""}
                           </span>
                         </div>
-                        <p className="mt-1 text-xs font-mono text-foreground font-medium">
+                        <p className="mt-1 text-xs text-foreground font-semibold">
                           Subject: {c.subject || "General Inquiry"}
                         </p>
                       </div>
@@ -254,15 +254,15 @@ export default function AdminDashboardPage() {
                       <StatusBadge status={c.status || (!c.read ? "unread" : "resolved")} />
                     </div>
 
-                    <p className="mt-2 line-clamp-2 text-xs text-muted font-mono leading-relaxed">
+                    <p className="mt-2 line-clamp-2 text-xs text-muted leading-relaxed">
                       {c.message}
                     </p>
 
-                    <div className="mt-3 flex items-center justify-between pt-2 border-t border-line/60 text-[0.68rem] font-mono text-muted">
+                    <div className="mt-3 flex items-center justify-between pt-2 border-t border-line/60 text-xs text-muted">
                       <span>{new Date(c.createdAt).toLocaleString()}</span>
                       <a
                         href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject || "Your Inquiry to Three Star Enterprises")}`}
-                        className="text-accent hover:underline font-semibold"
+                        className="text-accent hover:underline font-bold"
                       >
                         Reply via Email ✉
                       </a>

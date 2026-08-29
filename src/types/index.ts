@@ -20,6 +20,8 @@ export interface Project {
   application?: string;
   leadTime?: string;
   featured?: boolean;
+  featuredInHero?: boolean;
+  featuredInHome?: boolean;
   image?: string;
   gallery?: string[];
   parameters?: ProjectParameter[];
@@ -41,6 +43,8 @@ export interface GalleryItem {
   order?: number;
   sortOrder?: number;
   featured?: boolean;
+  featuredInHero?: boolean;
+  featuredInHeader?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -112,6 +116,8 @@ export interface ServiceItem {
   summary: string;
   outcome?: string;
   points?: string[];
+  image?: string;
+  featured?: boolean;
 }
 
 export interface IndustryItem {
@@ -121,6 +127,25 @@ export interface IndustryItem {
   image?: string;
   description: string;
   capabilities?: string[];
+  featured?: boolean;
+}
+
+export interface CapabilityItem {
+  id?: string;
+  _id?: string;
+  code: string;
+  title: string;
+  tagline?: string;
+  category?: string;
+  description: string;
+  image?: string;
+  featured?: boolean;
+  metrics?: Array<{ label: string; value: string }>;
+  features: string[];
+  specs?: Array<{ label: string; value: string }>;
+  deliverables?: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface FaqItem {
@@ -132,6 +157,17 @@ export interface FaqItem {
   a?: string;
 }
 
+export interface EngagementModelItem {
+  id?: string;
+  _id?: string;
+  title: string;
+  badge: string;
+  tagline: string;
+  description: string;
+  deliverables?: string[];
+  image?: string;
+}
+
 export interface TestimonialItem {
   id?: string;
   _id?: string;
@@ -139,6 +175,15 @@ export interface TestimonialItem {
   role: string;
   quote: string;
   enabled?: boolean;
+}
+
+export interface ServicesSpotlight {
+  badge?: string;
+  title: string;
+  subtitle: string;
+  image?: string;
+  deliveryModel?: string;
+  qualityQa?: string;
 }
 
 export interface SiteContentState {

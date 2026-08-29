@@ -16,6 +16,7 @@ export async function GET() {
           category: g.category,
           image: g.image,
           featured: Boolean(g.featured),
+          featuredInHero: Boolean(g.featuredInHero),
           order: idx,
         })),
       );
@@ -45,13 +46,18 @@ export async function POST(request: NextRequest) {
   try {
     await connectToDatabase();
     const body = await request.json();
-    const { title, category, image, cloudinaryPublicId, description, featured, order } = body;
+    const { title, category, image, cloudinaryPublicId, description, featured, featuredInHero, order } = body;
 
     if (!title) {
       return NextResponse.json(
         { success: false, error: "Title is required" },
         { status: 400 },
       );
+    }
+
+    // If featuredInHero is true, un-feature other hero items
+    if (featuredInHero) {
+      await Gallery.updateMany({}, { featuredInHero: false });
     }
 
     const newItem = await Gallery.create({
@@ -61,6 +67,7 @@ export async function POST(request: NextRequest) {
       cloudinaryPublicId: cloudinaryPublicId || "",
       description: description ? description.trim() : "",
       featured: Boolean(featured),
+      featuredInHero: Boolean(featuredInHero),
       order: typeof order === "number" ? order : 0,
     });
 

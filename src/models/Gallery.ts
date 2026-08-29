@@ -7,6 +7,7 @@ export interface IGallery extends Document {
   cloudinaryPublicId?: string;
   description?: string;
   featured?: boolean;
+  featuredInHero?: boolean;
   order?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -40,6 +41,10 @@ const GallerySchema = new Schema<IGallery>(
       trim: true,
     },
     featured: {
+      type: Boolean,
+      default: false,
+    },
+    featuredInHero: {
       type: Boolean,
       default: false,
     },

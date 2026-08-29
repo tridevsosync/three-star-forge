@@ -27,11 +27,13 @@
   --color-danger: var(--danger);
   --color-success: var(--success);
 
-  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Plus Jakarta Sans", "DM Sans", "Outfit", -apple-system, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", "DM Sans", -apple-system, sans-serif;
+  --font-mono: "Plus Jakarta Sans", "Inter", "DM Sans", -apple-system, sans-serif;
 
-  --radius-card: 2px;
+  --radius-card: 16px;
+  --radius-btn: 10px;
+  --radius-pill: 9999px;
 }
 
 :root {
@@ -76,6 +78,10 @@
     color: var(--foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    letter-spacing: -0.012em;
     overflow-x: hidden;
   }
 
@@ -106,6 +112,7 @@
   h4 {
     font-family: var(--font-display);
     letter-spacing: -0.025em;
+    font-weight: 700;
   }
 
   ::selection {
@@ -123,7 +130,7 @@
   }
   ::-webkit-scrollbar-thumb {
     background: var(--line-strong);
-    border-radius: 2px;
+    border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--steel);
@@ -163,9 +170,10 @@
 }
 
 @utility tech-label {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.22em;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
@@ -173,14 +181,16 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.25rem 0.75rem;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.15em;
+  padding: 0.35rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   border: 1px solid var(--line);
+  border-radius: 9999px;
   background: color-mix(in oklab, var(--surface) 85%, transparent);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
 }
 
 @utility corner-marks {
@@ -333,19 +343,41 @@
   transform: none;
 }
 
+@utility animate-marquee {
+  animation: ts-marquee 40s linear infinite;
+  display: flex;
+  width: max-content;
+}
+
+@utility animate-marquee-fast {
+  animation: ts-marquee 25s linear infinite;
+  display: flex;
+  width: max-content;
+}
+
+@keyframes ts-marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 /* ---------- Premium Surfaces & Cards ---------- */
 
 @utility card-soft {
   background: var(--surface);
   border: 1px solid var(--line);
-  box-shadow: 0 1px 3px -1px color-mix(in oklab, var(--navy) 6%, transparent);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 20px -4px color-mix(in oklab, var(--navy) 6%, transparent);
   transition:
     box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.45s ease,
     transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   &:hover {
     border-color: color-mix(in oklab, var(--accent) 55%, transparent);
-    box-shadow: 0 24px 60px -30px color-mix(in oklab, var(--navy) 35%, transparent);
+    box-shadow: 0 20px 45px -15px color-mix(in oklab, var(--navy) 20%, transparent);
     transform: translateY(-4px);
   }
 }
@@ -353,13 +385,15 @@
 @utility card-navy {
   background: var(--navy);
   border: 1px solid color-mix(in oklab, var(--onnavy) 14%, transparent);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 20px -4px color-mix(in oklab, var(--navy-deep) 40%, transparent);
   transition:
     box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.45s ease,
     transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   &:hover {
     border-color: var(--accent);
-    box-shadow: 0 24px 60px -30px color-mix(in oklab, var(--accent) 25%, transparent);
+    box-shadow: 0 20px 45px -15px color-mix(in oklab, var(--accent) 25%, transparent);
     transform: translateY(-4px);
   }
 }

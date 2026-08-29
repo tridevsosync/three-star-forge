@@ -52,6 +52,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       await deleteFromCloudinary(existing.cloudinaryPublicId).catch(() => {});
     }
 
+    // If setting featuredInHero to true, un-feature other hero items
+    if (body.featuredInHero) {
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        await Gallery.updateMany({ _id: { $ne: id } }, { featuredInHero: false });
+      } else {
+        await Gallery.updateMany({ id: { $ne: id }, _id: { $ne: id } }, { featuredInHero: false });
+      }
+    }
+
     let updated: any = null;
     const updateData = {
       title: body.title !== undefined ? body.title : existing.title,
@@ -60,6 +69,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       cloudinaryPublicId: body.image ? (body.cloudinaryPublicId !== undefined ? body.cloudinaryPublicId : existing.cloudinaryPublicId) : "",
       description: body.description !== undefined ? body.description : existing.description,
       featured: body.featured !== undefined ? body.featured : existing.featured,
+      featuredInHero: body.featuredInHero !== undefined ? body.featuredInHero : existing.featuredInHero,
       order: body.order !== undefined ? body.order : existing.order,
     };
 

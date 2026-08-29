@@ -7,6 +7,8 @@ export interface IProject extends Document {
   image?: string;
   short?: string;
   featured?: boolean;
+  featuredInHero?: boolean;
+  featuredInHome?: boolean;
   overview?: string;
   challenge?: string;
   solution?: string;
@@ -25,6 +27,8 @@ const ProjectSchema = new Schema<IProject>(
     image: { type: String, default: "", trim: true },
     short: { type: String, default: "", trim: true },
     featured: { type: Boolean, default: false },
+    featuredInHero: { type: Boolean, default: false },
+    featuredInHome: { type: Boolean, default: false },
     overview: { type: String, default: "", trim: true },
     challenge: { type: String, default: "", trim: true },
     solution: { type: String, default: "", trim: true },

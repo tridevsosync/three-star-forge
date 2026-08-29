@@ -30,6 +30,7 @@ import {
   Wrench,
   ExternalLink,
   Star,
+  ChevronDown,
 } from "lucide-react";
 
 function emptyProject() {
@@ -41,6 +42,8 @@ function emptyProject() {
     image: "",
     short: "",
     featured: false,
+    featuredInHero: false,
+    featuredInHome: false,
     overview: "",
     challenge: "",
     solution: "",
@@ -76,6 +79,7 @@ export default function AdminProjectsPage() {
 
   const [editing, setEditing] = useState(null);
   const [editTab, setEditTab] = useState("core"); // 'core' | 'narrative' | 'specs' | 'media'
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [deletingProject, setDeletingProject] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [viewing, setViewing] = useState(null);
@@ -89,6 +93,8 @@ export default function AdminProjectsPage() {
     setEditing(p);
     setEditTab(tab);
     setViewing(null);
+    const isCustom = Boolean(p?.category && !DEFAULT_CATEGORIES.includes(p.category));
+    setIsCustomCategory(isCustom);
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 50);
@@ -147,8 +153,9 @@ const DEFAULT_CATEGORIES = [
       const matchCat = categoryFilter === "All" || p.category === categoryFilter;
       const matchFeatured =
         featuredFilter === "All" ||
-        (featuredFilter === "Featured" && Boolean(p.featured)) ||
-        (featuredFilter === "Standard" && !p.featured);
+        (featuredFilter === "Hero" && Boolean(p.featuredInHero)) ||
+        (featuredFilter === "Home" && Boolean(p.featured || p.featuredInHome)) ||
+        (featuredFilter === "Standard" && !p.featuredInHero && !p.featured && !p.featuredInHome);
       const matchQuery =
         !query.trim() ||
         (p.title + " " + p.category + " " + p.industry + " " + p.short)
@@ -158,7 +165,8 @@ const DEFAULT_CATEGORIES = [
     });
   }, [projects, industryFilter, categoryFilter, featuredFilter, query]);
 
-  const featuredTotal = projects.filter((p) => p.featured).length;
+  const featuredHeroCount = projects.filter((p) => p.featuredInHero).length;
+  const featuredHomeTotal = projects.filter((p) => p.featured || p.featuredInHome).length;
 
   const save = async () => {
     if (!editing) return;
@@ -175,6 +183,9 @@ const DEFAULT_CATEGORIES = [
         body: JSON.stringify({
           ...editing,
           image: editing.image || "",
+          featuredInHero: Boolean(editing.featuredInHero),
+          featured: Boolean(editing.featured || editing.featuredInHome),
+          featuredInHome: Boolean(editing.featured || editing.featuredInHome),
         }),
       });
       const data = await response.json();
@@ -183,12 +194,28 @@ const DEFAULT_CATEGORIES = [
         return;
       }
       const savedData = data.data || { ...editing, id: editId };
-      update(
-        "projects",
-        exists
-          ? projects.map((p) => (p.id === editId || p._id === editId ? savedData : p))
-          : [savedData, ...projects],
-      );
+      let updatedList = exists
+        ? projects.map((p) => (p.id === editId || p._id === editId ? savedData : p))
+        : [savedData, ...projects];
+
+      // If set to featuredInHero, un-feature all other projects (exclusive radio behavior)
+      if (editing.featuredInHero) {
+        updatedList = updatedList.map((p) => {
+          const pId = p.id || p._id;
+          return pId === editId ? { ...p, featuredInHero: true } : { ...p, featuredInHero: false };
+        });
+        projects
+          .filter((p: any) => (p.id || p._id) !== editId && p.featuredInHero)
+          .forEach((p: any) => {
+            fetch(`/api/projects/${encodeURIComponent(p.id || p._id)}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ featuredInHero: false }),
+            }).catch(() => {});
+          });
+      }
+
+      update("projects", updatedList);
       setEditing(null);
       flash(`✓ Saved project "${editing.title}" to database`);
     } catch (err: any) {
@@ -214,12 +241,64 @@ const DEFAULT_CATEGORIES = [
     }
   };
 
-  const toggleFeatured = async (project, featured) => {
+  // Toggle Featured status for Projects Header Hero Spotlight (Exclusive single-featured)
+  const toggleFeaturedInHero = async (project: any) => {
+    const id = project.id || project._id;
+    const newFeatured = !project.featuredInHero;
     try {
-      const response = await fetch(`/api/projects/${project.id}`, {
+      const updatedList = projects.map((p: any) => {
+        const pId = p.id || p._id;
+        if (pId === id) {
+          return { ...p, featuredInHero: newFeatured };
+        }
+        return newFeatured ? { ...p, featuredInHero: false } : p;
+      });
+
+      update("projects", updatedList);
+      if (viewing && (viewing.id === id || viewing._id === id)) {
+        setViewing({ ...viewing, featuredInHero: newFeatured });
+      }
+      flash(
+        newFeatured
+          ? `★ "${project.title}" is now Featured in Projects Page Header Spotlight`
+          : `✓ Removed "${project.title}" from Header Spotlight`,
+      );
+
+      // Save update to database
+      if (newFeatured) {
+        // Un-feature others in db
+        await Promise.all(
+          projects
+            .filter((p: any) => (p.id || p._id) !== id && p.featuredInHero)
+            .map((p: any) =>
+              fetch(`/api/projects/${encodeURIComponent(p.id || p._id)}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ featuredInHero: false }),
+              }),
+            ),
+        );
+      }
+      await fetch(`/api/projects/${encodeURIComponent(id)}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ featured }),
+        body: JSON.stringify({ featuredInHero: newFeatured }),
+      });
+    } catch (err: any) {
+      flash("Error: " + err.message);
+    }
+  };
+
+  // Toggle Featured on Homepage (Multi-select)
+  const toggleFeaturedInHome = async (project: any) => {
+    const id = project.id || project._id;
+    const isCurFeatured = Boolean(project.featured || project.featuredInHome);
+    const newFeatured = !isCurFeatured;
+    try {
+      const response = await fetch(`/api/projects/${encodeURIComponent(id)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ featured: newFeatured, featuredInHome: newFeatured }),
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
@@ -228,13 +307,21 @@ const DEFAULT_CATEGORIES = [
       }
       update(
         "projects",
-        projects.map((item) => (item.id === project.id ? data.data : item)),
+        projects.map((item) =>
+          item.id === id || (item as any)._id === id
+            ? { ...item, featured: newFeatured, featuredInHome: newFeatured }
+            : item,
+        ),
       );
-      if (viewing && viewing.id === project.id) {
-        setViewing({ ...viewing, featured });
+      if (viewing && (viewing.id === id || viewing._id === id)) {
+        setViewing({ ...viewing, featured: newFeatured, featuredInHome: newFeatured });
       }
-      flash(featured ? `★ Marked "${project.title}" as Featured Build` : `Marked as Standard`);
-    } catch (err) {
+      flash(
+        newFeatured
+          ? `🏠 Marked "${project.title}" as Featured on Homepage`
+          : `✓ Removed "${project.title}" from Homepage`,
+      );
+    } catch (err: any) {
       flash(err.message || "Update failed");
     }
   };
@@ -334,9 +421,9 @@ const DEFAULT_CATEGORIES = [
     <div className="space-y-8">
       {/* Top Header */}
       <AdminHead
-        title="Project Portfolio & Machine Builds Studio"
-        eyebrow="Portfolio Console"
-        intro="Enterprise portfolio management. Create precision machinery showcases, define engineering specifications, upload shop-floor media, and curate featured client deliveries."
+        title="Machinery Portfolio & Delivered Builds"
+        eyebrow="Machine Manager"
+        intro="Add, edit, or remove delivered machines. Machines starred as 'Featured' will automatically appear on the Home Page spotlight and lead the 'Our Work' portfolio."
         action={
           <div className="flex flex-wrap items-center gap-3">
             {feedback && (
@@ -380,11 +467,18 @@ const DEFAULT_CATEGORIES = [
           <span className="text-[0.68rem] font-mono text-muted">Active in Portfolio</span>
         </div>
         <div className="bg-surface p-5">
-          <span className="tech-label text-accent text-[0.65rem]">Featured Showcases</span>
+          <span className="tech-label text-accent text-[0.65rem]">Projects Header Spotlight</span>
           <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-accent">
-            {featuredTotal}
+            {featuredHeroCount > 0 ? "1 Active Hero" : "None Set"}
           </p>
-          <span className="text-[0.68rem] font-mono text-muted">Pinned on Homepage</span>
+          <span className="text-[0.68rem] font-mono text-muted">/projects Hero Card</span>
+        </div>
+        <div className="bg-surface p-5">
+          <span className="tech-label text-accent text-[0.65rem]">Homepage Featured</span>
+          <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-accent">
+            {featuredHomeTotal}
+          </p>
+          <span className="text-[0.68rem] font-mono text-muted">Showcased on Home</span>
         </div>
         <div className="bg-surface p-5">
           <span className="tech-label text-muted text-[0.65rem]">Target Industries</span>
@@ -392,13 +486,6 @@ const DEFAULT_CATEGORIES = [
             {industryNames.length - 1}
           </p>
           <span className="text-[0.68rem] font-mono text-muted">Sectors Covered</span>
-        </div>
-        <div className="bg-surface p-5">
-          <span className="tech-label text-muted text-[0.65rem]">Filtered Results</span>
-          <p className="mt-1 font-display text-2xl sm:text-3xl font-bold text-foreground">
-            {filtered.length}
-          </p>
-          <span className="text-[0.68rem] font-mono text-muted">of {projects.length} total</span>
         </div>
       </div>
 
@@ -458,15 +545,16 @@ const DEFAULT_CATEGORIES = [
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="tech-label text-muted text-[0.65rem]">Status:</span>
+            <span className="tech-label text-muted text-[0.65rem]">Placement:</span>
             <select
               value={featuredFilter}
               onChange={(e) => setFeaturedFilter(e.target.value)}
               className="border border-line bg-background px-2.5 py-1.5 font-mono text-xs text-foreground outline-none focus:border-accent"
             >
-              <option value="All">All Statuses</option>
-              <option value="Featured">★ Featured Only</option>
-              <option value="Standard">Standard Only</option>
+              <option value="All">All Placements</option>
+              <option value="Hero">★ Projects Header Spotlight</option>
+              <option value="Home">🏠 Homepage Featured</option>
+              <option value="Standard">Standard Builds Only</option>
             </select>
           </div>
 
@@ -557,12 +645,110 @@ const DEFAULT_CATEGORIES = [
                 required
               />
 
-              <TextField
-                label="Machinery Category"
-                value={editing.category}
-                onChange={(v) => setEditing({ ...editing, category: v })}
-                placeholder="e.g. Induction Hardening, Material Handling, Automation"
-              />
+              {/* Machinery Category Selector + Custom Input */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-foreground">
+                    Machinery Category <span className="text-danger">*</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setIsCustomCategory(!isCustomCategory)}
+                    className="text-xs font-bold text-accent hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    {isCustomCategory ? "📁 Choose from Existing Categories" : "✏️ + Type Custom Category"}
+                  </button>
+                </div>
+
+                {isCustomCategory ? (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={editing.category || ""}
+                      onChange={(e) => setEditing({ ...editing, category: e.target.value })}
+                      placeholder="Type custom category name (e.g. Induction bro, Custom SPM, etc.)..."
+                      className="w-full rounded-xl border border-line bg-background px-4 py-2.5 text-xs text-foreground outline-none transition-all focus:border-accent font-medium placeholder:text-muted"
+                      autoFocus
+                    />
+                    {/* Quick Suggestion Pills */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span className="text-[0.68rem] text-muted font-medium mr-1">Suggestions:</span>
+                      {categoryNames
+                        .filter((c) => c !== "All")
+                        .slice(0, 5)
+                        .map((cat) => (
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => setEditing({ ...editing, category: cat })}
+                            className="rounded-lg border border-line bg-surface px-2 py-0.5 text-[0.68rem] text-muted hover:border-accent hover:text-accent transition-all cursor-pointer"
+                          >
+                            {cat}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <select
+                        value={
+                          categoryNames.includes(editing.category)
+                            ? editing.category
+                            : editing.category
+                            ? "custom"
+                            : ""
+                        }
+                        onChange={(e) => {
+                          if (e.target.value === "custom") {
+                            setIsCustomCategory(true);
+                          } else {
+                            setEditing({ ...editing, category: e.target.value });
+                          }
+                        }}
+                        className="w-full appearance-none rounded-xl border border-line bg-background px-4 py-2.5 pr-10 text-xs font-medium text-foreground outline-none transition-all focus:border-accent hover:border-line-strong cursor-pointer"
+                      >
+                        <option value="" disabled>
+                          -- Select Existing Category --
+                        </option>
+                        {categoryNames
+                          .filter((c) => c !== "All")
+                          .map((cat) => (
+                            <option key={cat} value={cat}>
+                              {cat}
+                            </option>
+                          ))}
+                        <option value="custom">✏️ + Type New / Custom Category...</option>
+                      </select>
+                      <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
+                    </div>
+
+                    {/* Quick Pills for 1-Click Selection */}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {categoryNames
+                        .filter((c) => c !== "All")
+                        .slice(0, 4)
+                        .map((cat) => {
+                          const isSelected = editing.category === cat;
+                          return (
+                            <button
+                              key={cat}
+                              type="button"
+                              onClick={() => setEditing({ ...editing, category: cat })}
+                              className={`rounded-lg border px-2.5 py-1 text-[0.68rem] font-semibold transition-all cursor-pointer ${
+                                isSelected
+                                  ? "border-accent bg-accent text-navy font-bold shadow-xs"
+                                  : "border-line bg-background text-muted hover:border-accent hover:text-foreground"
+                              }`}
+                            >
+                              {cat}
+                            </button>
+                          );
+                        })}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <div className="sm:col-span-2">
                 <span className="tech-label text-muted text-xs block mb-2">Cover Photograph</span>
@@ -645,13 +831,27 @@ const DEFAULT_CATEGORIES = [
                 />
               </div>
 
-              <div className="sm:col-span-2">
+              <div className="sm:col-span-2 space-y-4 rounded-2xl border border-line bg-surface/50 p-5">
+                <h4 className="font-display text-sm font-bold text-foreground flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-accent" />
+                  <span>Featured Placements & Showcase Settings</span>
+                </h4>
+
                 <Toggle
-                  label="Featured Showcase"
-                  checked={editing.featured}
-                  onChange={(v) => setEditing({ ...editing, featured: v })}
-                  description="When enabled, this machine build will be prominently showcased on the home landing page."
+                  label="★ Featured in Projects Page Header Hero Spotlight"
+                  checked={Boolean(editing.featuredInHero)}
+                  onChange={(v) => setEditing({ ...editing, featuredInHero: v })}
+                  description="When enabled, this machine will be prominently featured inside the top hero header on the /projects page. (Setting this ON automatically un-features any previous hero build)."
                 />
+
+                <div className="border-t border-line/60 pt-3">
+                  <Toggle
+                    label="🏠 Featured on Homepage Showcases"
+                    checked={Boolean(editing.featured || editing.featuredInHome)}
+                    onChange={(v) => setEditing({ ...editing, featured: v, featuredInHome: v })}
+                    description="When enabled, this build will be featured in the homepage carousel, marquee reel, and top portfolio showcase."
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -857,13 +1057,16 @@ const DEFAULT_CATEGORIES = [
         /* Visual Card Grid View */
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((p) => {
-            const isFeatured = Boolean(p.featured);
+            const isHeroFeatured = Boolean(p.featuredInHero);
+            const isHomeFeatured = Boolean(p.featured || p.featuredInHome);
             return (
               <article
                 key={p.id}
-                className={`group flex flex-col border bg-surface transition-all duration-300 hover:shadow-lg ${
-                  isFeatured
-                    ? "border-accent/60 shadow-sm"
+                className={`group flex flex-col border bg-surface transition-all duration-300 hover:shadow-lg rounded-2xl overflow-hidden ${
+                  isHeroFeatured
+                    ? "border-accent shadow-md ring-1 ring-accent/30"
+                    : isHomeFeatured
+                    ? "border-accent/50 shadow-xs"
                     : "border-line hover:border-line-strong"
                 }`}
               >
@@ -883,14 +1086,20 @@ const DEFAULT_CATEGORIES = [
                   )}
 
                   {/* Top Badges */}
-                  <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                    <span className="border border-onnavy/30 bg-navy/80 px-2 py-0.5 font-mono text-[0.65rem] font-bold text-onnavy uppercase backdrop-blur-sm">
+                  <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                    <span className="border border-onnavy/30 bg-navy/90 px-2 py-0.5 font-mono text-[0.65rem] font-bold text-onnavy uppercase backdrop-blur-sm rounded-md">
                       {p.industry}
                     </span>
-                    {isFeatured && (
-                      <span className="border border-accent bg-accent px-2 py-0.5 font-mono text-[0.65rem] font-bold text-navy uppercase shadow-sm flex items-center gap-1">
-                        <Star className="h-3 w-3 fill-current" />
-                        Featured Build
+                    {isHeroFeatured && (
+                      <span className="border border-accent bg-accent px-2 py-0.5 text-[0.65rem] font-bold text-navy uppercase shadow-sm flex items-center gap-1 rounded-md">
+                        <Sparkles className="h-3 w-3 fill-navy" />
+                        Header Hero
+                      </span>
+                    )}
+                    {isHomeFeatured && (
+                      <span className="border border-onnavy/30 bg-navy/90 px-2 py-0.5 text-[0.65rem] font-bold text-accent uppercase shadow-sm flex items-center gap-1 rounded-md backdrop-blur-sm">
+                        <Star className="h-3 w-3 fill-accent" />
+                        Home Featured
                       </span>
                     )}
                   </div>
@@ -911,17 +1120,39 @@ const DEFAULT_CATEGORIES = [
                     {p.short || p.overview || "No description provided."}
                   </p>
 
-                  {/* Footer & Actions */}
+                  {/* Footer Placement Toggles & Action Buttons */}
                   <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-4">
-                    <button
-                      type="button"
-                      onClick={() => toggleFeatured(p, !isFeatured)}
-                      className={`font-mono text-[0.68rem] font-semibold uppercase tracking-wider transition-colors ${
-                        isFeatured ? "text-accent" : "text-muted hover:text-foreground"
-                      }`}
-                    >
-                      {isFeatured ? "★ Featured" : "☆ Feature"}
-                    </button>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {/* Projects Header Hero Spotlight Toggle (Exclusive) */}
+                      <button
+                        type="button"
+                        onClick={() => toggleFeaturedInHero(p)}
+                        className={`rounded-lg px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 ${
+                          isHeroFeatured
+                            ? "border border-accent bg-accent text-navy shadow-sm font-extrabold"
+                            : "border border-line bg-background text-muted hover:border-accent hover:text-accent"
+                        }`}
+                        title="Feature this build in the /projects page top hero header"
+                      >
+                        <Sparkles className="h-3 w-3" />
+                        <span>{isHeroFeatured ? "In Hero" : "Set Hero"}</span>
+                      </button>
+
+                      {/* Homepage Featured Toggle */}
+                      <button
+                        type="button"
+                        onClick={() => toggleFeaturedInHome(p)}
+                        className={`rounded-lg px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 ${
+                          isHomeFeatured
+                            ? "border border-accent/40 bg-accent/15 text-accent"
+                            : "border border-line bg-background text-muted hover:border-line-strong hover:text-foreground"
+                        }`}
+                        title="Feature this build on the Homepage showcase carousel"
+                      >
+                        <Star className="h-3 w-3" />
+                        <span>{isHomeFeatured ? "Home (On)" : "Home (Off)"}</span>
+                      </button>
+                    </div>
 
                     <div className="flex items-center gap-1.5">
                       <MiniBtn tone="accent" onClick={() => setViewing(p)} title="Inspect project specification sheet">
@@ -947,9 +1178,9 @@ const DEFAULT_CATEGORIES = [
         </div>
       ) : (
         /* Detailed Table View */
-        <div className="border border-line bg-surface shadow-sm overflow-hidden min-w-0">
+        <div className="border border-line bg-surface shadow-sm overflow-hidden min-w-0 rounded-2xl">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] border-collapse text-left">
+            <table className="w-full min-w-[820px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-line bg-background/50">
                   <th className="px-6 py-4 font-mono text-[0.68rem] font-bold tracking-wider uppercase text-muted">
@@ -962,7 +1193,10 @@ const DEFAULT_CATEGORIES = [
                     Category
                   </th>
                   <th className="px-6 py-4 font-mono text-[0.68rem] font-bold tracking-wider uppercase text-muted text-center">
-                    Featured
+                    Header Hero
+                  </th>
+                  <th className="px-6 py-4 font-mono text-[0.68rem] font-bold tracking-wider uppercase text-muted text-center">
+                    Homepage
                   </th>
                   <th className="px-6 py-4 text-right font-mono text-[0.68rem] font-bold tracking-wider uppercase text-muted">
                     Actions
@@ -970,68 +1204,89 @@ const DEFAULT_CATEGORIES = [
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
-                {filtered.map((p) => (
-                  <tr key={p.id} className="transition-colors hover:bg-background/80">
-                    <td className="px-6 py-4 max-w-sm min-w-0">
-                      <div className="flex items-center gap-4 min-w-0">
-                        <div className="h-12 w-16 shrink-0 overflow-hidden border border-line bg-navy cursor-pointer" onClick={() => setViewing(p)}>
-                          {p.image ? (
-                            <img
-                              src={p.image}
-                              alt=""
-                              className="h-full w-full object-cover"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center font-mono text-[0.6rem] text-onnavy-muted">
-                              No Img
-                            </div>
-                          )}
+                {filtered.map((p) => {
+                  const isHeroFeatured = Boolean(p.featuredInHero);
+                  const isHomeFeatured = Boolean(p.featured || p.featuredInHome);
+                  return (
+                    <tr key={p.id} className="transition-colors hover:bg-background/80">
+                      <td className="px-6 py-4 max-w-sm min-w-0">
+                        <div className="flex items-center gap-4 min-w-0">
+                          <div className="h-12 w-16 shrink-0 overflow-hidden rounded-lg border border-line bg-navy cursor-pointer" onClick={() => setViewing(p)}>
+                            {p.image ? (
+                              <img
+                                src={p.image}
+                                alt=""
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center font-mono text-[0.6rem] text-onnavy-muted">
+                                No Img
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p
+                              className="font-display text-sm font-bold text-foreground hover:text-accent cursor-pointer transition-colors break-words"
+                              onClick={() => setViewing(p)}
+                            >
+                              {p.title}
+                            </p>
+                            <span className="block text-xs font-mono text-muted truncate max-w-xs">
+                              {p.short || "No description"}
+                            </span>
+                          </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p
-                            className="font-display text-sm font-bold text-foreground hover:text-accent cursor-pointer transition-colors break-words"
-                            onClick={() => setViewing(p)}
-                          >
-                            {p.title}
-                          </p>
-                          <span className="block text-xs font-mono text-muted truncate max-w-xs">
-                            {p.short || "No description"}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 font-mono text-xs text-muted break-words">{p.industry}</td>
-                    <td className="px-6 py-4 font-mono text-xs text-accent break-words">{p.category}</td>
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        type="button"
-                        onClick={() => toggleFeatured(p, !p.featured)}
-                        className={`font-mono text-xs font-bold ${
-                          p.featured ? "text-accent" : "text-muted hover:text-foreground"
-                        }`}
-                      >
-                        {p.featured ? "★ Yes" : "No"}
-                      </button>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <MiniBtn tone="accent" onClick={() => setViewing(p)} title="View project">
-                          <Eye className="h-3 w-3" />
-                        </MiniBtn>
-                        <MiniBtn
-                          onClick={() => startEditingProject(p, "core")}
-                          title="Edit project"
+                      </td>
+                      <td className="px-6 py-4 font-mono text-xs text-muted break-words">{p.industry}</td>
+                      <td className="px-6 py-4 font-mono text-xs text-accent break-words">{p.category}</td>
+                      <td className="px-6 py-4 text-center">
+                        <button
+                          type="button"
+                          onClick={() => toggleFeaturedInHero(p)}
+                          className={`rounded-lg px-2.5 py-1 text-xs font-bold transition-all cursor-pointer ${
+                            isHeroFeatured
+                              ? "bg-accent text-navy font-bold shadow-xs"
+                              : "bg-surface border border-line text-muted hover:border-accent hover:text-accent"
+                          }`}
+                          title="Toggle /projects page hero spotlight"
                         >
-                          <Edit className="h-3 w-3" />
-                        </MiniBtn>
-                        <MiniBtn tone="danger" onClick={() => setDeletingProject(p)} title="Delete project">
-                          <Trash2 className="h-3 w-3" />
-                        </MiniBtn>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          {isHeroFeatured ? "★ In Hero" : "Set Hero"}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <button
+                          type="button"
+                          onClick={() => toggleFeaturedInHome(p)}
+                          className={`rounded-lg px-2.5 py-1 text-xs font-bold transition-all cursor-pointer ${
+                            isHomeFeatured
+                              ? "bg-accent/15 text-accent border border-accent/40"
+                              : "bg-surface border border-line text-muted hover:text-foreground"
+                          }`}
+                          title="Toggle Homepage showcase"
+                        >
+                          {isHomeFeatured ? "★ Active" : "Off"}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <MiniBtn tone="accent" onClick={() => setViewing(p)} title="View project">
+                            <Eye className="h-3 w-3" />
+                          </MiniBtn>
+                          <MiniBtn
+                            onClick={() => startEditingProject(p, "core")}
+                            title="Edit project"
+                          >
+                            <Edit className="h-3 w-3" />
+                          </MiniBtn>
+                          <MiniBtn tone="danger" onClick={() => setDeletingProject(p)} title="Delete project">
+                            <Trash2 className="h-3 w-3" />
+                          </MiniBtn>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -1059,11 +1314,16 @@ const DEFAULT_CATEGORIES = [
                   <span>Delete Project</span>
                 </MiniBtn>
                 <MiniBtn
-                  onClick={() => {
-                    toggleFeatured(viewing, !viewing.featured);
-                  }}
+                  onClick={() => toggleFeaturedInHero(viewing)}
                 >
-                  {viewing.featured ? "☆ Unmark Featured" : "★ Mark as Featured"}
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>{viewing.featuredInHero ? "In Header Hero" : "Set Header Hero"}</span>
+                </MiniBtn>
+                <MiniBtn
+                  onClick={() => toggleFeaturedInHome(viewing)}
+                >
+                  <Star className="h-3.5 w-3.5" />
+                  <span>{viewing.featured || viewing.featuredInHome ? "Home (On)" : "Home (Off)"}</span>
                 </MiniBtn>
               </div>
 

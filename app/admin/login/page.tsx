@@ -13,7 +13,6 @@ import {
   ArrowLeft,
   CheckCircle2,
   AlertCircle,
-  ArrowRight,
 } from "lucide-react";
 
 export default function AdminLoginPage() {
@@ -59,37 +58,36 @@ export default function AdminLoginPage() {
         <div className="flex items-center justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 font-mono text-xs font-semibold text-onnavy-muted hover:text-accent transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-onnavy-muted hover:text-accent transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Return to Website</span>
           </Link>
-          <div className="flex items-center gap-1.5 font-mono text-[0.65rem] text-accent uppercase tracking-widest border border-accent/40 bg-accent/10 px-2.5 py-1">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-accent rounded-full border border-accent/40 bg-accent/10 px-3 py-1">
             <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
             <span>Secure Access</span>
           </div>
         </div>
 
         {/* Main Terminal Card */}
-        <div className="relative border border-onnavy/20 bg-navy-deep/95 shadow-2xl backdrop-blur-xl p-8 sm:p-10">
+        <div className="relative rounded-3xl border border-onnavy/20 bg-navy-deep/95 shadow-2xl backdrop-blur-xl p-8 sm:p-10 overflow-hidden">
           {/* Top Laser Accent */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-accent/80 to-transparent" />
 
           {/* Brand Identity Header */}
           <div className="flex items-start justify-between border-b border-onnavy/15 pb-6">
             <div className="flex items-center gap-3.5">
-              <div className="relative flex h-11 w-11 items-center justify-center border border-accent bg-navy shadow-md">
-                <span className="absolute inset-0.5 border border-accent/40" />
-                <span className="font-mono text-sm font-bold text-accent tracking-tight">3S</span>
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-accent bg-navy shadow-md">
+                <span className="text-sm font-bold text-accent tracking-tight">3S</span>
               </div>
               <div>
-                <span className="block font-display text-sm font-bold tracking-[0.16em] text-onnavy sm:text-base">
+                <span className="block font-display text-sm font-bold tracking-wide text-onnavy sm:text-base">
                   THREE STAR
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="tech-label text-accent font-semibold text-[0.68rem]">ENTERPRISES</span>
                   <span className="h-1 w-1 rounded-full bg-accent" />
-                  <span className="font-mono text-[0.62rem] text-onnavy-muted uppercase tracking-wider">
+                  <span className="text-xs text-onnavy-muted font-medium">
                     Admin Portal
                   </span>
                 </div>
@@ -97,12 +95,12 @@ export default function AdminLoginPage() {
             </div>
 
             {isAuthed ? (
-              <span className="inline-flex items-center gap-1.5 border border-success/40 bg-success/15 px-2.5 py-1 font-mono text-[0.68rem] font-bold text-success uppercase">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/15 px-3 py-1 text-xs font-bold text-success">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 <span>Active</span>
               </span>
             ) : (
-              <span className="font-mono text-[0.68rem] text-onnavy-muted uppercase tracking-widest border border-onnavy/15 px-2.5 py-1">
+              <span className="text-xs text-onnavy-muted font-semibold rounded-full border border-onnavy/15 px-3 py-1">
                 Restricted
               </span>
             )}
@@ -123,15 +121,14 @@ export default function AdminLoginPage() {
           {/* Already Logged In Actions */}
           {isAuthed ? (
             <div className="mt-8 space-y-4">
-              <Btn onClick={() => router.push("/admin")} variant="primary" full className="py-4">
-                <span>Enter Admin Dashboard</span>
-                <ArrowRight className="h-4 w-4 ml-1" />
+              <Btn onClick={() => router.push("/admin")} variant="primary" full className="py-4 font-bold rounded-2xl">
+                Enter Admin Dashboard
               </Btn>
 
               <button
                 type="button"
                 onClick={() => logout()}
-                className="w-full border border-onnavy/20 bg-navy/50 py-3.5 font-mono text-xs font-bold uppercase tracking-wider text-onnavy-muted hover:text-danger hover:border-danger/50 hover:bg-danger/10 transition-all"
+                className="w-full rounded-2xl border border-onnavy/20 bg-navy/50 py-3.5 text-xs font-bold uppercase tracking-wider text-onnavy-muted hover:text-danger hover:border-danger/50 hover:bg-danger/10 transition-all cursor-pointer"
               >
                 Sign Out of Current Session
               </button>
@@ -141,7 +138,7 @@ export default function AdminLoginPage() {
             <form onSubmit={submit} className="mt-8 space-y-5">
               {/* Email Input */}
               <div className="space-y-1.5">
-                <label className="block text-xs font-mono font-bold text-onnavy-muted uppercase tracking-wider">
+                <label className="block text-xs font-bold text-onnavy-muted uppercase tracking-wider">
                   <span className="flex items-center gap-1.5">
                     <Mail className="h-3.5 w-3.5 text-accent" />
                     Administrator Email
@@ -154,7 +151,7 @@ export default function AdminLoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
                     autoComplete="email"
-                    className="w-full border border-onnavy/25 bg-navy/80 px-4 py-3 font-mono text-sm text-onnavy placeholder:text-onnavy-muted/40 outline-none transition-all focus:border-accent focus:ring-2 focus:ring-accent/50"
+                    className="w-full rounded-2xl border border-onnavy/25 bg-navy/80 px-4 py-3 text-sm text-onnavy placeholder:text-onnavy-muted/40 outline-none transition-all focus:border-accent focus:ring-2 focus:ring-accent/50"
                     required
                   />
                 </div>
@@ -162,7 +159,7 @@ export default function AdminLoginPage() {
 
               {/* Password Input */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center justify-between text-xs">
                   <label className="font-bold text-onnavy-muted uppercase tracking-wider flex items-center gap-1.5">
                     <Lock className="h-3.5 w-3.5 text-accent" />
                     Password
@@ -170,7 +167,7 @@ export default function AdminLoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="inline-flex items-center gap-1 font-mono text-[0.68rem] text-onnavy-muted hover:text-accent transition-colors"
+                    className="inline-flex items-center gap-1 text-xs text-onnavy-muted hover:text-accent transition-colors cursor-pointer"
                   >
                     {showPassword ? (
                       <>
@@ -192,13 +189,13 @@ export default function AdminLoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
                     autoComplete="current-password"
-                    className="w-full border border-onnavy/25 bg-navy/80 px-4 pr-11 py-3 font-mono text-sm text-onnavy placeholder:text-onnavy-muted/40 outline-none transition-all focus:border-accent focus:ring-2 focus:ring-accent/50"
+                    className="w-full rounded-2xl border border-onnavy/25 bg-navy/80 px-4 pr-11 py-3 text-sm text-onnavy placeholder:text-onnavy-muted/40 outline-none transition-all focus:border-accent focus:ring-2 focus:ring-accent/50"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-onnavy-muted hover:text-accent transition-colors p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-onnavy-muted hover:text-accent transition-colors p-1 cursor-pointer"
                     title={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -207,7 +204,7 @@ export default function AdminLoginPage() {
               </div>
 
               {/* Remember Me Option */}
-              <div className="flex items-center text-xs font-mono pt-1">
+              <div className="flex items-center text-xs pt-1">
                 <label className="flex items-center gap-2 cursor-pointer text-onnavy-muted hover:text-onnavy">
                   <input
                     type="checkbox"
@@ -221,7 +218,7 @@ export default function AdminLoginPage() {
 
               {/* Error Message */}
               {error && (
-                <div className="flex items-start gap-2.5 border border-danger/40 bg-danger/15 p-3.5 text-xs text-danger leading-relaxed font-mono">
+                <div className="flex items-start gap-2.5 rounded-2xl border border-danger/40 bg-danger/15 p-3.5 text-xs text-danger leading-relaxed">
                   <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </div>
@@ -229,14 +226,14 @@ export default function AdminLoginPage() {
 
               {/* Submit Button */}
               <div className="pt-2">
-                <Btn type="submit" full disabled={loading} variant="primary" className="py-3.5 font-bold">
+                <Btn type="submit" full disabled={loading} variant="primary" className="py-3.5 font-bold rounded-2xl shadow-lg shadow-accent/25">
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-navy border-t-transparent" />
                       <span>Verifying Credentials...</span>
                     </span>
                   ) : (
-                    "Sign In →"
+                    "Sign In"
                   )}
                 </Btn>
               </div>
@@ -245,7 +242,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Security Badge Footer */}
-        <div className="text-center font-mono text-[0.7rem] text-onnavy-muted/70 flex items-center justify-center gap-4">
+        <div className="text-center text-xs text-onnavy-muted/70 flex items-center justify-center gap-4">
           <span>THREE STAR ENTERPRISES</span>
           <span>•</span>
           <span>Pune Works</span>

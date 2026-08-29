@@ -11,6 +11,9 @@ import {
 } from "react";
 import {
   COMPANY,
+  CAPABILITIES,
+  DEFAULT_SERVICES_SPOTLIGHT,
+  ENGAGEMENT_MODELS,
   FAQS,
   GALLERY,
   HOME_CONTENT,
@@ -23,7 +26,10 @@ import {
   CompanyData,
   HomeData,
   ServiceItem,
+  ServicesSpotlight,
   IndustryItem,
+  CapabilityItem,
+  EngagementModelItem,
   Project,
   GalleryItem,
   TestimonialItem,
@@ -36,7 +42,10 @@ export interface SiteState {
   company: CompanyData;
   home: HomeData;
   services: ServiceItem[];
+  servicesSpotlight: ServicesSpotlight;
+  engagementModels: EngagementModelItem[];
   industries: IndustryItem[];
+  capabilities: CapabilityItem[];
   projects: Project[];
   gallery: GalleryItem[];
   testimonials: TestimonialItem[];
@@ -88,7 +97,10 @@ const initialState: SiteState = {
   company: COMPANY as CompanyData,
   home: HOME_CONTENT as HomeData,
   services: SERVICES as ServiceItem[],
+  servicesSpotlight: DEFAULT_SERVICES_SPOTLIGHT as ServicesSpotlight,
+  engagementModels: ENGAGEMENT_MODELS as EngagementModelItem[],
   industries: INDUSTRIES as IndustryItem[],
+  capabilities: CAPABILITIES as CapabilityItem[],
   projects: PROJECTS as Project[],
   gallery: GALLERY as GalleryItem[],
   testimonials: TESTIMONIALS as TestimonialItem[],
@@ -128,7 +140,17 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   const fetchContent = useCallback(async () => {
     setContentLoading(true);
     try {
-      const sections = ["company", "home", "services", "industries", "faqs", "testimonials"];
+      const sections = [
+        "company",
+        "home",
+        "services",
+        "industries",
+        "faqs",
+        "testimonials",
+        "engagementModels",
+        "servicesSpotlight",
+        "capabilities",
+      ];
       const responses = await Promise.all(
         sections.map((section) => fetch(`/api/content/${section}`, { cache: "no-store" })),
       );
@@ -142,6 +164,9 @@ export function SiteProvider({ children }: { children: ReactNode }) {
           ["industries", payloads[3].data],
           ["faqs", payloads[4].data],
           ["testimonials", payloads[5].data],
+          ["engagementModels", payloads[6]?.data || (ENGAGEMENT_MODELS as EngagementModelItem[])],
+          ["servicesSpotlight", payloads[7]?.data || (DEFAULT_SERVICES_SPOTLIGHT as ServicesSpotlight)],
+          ["capabilities", payloads[8]?.data || (CAPABILITIES as CapabilityItem[])],
           ...Object.entries(prev).filter(([key]) => !sections.includes(key)),
         ]) as unknown as SiteState,
       );
@@ -255,6 +280,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
         home: initialState.home,
         services: initialState.services,
         industries: initialState.industries,
+        capabilities: initialState.capabilities,
         projects: initialState.projects,
         faqs: initialState.faqs,
         testimonials: initialState.testimonials,

@@ -41,12 +41,12 @@ export interface BadgeProps {
 
 export function Badge({ children, variant = "default", className = "" }: BadgeProps) {
   const base =
-    "inline-flex items-center gap-1.5 px-3 py-1 font-mono text-[0.68rem] font-medium uppercase tracking-[0.14em]";
+    "inline-flex items-center gap-1.5 px-3 py-1 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.08em] rounded-full";
   const variants = {
-    default: "border border-line bg-surface text-foreground",
-    accent: "border border-accent/60 bg-accent/10 text-accent",
-    navy: "border border-onnavy/20 bg-navy text-onnavy",
-    success: "border border-success/40 bg-success/10 text-success",
+    default: "border border-line bg-surface text-foreground shadow-xs",
+    accent: "border border-accent/50 bg-accent/15 text-accent shadow-xs",
+    navy: "border border-onnavy/20 bg-navy text-onnavy shadow-xs",
+    success: "border border-success/40 bg-success/15 text-success shadow-xs",
   };
   return <span className={`${base} ${variants[variant] || variants.default} ${className}`}>{children}</span>;
 }
@@ -64,12 +64,16 @@ export function SectionHead({ index, eyebrow, title, intro, dark = false, align 
   return (
     <div className={`${align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}`}>
       <div className={`flex items-center gap-3 ${align === "center" ? "justify-center" : ""}`}>
-        {index ? <span className="tech-label text-accent font-semibold">{index}</span> : null}
-        <span className="h-px w-8 bg-accent" />
+        {index ? (
+          <span className="font-sans text-xs font-bold text-accent px-2 py-0.5 rounded-md bg-accent/10 border border-accent/20">
+            {index}
+          </span>
+        ) : null}
+        <span className="h-px w-8 bg-accent/50" />
         {eyebrow && <TechLabel tone={dark ? "light" : "muted"}>{eyebrow}</TechLabel>}
       </div>
       <h2
-        className={`mt-5 text-3xl leading-[1.08] font-bold sm:text-4xl lg:text-[2.85rem] ${
+        className={`mt-4 text-3xl leading-[1.1] font-bold tracking-tight sm:text-4xl lg:text-[2.75rem] ${
           dark ? "text-onnavy" : "text-foreground"
         }`}
       >
@@ -77,7 +81,7 @@ export function SectionHead({ index, eyebrow, title, intro, dark = false, align 
       </h2>
       {intro ? (
         <p
-          className={`mt-5 text-base leading-relaxed sm:text-lg ${
+          className={`mt-4 text-base leading-relaxed sm:text-lg ${
             dark ? "text-onnavy-muted" : "text-muted"
           }`}
         >
@@ -89,17 +93,17 @@ export function SectionHead({ index, eyebrow, title, intro, dark = false, align 
 }
 
 const btnBase =
-  "group inline-flex items-center justify-center gap-2.5 px-6 py-3.5 text-[0.78rem] font-semibold tracking-[0.14em] uppercase transition-all duration-300 rounded-[2px]";
+  "group inline-flex items-center justify-center gap-2.5 px-6 py-3.5 text-sm font-semibold tracking-wide transition-all duration-300 rounded-xl cursor-pointer whitespace-nowrap select-none";
 const variants = {
   primary:
-    "bg-accent text-navy hover:bg-navy hover:text-onnavy shadow-[0_4px_16px_rgba(14,165,233,0.28)] hover:shadow-none font-bold",
+    "bg-accent text-navy hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/25 active:scale-[0.98] font-bold",
   outline:
-    "border border-line-strong text-foreground hover:border-navy hover:bg-navy hover:text-onnavy bg-surface/60 font-semibold",
+    "border border-line-strong text-foreground hover:border-accent hover:bg-accent/5 hover:text-accent bg-surface font-semibold active:scale-[0.98]",
   light:
-    "border border-white/30 bg-white/10 text-onnavy hover:bg-white hover:text-navy font-semibold backdrop-blur-sm shadow-sm",
-  ghost: "text-foreground hover:text-accent font-semibold",
-  accentGhost: "text-accent hover:bg-accent/15 border border-accent/40 font-semibold",
-  accentOutline: "border border-accent bg-accent/10 text-accent hover:bg-accent hover:text-navy font-bold shadow-[0_0_12px_rgba(14,165,233,0.2)]",
+    "border border-white/25 bg-white/10 text-onnavy hover:bg-white hover:text-navy font-semibold backdrop-blur-md shadow-sm active:scale-[0.98]",
+  ghost: "text-foreground hover:text-accent hover:bg-accent/10 font-semibold active:scale-[0.98]",
+  accentGhost: "text-accent hover:bg-accent/15 border border-accent/40 font-semibold active:scale-[0.98]",
+  accentOutline: "border border-accent bg-accent/10 text-accent hover:bg-accent hover:text-navy font-bold shadow-sm active:scale-[0.98]",
 };
 
 export interface BtnProps {
@@ -275,7 +279,7 @@ export function Lightbox({
       {/* Top Header Bar */}
       <div className="w-full flex items-center justify-between max-w-6xl py-2 z-10 border-b border-onnavy/15 text-onnavy">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs font-semibold text-accent px-2.5 py-1 bg-accent/10 border border-accent/30">
+          <span className="font-sans text-xs font-bold text-accent px-3 py-1 bg-accent/10 border border-accent/30 rounded-full">
             {String(currentNum).padStart(2, "0")} / {String(total).padStart(2, "0")}
           </span>
           {displayCategory && (
@@ -290,7 +294,7 @@ export function Lightbox({
           <button
             type="button"
             onClick={() => setZoom(!zoom)}
-            className="px-3 py-1.5 border border-onnavy/20 text-onnavy-muted hover:text-accent hover:border-accent font-mono text-xs transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-1.5 rounded-lg border border-onnavy/20 text-onnavy-muted hover:text-accent hover:border-accent font-sans font-semibold text-xs transition-colors flex items-center gap-1.5"
             title={zoom ? "Normal view" : "Zoom in"}
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -307,7 +311,7 @@ export function Lightbox({
           <button
             type="button"
             onClick={onClose}
-            className="px-3.5 py-1.5 border border-accent/40 bg-accent/10 text-accent hover:bg-accent hover:text-navy font-mono text-xs tracking-wider uppercase transition-all flex items-center gap-2"
+            className="px-4 py-1.5 rounded-lg border border-accent/40 bg-accent/10 text-accent hover:bg-accent hover:text-navy font-sans text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2"
           >
             <span>Close</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -361,7 +365,7 @@ export function Lightbox({
               }`}
             />
           ) : (
-            <div className="flex h-48 w-full items-center justify-center font-mono text-xs text-onnavy-muted">
+            <div className="flex h-48 w-full items-center justify-center text-xs text-onnavy-muted">
               No Image Available
             </div>
           )}
@@ -380,7 +384,7 @@ export function Lightbox({
           <div className="flex items-center gap-3">
             <Link
               href={`/quote?project=${encodeURIComponent(displayTitle)}&machine=${encodeURIComponent(displayCategory || "Induction Hardening Machine")}`}
-              className="border border-accent bg-accent/15 px-4 py-2 text-[0.72rem] font-semibold tracking-wider text-accent uppercase hover:bg-accent hover:text-navy transition-all flex items-center gap-2"
+              className="rounded-xl border border-accent bg-accent/15 px-4 py-2 text-xs font-semibold tracking-wider text-accent uppercase hover:bg-accent hover:text-navy transition-all flex items-center gap-2"
             >
               <span>Request Quote for This Build</span>
               <span>→</span>
@@ -396,7 +400,7 @@ export function Lightbox({
                 key={it.id || idx}
                 type="button"
                 onClick={() => (onChangeIndex ? onChangeIndex(idx) : null)}
-                className={`relative h-12 w-16 shrink-0 border overflow-hidden transition-all ${
+                className={`relative h-12 w-16 shrink-0 rounded-lg border overflow-hidden transition-all cursor-pointer ${
                   idx === currentIndex
                     ? "border-accent ring-2 ring-accent/50 opacity-100 scale-105"
                     : "border-onnavy/20 opacity-50 hover:opacity-100"
@@ -405,7 +409,7 @@ export function Lightbox({
                 {it.image ? (
                   <img src={it.image} alt={it.title} className="h-full w-full object-cover" />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center font-mono text-[0.6rem] text-onnavy-muted">
+                  <div className="flex h-full w-full items-center justify-center text-[0.65rem] text-onnavy-muted">
                     No Img
                   </div>
                 )}

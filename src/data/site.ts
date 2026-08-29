@@ -197,6 +197,53 @@ export const SERVICES = [
     outcome: "Smooth, automated material flow that cuts down on manual handling.",
   },
 ];
+export const ENGAGEMENT_MODELS = [
+  {
+    id: "design-only",
+    title: "1. 3D Design & Blueprints Only",
+    badge: "DESIGN ONLY",
+    tagline: "FOR OEMS WITH INTERNAL MANUFACTURING CAPACITY",
+    description:
+      "We engineer complete 3D CAD SolidWorks models, kinematic simulations, 2D part drawings, and ready-to-procure Bill of Materials (BOM).",
+    deliverables: [
+      "Full 3D CAD Assembly & Part Models",
+      "2D Detailed Manufacturing Blueprints",
+      "Comprehensive Bill of Materials (BOM)",
+      "FEA Stress & Deflection Calculations",
+    ],
+    image: IMAGES.blueprints,
+  },
+  {
+    id: "manufacturing-only",
+    title: "2. Build to Your Drawings",
+    badge: "MANUFACTURING ONLY",
+    tagline: "YOU PROVIDE BLUEPRINTS, WE MANUFACTURE & ASSEMBLE",
+    description:
+      "Hand over your CAD drawings; our Pune workshop handles material procurement, CNC machining, electrical wiring, and full mechanical assembly.",
+    deliverables: [
+      "Certified Raw Material Procurement",
+      "Heavy Precision CNC Milling & Turning",
+      "Electrical PLC Wiring & Control Integration",
+      "Dimensional & Accuracy Verification",
+    ],
+    image: IMAGES.engineeringEquipment,
+  },
+  {
+    id: "full-turnkey",
+    title: "3. Complete Turnkey Delivery",
+    badge: "FULL TURNKEY SPM",
+    tagline: "FROM RAW CONCEPT TO RUNNING MACHINE ON YOUR FLOOR",
+    description:
+      "Our most popular model: a single accountable team handles 3D design, custom tooling, fabrication, PLC automation, and live FAT trials.",
+    deliverables: [
+      "Dedicated Single Project Manager",
+      "Custom Machine & Inductor Tooling",
+      "100% FAT Live Part Testing in Pune",
+      "Installation Support, Manuals & Spare Lists",
+    ],
+    image: IMAGES.pageAbout,
+  },
+];
 export const INDUSTRIES = [
   {
     id: "material-handling",
@@ -304,6 +351,8 @@ export const PROJECTS = [
     short:
       "Vertical scanning induction hardening setup for shafts and long components, with automatic handling options.",
     featured: true,
+    featuredInHero: true,
+    featuredInHome: true,
     overview:
       "A vertical scanning induction hardening machine built for long rotational components, supplied with the quench system, scanning axis and control setup required for repeatable case depth.",
     challenge: genericChallenge,
@@ -871,6 +920,7 @@ export const DEMO_GALLERY = [
     category: "Machines",
     image: IMAGES.verticalInduction,
     featured: true,
+    featuredInHero: true,
     caption: "Full assembly and testing of vertical induction hardening scanner at Pune plant.",
   },
   {
@@ -1001,6 +1051,192 @@ export const HOME_CONTENT = {
   ctaButton: "Get in Touch with Our Team",
   clientsHeading: "Trusted by equipment manufacturers and industrial businesses",
 };
+export const DEFAULT_SERVICES_SPOTLIGHT = {
+  badge: "SERVICE SPOTLIGHT",
+  title: "Turnkey SPM Design & Assembly Bay",
+  subtitle: "In-house CAD bureau, CNC machine shop & 100% FAT test cells",
+  image: IMAGES.pageServices || "",
+  deliveryModel: "Turnkey",
+  qualityQa: "100% FAT",
+};
+
+export const CAPABILITIES = [
+  {
+    id: "cap-induction-hardening",
+    code: "CAP-01",
+    title: "Induction Hardening Machinery & Quench Systems",
+    tagline: "Vertical & Horizontal Scanning Systems",
+    category: "Induction Hardening",
+    description:
+      "Vertical, horizontal, dual-spindle, and rotary induction hardening systems with custom quench rings, scanning axes, and automatic part transfer.",
+    image: IMAGES.pageCapabilities || IMAGES.verticalInduction,
+    featured: true,
+    metrics: [
+      { label: "Scan Length", value: "Up to 3,000 mm" },
+      { label: "Max Power", value: "250 kW Solid State" },
+      { label: "Tolerance", value: "±0.005 mm CNC" },
+    ],
+    features: [
+      "Vertical scanning machinery with high-precision servo ballscrew drive",
+      "Horizontal induction systems for long tubes, bars, and cylinder rods",
+      "Dual-spindle high-throughput configurations for simultaneous processing",
+      "Rotary indexing tables with integrated quench and component loading",
+      "Closed-loop optical pyrometer for real-time temperature regulation",
+      "Automatic pneumatic and servo pick-and-place component transfer",
+    ],
+    deliverables: [
+      "Complete PLC / CNC Control Cabinets with Touch HMI",
+      "Custom CNC-Wound Induction Heating Coils & Transformers",
+      "100% Case Depth FAT Trial Verification with Client Parts",
+    ],
+  },
+  {
+    id: "cap-material-handling",
+    code: "CAP-02",
+    title: "Conveying & Industrial Material Handling",
+    tagline: "High-Temperature & Heavy Transfer Systems",
+    category: "Material Handling",
+    description:
+      "Heavy-duty conveying systems engineered for hot forged billets, machined components, and high-speed automated transfer lines.",
+    image: IMAGES.materialHandling || IMAGES.forgeToTrim,
+    featured: false,
+    metrics: [
+      { label: "Heat Resistance", value: "Up to 1,200°C" },
+      { label: "Load Rating", value: "5,000 kg/hr" },
+      { label: "Belt Types", value: "SS Mesh & Chains" },
+    ],
+    features: [
+      "Forge-to-trim press heat-resistant chain conveyors with thermal shielding",
+      "Honeycomb stainless steel wire mesh conveyors for quench tank immersion",
+      "Slat and modular sanitary plastic belt conveyors for assembly bays",
+      "Automatic pneumatic billet elevator loaders with bowl hopper feeds",
+      "Gravity roller tracks and powered multi-stage transfer decks",
+      "Variable frequency drives (VFD) with safety interlock lines",
+    ],
+    deliverables: [
+      "Heavy Structural Welded Channel Frames",
+      "Automated Pneumatic Sorting Gates & Diverters",
+      "Washdown Sanitary Modular Plastic Belting",
+    ],
+  },
+  {
+    id: "cap-inspection-sorting",
+    code: "CAP-03",
+    title: "Inline NDT & Automated Inspection Stations",
+    tagline: "100% Crack Detection & Sorting Gates",
+    category: "Inspection & Sorting",
+    description:
+      "Inline non-destructive testing (NDT) integration with high-speed reject segregation mechanisms built directly into production lines.",
+    image: IMAGES.lineAutomation || IMAGES.eddyCurrent,
+    featured: false,
+    metrics: [
+      { label: "Inspection Speed", value: "0.8 sec / component" },
+      { label: "Sorting Accuracy", value: "100% Fail-Safe" },
+      { label: "Interface", value: "Digital SPC Logging" },
+    ],
+    features: [
+      "Multi-frequency eddy current crack detection integration for machined shafts",
+      "Ultrasonic testing (UT) fixture and component handling cells",
+      "Pneumatic high-speed accept/reject sorting gates with sensor verification",
+      "Multi-channel dimensional gauging fixtures with digital linear probes",
+      "Optical machine vision camera mounting and backlit inspection bays",
+      "Data logging and statistical process control (SPC) parameter capture",
+    ],
+    deliverables: [
+      "Digital Test Record Logging & Reject Tracking",
+      "Custom Calibration Reference Sample Blocks",
+      "Interlocked Reject Containment Bin",
+    ],
+  },
+  {
+    id: "cap-automation-cells",
+    code: "CAP-04",
+    title: "Automation Cells & Custom Tooling",
+    tagline: "Gantry Loading & Press Tooling Fixtures",
+    category: "Automation & Tooling",
+    description:
+      "Dedicated robotic and pneumatic cells that eliminate manual handling in dangerous, high-heat, and repetitive manufacturing operations.",
+    image: IMAGES.automation || IMAGES.autoBilletLoader,
+    featured: false,
+    metrics: [
+      { label: "Cycle Time", value: "< 6.5 sec / part" },
+      { label: "Payload", value: "Up to 120 kg" },
+      { label: "Safety Level", value: "Cat 4 Interlocked" },
+    ],
+    features: [
+      "Pick and place Cartesian gantries with pneumatic and servo grippers",
+      "Forging press loading/unloading robots eliminating manual heat exposure",
+      "Precision hydraulic and pneumatic press-fit tooling with force monitoring",
+      "Hydraulic cutters and shearing presses for laminates and composites",
+      "Heavy-duty clamping, welding, and structural assembly jigs",
+      "Interlocked perimeter safety fencing and optical light curtain integration",
+    ],
+    deliverables: [
+      "Optical Safety Light Curtains & Interlocked Enclosures",
+      "Quick-Change Pneumatic Gripper Tooling Sets",
+      "Operator HMI Touchscreens with Recipe Memory",
+    ],
+  },
+  {
+    id: "cap-machine-building",
+    code: "CAP-05",
+    title: "Special Purpose Machine Building & Retrofits",
+    tagline: "Bespoke SPMs & Slideway Scraping",
+    category: "Machine Building",
+    description:
+      "Complete assembly, geometric realignment, scraping, retrofit, and modernisation of production machine tools and special purpose machinery.",
+    image: IMAGES.engineeringEquipment || IMAGES.latheAssembly,
+    featured: false,
+    metrics: [
+      { label: "Assembly Bay", value: "5,000+ sq. ft" },
+      { label: "Geometric Alignment", value: "ISO Class 1" },
+      { label: "Controllers", value: "Siemens / Fanuc / Delta" },
+    ],
+    features: [
+      "Turnkey SPM machine assembly from 3D SolidWorks blueprints to trial run",
+      "Complete machine tool lathe assembly, geometric alignment, and precision testing",
+      "Cylindrical and surface grinder overhaul with hand scraping on guide slideways",
+      "HMC and VMC machine tool maintenance and slideway alignment",
+      "PLC, CNC controller, and digital servo drive retrofits on legacy machines",
+      "On-site installation and laser calibration support across client plants",
+    ],
+    deliverables: [
+      "Laser Calibrated Alignment Certificates",
+      "Complete Wiring Schematics and Ladder Logic",
+      "On-Site Operator Training and FAT Sign-Off",
+    ],
+  },
+  {
+    id: "cap-metrology-fat",
+    code: "CAP-06",
+    title: "Shop-Floor Precision Metrology & FAT Trials",
+    tagline: "Sub-Micron Quality Testing & Trials",
+    category: "Quality & Metrology",
+    description:
+      "Comprehensive pre-dispatch quality verification, sub-micron dimensional checks, and live component trial runs conducted in our Pune workshop.",
+    image: IMAGES.metrology,
+    featured: false,
+    metrics: [
+      { label: "Dial Precision", value: "±0.001 mm" },
+      { label: "FAT Trial", value: "100% with Client Parts" },
+      { label: "Hardness Check", value: "Rockwell / Vickers" },
+    ],
+    features: [
+      "Sub-micron dial indicator and surface plate precision geometric inspection",
+      "100% full-speed continuous dry and wet trial runs using customer production blanks",
+      "Rockwell and Vickers micro-hardness testing across heat-treated case zones",
+      "Optical pyrometer calibration and quench spray coverage validation",
+      "Detailed Pre-Dispatch Inspection (PDI) and Factory Acceptance Test (FAT) dossiers",
+      "Pre-wired trial video documentation for remote client approvals",
+    ],
+    deliverables: [
+      "Signed FAT Test Trial Compliance Report",
+      "Pre-Dispatch Dimensional Inspection Sheet",
+      "Pre-Wired Trial Video Documentation",
+    ],
+  },
+];
+
 export const ADMIN_CREDENTIALS = {
   email: "pandeytushar287@gmail.com",
   password: "Admin@123",

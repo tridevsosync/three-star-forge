@@ -61,6 +61,19 @@ function QuoteForm() {
         machineType: machine || p.machineType,
       }));
     }
+
+    if (typeof window !== "undefined" && (project || machine || window.location.hash === "#quote-form")) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById("quote-form");
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const targetY = rect.top + scrollTop - 90;
+          window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+        }
+      }, 120);
+      return () => clearTimeout(timer);
+    }
   }, [searchParams]);
 
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
@@ -117,7 +130,7 @@ function QuoteForm() {
 
       <Section grid>
         <div className="mx-auto max-w-4xl">
-          <div className="corner-marks border border-line bg-surface shadow-xl">
+          <div id="quote-form" className="scroll-mt-28 corner-marks border border-line bg-surface shadow-xl">
             {/* Header */}
             <div className="border-b border-line bg-navy text-onnavy px-8 py-6 flex flex-wrap items-center justify-between gap-4">
               <div>
