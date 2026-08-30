@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { IMAGES } from "@/data/images";
 import { useSite } from "@/store/site-store";
-import { SectionHead, TechLabel, Badge, Btn } from "@/components/site/ui";
-import { PageHero, Section } from "@/components/site/blocks";
+import { SectionHead, TechLabel, Badge, Btn, Container, Reveal, Lightbox } from "@/components/site/ui";
+import { Section } from "@/components/site/blocks";
 import { InView } from "@/components/site/reveal";
+import { SafeImage } from "@/components/site/SafeImage";
+import { CheckCircle2, Maximize2, MapPin, Phone, Mail, Clock, ShieldCheck } from "lucide-react";
 
 const SUBJECT_OPTIONS = [
   "General Engineering Inquiry",
@@ -135,15 +137,120 @@ function ContactPageInner() {
     }
   };
 
+  const [isHeroLightboxOpen, setIsHeroLightboxOpen] = useState(false);
+
   return (
     <>
-      <PageHero
-        index="07"
-        eyebrow="Contact Us"
-        title="Get in Touch with Three Star Enterprises"
-        intro="Have a question about our machines, need a price quote, or want to visit our workshop in Pune? Send us a message below or call us directly."
-        image={IMAGES.pageContact}
-      />
+      {/* ========================================================================= */}
+      {/* 1. CINEMATIC HERO SECTION (MATCHING ABOUT PAGE LAYOUT & STYLE — NO BUTTONS) */}
+      {/* ========================================================================= */}
+      <section className="relative overflow-hidden bg-navy pt-28 pb-20 text-onnavy sm:pt-36 sm:pb-28 lg:pt-40 lg:pb-32">
+        <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-30" />
+        <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-accent/15 blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 -right-40 h-[450px] w-[450px] rounded-full bg-accent/10 blur-[100px] pointer-events-none" />
+
+        <Container className="relative">
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-14 items-center">
+            {/* Left Hero Narrative */}
+            <div className="lg:col-span-7">
+              <Reveal>
+                {/* Glowing Pill Badge */}
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-xs font-semibold text-accent backdrop-blur-md shadow-xs">
+                  <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
+                  <span>07 • CONTACT US • PUNE WORKS</span>
+                  <span className="h-3 w-px bg-accent/40" />
+                  <span className="text-onnavy-muted font-normal hidden sm:inline">
+                    Direct Engineering Support
+                  </span>
+                </div>
+
+                <h1 className="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
+                  Get in Touch with <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent-hover to-white">
+                    Three Star Enterprises
+                  </span>
+                </h1>
+
+                <p className="mt-5 max-w-2xl text-base sm:text-lg text-onnavy-muted leading-relaxed font-sans">
+                  Have a question about our machines, need a price quote, or want to visit our workshop in Pune? Send us a message below or call us directly.
+                </p>
+
+                {/* Trust Badges Strip (No CTA buttons) */}
+                <div className="mt-8 flex flex-wrap items-center gap-6 border-t border-onnavy/15 pt-6 text-xs text-onnavy-muted">
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent" />
+                    <span>Rapid 24-Hour Response</span>
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent" />
+                    <span>Direct Technical Consultation</span>
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent" />
+                    <span>Pune Plant Visits Welcome</span>
+                  </span>
+                </div>
+              </Reveal>
+            </div>
+
+            {/* Right Hero: Interactive Facility & Works Showcase Card */}
+            <div className="lg:col-span-5">
+              <InView delay={120}>
+                <div className="group relative rounded-3xl border border-onnavy/20 bg-surface/5 p-4 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:border-accent/50">
+                  {/* Photo Container with Lightbox Trigger */}
+                  <div
+                    onClick={() => setIsHeroLightboxOpen(true)}
+                    className="relative aspect-[16/11] w-full overflow-hidden rounded-2xl bg-navy cursor-pointer"
+                  >
+                    <SafeImage
+                      src={IMAGES.pageContact || IMAGES.machineAssembly}
+                      alt="Three Star Enterprises Facility & Workshop"
+                      fallbackType="workshop"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/30 to-transparent" />
+
+                    {/* Floating Zoom Action */}
+                    <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-navy/80 px-3 py-1.5 text-xs font-semibold text-accent backdrop-blur-md border border-accent/30 shadow-lg">
+                      <Maximize2 className="h-3.5 w-3.5" />
+                      <span>Inspect Facility</span>
+                    </div>
+
+                    {/* Overlay Facility Telemetry */}
+                    <div className="absolute bottom-4 left-4 right-4 text-onnavy">
+                      <span className="inline-block rounded-full bg-accent/20 border border-accent/40 px-2.5 py-0.5 text-[0.65rem] font-bold text-accent uppercase">
+                        Operating Facility & Works
+                      </span>
+                      <h3 className="mt-1 font-display text-base font-bold text-onnavy">
+                        Dehu Gaon Workshop Plant
+                      </h3>
+                      <p className="text-xs text-onnavy-muted line-clamp-1">
+                        {company.address || "Gat No 78, Dehu Gaon, Pune - 412109, Maharashtra"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Quick Facts Grid */}
+                  <div className="mt-3.5 grid grid-cols-3 gap-2 text-center text-xs">
+                    <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
+                      <span className="text-[0.65rem] text-onnavy-muted uppercase block">Location</span>
+                      <strong className="font-display text-sm font-bold text-onnavy">Pune, India</strong>
+                    </div>
+                    <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
+                      <span className="text-[0.65rem] text-onnavy-muted uppercase block">Response</span>
+                      <strong className="font-display text-sm font-bold text-accent">&lt; 24 Hours</strong>
+                    </div>
+                    <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
+                      <span className="text-[0.65rem] text-onnavy-muted uppercase block">Support</span>
+                      <strong className="font-display text-sm font-bold text-onnavy">Engineering</strong>
+                    </div>
+                  </div>
+                </div>
+              </InView>
+            </div>
+          </div>
+        </Container>
+      </section>
 
       {/* RFQ Prompt Banner */}
       <div className="border-b border-line bg-accent/10 py-4 px-4 text-center">
@@ -431,6 +538,16 @@ function ContactPageInner() {
           </InView>
         </div>
       </Section>
+
+      {/* Facility Image Lightbox */}
+      <Lightbox
+        isOpen={isHeroLightboxOpen}
+        image={IMAGES.pageContact || IMAGES.machineAssembly}
+        title="Three Star Enterprises Manufacturing Works"
+        category="Pune Facility & Workshop"
+        description={company.address || "Gat No 78, Dehu Gaon, Pune - 412109, Maharashtra"}
+        onClose={() => setIsHeroLightboxOpen(false)}
+      />
     </>
   );
 }

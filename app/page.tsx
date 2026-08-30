@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { IMAGES } from "@/data/images";
 import { NPI_STEPS } from "@/data/site";
 import { useSite } from "@/store/site-store";
@@ -34,6 +34,7 @@ export default function HomePage() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [spotlightIndex, setSpotlightIndex] = useState(0);
+  const [isSpotlightPaused, setIsSpotlightPaused] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [lightboxItems, setLightboxItems] = useState<any[]>([]);
   const [showAllFeedback, setShowAllFeedback] = useState(false);
@@ -43,6 +44,17 @@ export default function HomePage() {
     const featured = projects.filter((p) => p.featured);
     return featured.length > 0 ? featured.slice(0, 4) : projects.slice(0, 4);
   }, [projects]);
+
+  // Automatic sliding for Hero Machine Spotlight (every 4 seconds, pauses on hover)
+  useEffect(() => {
+    if (heroSpotlightProjects.length <= 1 || isSpotlightPaused) return;
+
+    const timer = setInterval(() => {
+      setSpotlightIndex((prev) => (prev + 1) % heroSpotlightProjects.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [heroSpotlightProjects.length, isSpotlightPaused]);
 
   const activeSpotlight = heroSpotlightProjects[spotlightIndex] || heroSpotlightProjects[0] || {
     title: "Vertical Induction Hardening Machine",
@@ -316,7 +328,11 @@ export default function HomePage() {
             {/* Hero Right Visual Machine Spotlight */}
             <div className="lg:col-span-5">
               <Reveal className="delay-100">
-                <div className="relative rounded-2xl border border-onnavy/20 bg-navy-deep/90 p-5 backdrop-blur-md shadow-2xl overflow-hidden transition-all hover:border-accent/50">
+                <div
+                  onMouseEnter={() => setIsSpotlightPaused(true)}
+                  onMouseLeave={() => setIsSpotlightPaused(false)}
+                  className="relative rounded-2xl border border-onnavy/20 bg-navy-deep/90 p-5 backdrop-blur-md shadow-2xl overflow-hidden transition-all hover:border-accent/50"
+                >
                   {/* Spotlight Top Bar */}
                   <div className="flex items-center justify-between border-b border-onnavy/15 pb-3">
                     <div className="flex items-center gap-2">
