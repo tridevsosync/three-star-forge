@@ -70,88 +70,190 @@ export function CapabilityDetail({ capabilityId }: { capabilityId?: string }) {
   return (
     <>
       {/* ========================================================================= */}
-      {/* 1. ATMOSPHERIC HERO BANNER */}
+      {/* 1. PREMIUM INDUSTRIAL SPLIT HERO BANNER */}
       {/* ========================================================================= */}
-      <section className="relative overflow-hidden bg-navy pt-32 pb-16 text-onnavy sm:pt-40 sm:pb-24">
-        {coverImage && (
-          <img
-            src={coverImage}
-            alt={`${cap.title} engineered by Three Star Enterprises Pune`}
-            className="absolute inset-0 h-full w-full object-cover opacity-20"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/95 to-navy/80" />
-        <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-50" />
+      <section className="relative overflow-hidden bg-navy pt-28 pb-16 text-onnavy sm:pt-36 sm:pb-20">
+        {/* Ambient Blueprint Matrix */}
+        <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-70" />
+        <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-accent/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 -left-40 h-[400px] w-[400px] rounded-full bg-accent/5 blur-3xl pointer-events-none" />
 
         <Container className="relative">
-          <Reveal>
-            {/* Breadcrumb Navigation */}
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-sans font-semibold text-onnavy-muted">
-              <Link href="/" className="transition-colors hover:text-accent">
-                HOME
-              </Link>
-              <span className="text-accent">/</span>
-              <Link href="/capabilities" className="transition-colors hover:text-accent">
-                CAPABILITIES
-              </Link>
-              <span className="text-accent">/</span>
-              <span className="text-accent uppercase">{cap.code}</span>
-              <span className="text-accent">/</span>
-              <span className="text-onnavy uppercase">{(cap.category || "Domain").toUpperCase()}</span>
-            </nav>
+          {/* Breadcrumbs Navigation */}
+          <nav
+            aria-label="Breadcrumb"
+            className="flex flex-wrap items-center gap-2 text-xs font-sans font-semibold text-onnavy-muted mb-6"
+          >
+            <Link href="/" className="transition-colors hover:text-accent">
+              HOME
+            </Link>
+            <span className="text-accent/60">/</span>
+            <Link href="/capabilities" className="transition-colors hover:text-accent">
+              CAPABILITIES
+            </Link>
+            <span className="text-accent/60">/</span>
+            <span className="text-accent uppercase font-bold">{cap.code}</span>
+            <span className="text-accent/60">/</span>
+            <span className="text-onnavy uppercase font-bold">{(cap.category || "Domain").toUpperCase()}</span>
+          </nav>
 
-            <div className="mt-6 flex flex-wrap items-center gap-2.5">
-              <span className="rounded-full bg-accent px-3 py-1 text-xs font-bold text-navy shadow-sm">
-                {cap.code}
-              </span>
-              <Badge variant="navy">{cap.category || "Manufacturing Domain"}</Badge>
-              {cap.featured && (
-                <span className="rounded-full bg-accent/20 border border-accent/40 px-3 py-1 text-xs font-bold text-accent flex items-center gap-1">
-                  <Sparkles className="h-3.5 w-3.5 fill-accent" />
-                  <span>Header Spotlight Build</span>
-                </span>
-              )}
-              <span className="rounded-full bg-surface/10 border border-onnavy/20 px-3 py-1 text-xs text-onnavy-muted">
-                100% In-House Pune Assembly
-              </span>
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12 items-center">
+            {/* Left Column: Domain Overview & Live Telemetry */}
+            <div className="lg:col-span-7">
+              <Reveal>
+                {/* Badges Row */}
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <span className="rounded-full bg-accent px-3 py-1 text-xs font-bold text-navy shadow-sm">
+                    {cap.code}
+                  </span>
+                  <Badge variant="navy" className="border-onnavy/20">
+                    {cap.category || "Manufacturing Domain"}
+                  </Badge>
+                  {cap.featured && (
+                    <span className="rounded-full bg-accent/20 border border-accent/40 px-3 py-1 text-xs font-bold text-accent flex items-center gap-1">
+                      <Sparkles className="h-3.5 w-3.5 fill-accent" />
+                      <span>Header Spotlight Build</span>
+                    </span>
+                  )}
+                  <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 border border-accent/30 px-3 py-1 text-[0.68rem] font-bold text-accent">
+                    <ShieldCheck className="h-3 w-3" />
+                    <span>100% FAT Tested</span>
+                  </span>
+                </div>
+
+                {/* Heading */}
+                <h1 className="mt-5 font-display text-3xl leading-[1.08] font-extrabold sm:text-4xl lg:text-[3.25rem] text-onnavy tracking-tight">
+                  {cap.title}
+                </h1>
+
+                {/* Tagline */}
+                {cap.tagline && (
+                  <p className="mt-3 text-base sm:text-lg font-semibold text-accent tracking-wide">
+                    {cap.tagline}
+                  </p>
+                )}
+
+                {/* Description */}
+                <p className="mt-4 max-w-2xl text-base leading-relaxed text-onnavy-muted">
+                  {cap.description}
+                </p>
+
+                {/* Quick Action Buttons */}
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <Btn
+                    to={`/quote?capability=${encodeURIComponent(cap.title)}#quote-form`}
+                    variant="primary"
+                    className="text-xs px-7 py-3.5 font-bold shadow-lg shadow-accent/25"
+                  >
+                    Request Domain Quote
+                  </Btn>
+                  <button
+                    type="button"
+                    onClick={() => setLightboxOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-onnavy/20 bg-navy-soft/80 px-5 py-3.5 text-xs font-semibold text-onnavy hover:border-accent hover:text-accent transition-all cursor-pointer backdrop-blur-sm"
+                  >
+                    <Maximize2 className="h-4 w-4" />
+                    <span>Inspect High-Res Photos</span>
+                  </button>
+                </div>
+
+                {/* Live Telemetry Metadata Strip */}
+                <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4 border-t border-onnavy/15 pt-6">
+                  <Meta label="Domain Reference" value={cap.code} />
+                  <Meta label="Sector Category" value={cap.category || "Precision Engineering"} />
+                  <Meta label="Shop-Floor QA" value="100% FAT Verified" highlight />
+                  <Meta label="Manufacturing Bay" value="Pune Works" />
+                </div>
+              </Reveal>
             </div>
 
-            <h1 className="mt-5 max-w-4xl font-display text-3xl leading-[1.08] font-extrabold sm:text-5xl lg:text-[3.5rem] text-onnavy tracking-tight">
-              {cap.title}
-            </h1>
+            {/* Right Column: Premium Capability Image Showcase Card */}
+            <div className="lg:col-span-5">
+              <Reveal className="delay-100">
+                <div className="relative rounded-3xl border border-onnavy/20 bg-navy-deep/90 p-5 backdrop-blur-md shadow-2xl overflow-hidden transition-all hover:border-accent/60 group">
+                  {/* Card Header Bar */}
+                  <div className="flex items-center justify-between border-b border-onnavy/15 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+                      <span className="font-sans text-xs font-bold text-accent uppercase tracking-wider">
+                        Capability Domain
+                      </span>
+                    </div>
+                    <span className="font-sans text-[0.7rem] text-onnavy-muted font-mono font-bold">
+                      {cap.code}
+                    </span>
+                  </div>
 
-            {cap.tagline && (
-              <p className="mt-3 text-base sm:text-lg font-semibold text-accent tracking-wide">
-                {cap.tagline}
-              </p>
-            )}
+                  {/* High-Resolution Capability Photo */}
+                  <div
+                    className="relative mt-4 aspect-[16/11] overflow-hidden rounded-2xl bg-navy cursor-pointer"
+                    onClick={() => setLightboxOpen(true)}
+                  >
+                    <img
+                      src={coverImage}
+                      alt={`${cap.title} engineered by Three Star Enterprises Pune`}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-108"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = IMAGES.verticalInduction;
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent opacity-60 transition-opacity group-hover:opacity-80" />
 
-            {/* Live Telemetry Metadata Strip */}
-            <div className="mt-8 flex flex-wrap gap-x-10 gap-y-4 border-t border-onnavy/15 pt-6">
-              <Meta label="Domain Reference" value={cap.code} />
-              <Meta label="Sector Category" value={cap.category || "Precision Engineering"} />
-              <Meta label="Shop-Floor QA Status" value="100% FAT Verified" />
-              <Meta label="Manufacturing Bay" value="Pune Engineering Works" />
+                    {/* Category Badge */}
+                    <div className="absolute top-3 left-3 flex items-center gap-2">
+                      <Badge variant="accent">{cap.category || "In-House Engineering"}</Badge>
+                    </div>
+
+                    {/* Inspect Photo Action */}
+                    <div className="absolute bottom-3 right-3 rounded-xl bg-navy/90 border border-accent/40 px-3 py-1.5 text-xs font-semibold text-accent backdrop-blur-md flex items-center gap-1.5 opacity-90 group-hover:opacity-100 group-hover:bg-accent group-hover:text-navy transition-all shadow-lg">
+                      <Maximize2 className="h-3.5 w-3.5" />
+                      <span>Inspect Photo</span>
+                    </div>
+                  </div>
+
+                  {/* Quick Facts Grid */}
+                  <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+                    <div className="rounded-xl border border-onnavy/15 bg-navy/60 p-2.5">
+                      <span className="text-[0.65rem] text-onnavy-muted uppercase block">Verification</span>
+                      <strong className="font-display text-xs font-bold text-accent block">100% FAT</strong>
+                    </div>
+                    <div className="rounded-xl border border-onnavy/15 bg-navy/60 p-2.5">
+                      <span className="text-[0.65rem] text-onnavy-muted uppercase block">Assembly Site</span>
+                      <strong className="font-display text-xs font-bold text-onnavy block">Pune Plant</strong>
+                    </div>
+                    <div className="rounded-xl border border-onnavy/15 bg-navy/60 p-2.5">
+                      <span className="text-[0.65rem] text-onnavy-muted uppercase block">Engineering</span>
+                      <strong className="font-display text-xs font-bold text-success block">In-House</strong>
+                    </div>
+                  </div>
+
+                  {/* Operating Metric Chips (if available) */}
+                  {cap.metrics && cap.metrics.length > 0 && (
+                    <div className="mt-3.5 pt-3.5 border-t border-onnavy/15">
+                      <span className="text-[0.68rem] text-onnavy-muted font-bold uppercase tracking-wider block mb-2">
+                        Key Performance Parameters
+                      </span>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {cap.metrics.slice(0, 3).map((m, idx) => (
+                          <div
+                            key={idx}
+                            className="rounded-lg border border-onnavy/10 bg-navy/40 p-2 text-xs"
+                          >
+                            <span className="text-[0.65rem] text-onnavy-muted truncate block">
+                              {m.label}
+                            </span>
+                            <span className="font-bold text-onnavy font-sans truncate block">
+                              {m.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Reveal>
             </div>
-
-            {/* Quick Action Buttons */}
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Btn
-                to={`/quote?capability=${encodeURIComponent(cap.title)}#quote-form`}
-                variant="primary"
-                className="text-xs px-7 py-3.5 font-bold shadow-lg shadow-accent/25"
-              >
-                Request Domain Quote
-              </Btn>
-              <Btn
-                to="/capabilities"
-                variant="light"
-                className="text-xs px-6 py-3.5 font-semibold"
-              >
-                ← Back to All Capabilities
-              </Btn>
-            </div>
-          </Reveal>
+          </div>
         </Container>
       </section>
 
@@ -164,8 +266,14 @@ export function CapabilityDetail({ capabilityId }: { capabilityId?: string }) {
           <InView className="lg:col-span-8 space-y-12 min-w-0">
             {/* Executive Overview */}
             <div className="min-w-0">
-              <TechLabel tone="accent">Domain Scope & Manufacturing Overview</TechLabel>
-              <p className="mt-4 text-base sm:text-lg leading-relaxed text-foreground font-medium break-words">
+              <div className="flex items-center gap-2">
+                <span className="h-px w-6 bg-accent" />
+                <TechLabel tone="accent">Domain Scope & Manufacturing Overview</TechLabel>
+              </div>
+              <h2 className="mt-3 font-display text-2xl font-bold text-foreground sm:text-3xl">
+                Precision Manufacturing & Assembly Capabilities
+              </h2>
+              <p className="mt-4 text-base sm:text-lg leading-relaxed text-foreground/90 font-medium break-words">
                 {cap.description}
               </p>
             </div>
@@ -315,41 +423,8 @@ export function CapabilityDetail({ capabilityId }: { capabilityId?: string }) {
             )}
           </InView>
 
-          {/* Right Column: Machine Photo Inspection, RFQ Card & Pune Bay Details */}
+          {/* Right Column: Direct RFQ Card & Pune Bay Details (Cleaned without duplicate photo card) */}
           <InView className="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
-            {/* Machine Photo Card with Lightbox Trigger */}
-            <div className="rounded-3xl border border-line bg-surface p-4 shadow-xl overflow-hidden group">
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-navy">
-                <img
-                  src={coverImage}
-                  alt={cap.title}
-                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = IMAGES.verticalInduction;
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent" />
-
-                <button
-                  type="button"
-                  onClick={() => setLightboxOpen(true)}
-                  className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-navy/80 px-3 py-1.5 text-xs font-semibold text-accent backdrop-blur-md border border-accent/30 shadow-lg hover:bg-accent hover:text-navy transition-all cursor-pointer"
-                >
-                  <Maximize2 className="h-3.5 w-3.5" />
-                  <span>Inspect Photo</span>
-                </button>
-
-                <div className="absolute bottom-3 left-3 right-3 text-onnavy">
-                  <span className="rounded-full bg-accent/20 border border-accent/40 px-2.5 py-0.5 text-[0.65rem] font-bold text-accent uppercase">
-                    {cap.code} • In-House Engineering
-                  </span>
-                  <h4 className="mt-1 font-display text-sm font-bold text-onnavy leading-snug">
-                    {cap.title}
-                  </h4>
-                </div>
-              </div>
-            </div>
-
             {/* Direct RFQ Action Box */}
             <div className="rounded-3xl border border-accent/30 bg-navy p-6 sm:p-7 text-onnavy shadow-2xl relative overflow-hidden">
               <div className="blueprint-grid-dark pointer-events-none absolute inset-0 opacity-40" />
@@ -435,14 +510,18 @@ export function CapabilityDetail({ capabilityId }: { capabilityId?: string }) {
   );
 }
 
-function Meta({ label, value }: { label: string; value?: string }) {
+function Meta({ label, value, highlight }: { label: string; value?: string; highlight?: boolean }) {
   if (!value) return null;
   return (
     <div>
       <span className="font-sans text-[0.65rem] font-bold text-onnavy-muted uppercase tracking-wider block">
         {label}
       </span>
-      <span className="font-sans text-xs sm:text-sm font-semibold text-onnavy mt-0.5 block">
+      <span
+        className={`font-sans text-xs sm:text-sm font-semibold mt-0.5 block truncate ${
+          highlight ? "text-accent font-bold" : "text-onnavy"
+        }`}
+      >
         {value}
       </span>
     </div>

@@ -337,14 +337,6 @@ export default function AdminEnquiriesPage() {
                       <option value="urgent">Priority: Urgent</option>
                     </select>
 
-                    <a
-                      href={`mailto:${e.email}?subject=Three Star Enterprises — Engineering Proposal for ${encodeURIComponent(e.machineType || "Machinery Build")}&body=Dear ${encodeURIComponent(e.name || "Client")},%0D%0A%0D%0AThank you for submitting your Request for Quotation (RFQ) for the ${encodeURIComponent(e.machineType || "custom machine build")}.%0D%0A%0D%0AWe have reviewed your project requirements and are pleased to provide the attached technical quotation.%0D%0A%0D%0ABest regards,%0D%0AThree Star Enterprises`}
-                      className="inline-flex items-center gap-1.5 rounded-xl border border-accent bg-accent/15 px-3.5 py-1.5 font-sans text-xs font-bold text-accent uppercase tracking-wider transition-colors hover:bg-accent hover:text-navy shadow-sm"
-                    >
-                      <Send className="h-3 w-3" />
-                      <span>Issue Proposal ✉</span>
-                    </a>
-
                     <MiniBtn onClick={() => handleToggleRead(e)}>
                       {e.read ? "Mark Unread" : "Mark Read"}
                     </MiniBtn>
@@ -477,13 +469,6 @@ export default function AdminEnquiriesPage() {
               </div>
 
               <div className="flex items-center gap-2">
-                <a
-                  href={`mailto:${viewingEnquiry.email}?subject=Three Star Enterprises — Engineering Proposal for ${encodeURIComponent(viewingEnquiry.machineType || "Machinery Build")}&body=Dear ${encodeURIComponent(viewingEnquiry.name || "Client")},%0D%0A%0D%0AThank you for submitting your Request for Quotation (RFQ) for the ${encodeURIComponent(viewingEnquiry.machineType || "custom machine build")}.%0D%0A%0D%0AWe have reviewed your project requirements and are pleased to provide the attached technical quotation.%0D%0A%0D%0ABest regards,%0D%0AThree Star Enterprises`}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-accent bg-accent px-4 py-2 font-sans text-xs font-bold text-navy uppercase tracking-wider transition-colors hover:bg-navy hover:text-onnavy shadow-sm"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                  <span>Issue Formal Proposal ✉</span>
-                </a>
                 <MiniBtn onClick={() => setViewingEnquiry(null)}>Close</MiniBtn>
               </div>
             </div>

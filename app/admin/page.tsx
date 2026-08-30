@@ -17,6 +17,7 @@ import {
   HardDrive,
   ExternalLink,
   ChevronRight,
+  Star,
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -29,13 +30,15 @@ export default function AdminDashboardPage() {
     testimonials,
     contacts,
     enquiries,
+    feedback,
     fetchProjects,
     fetchGallery,
     fetchContacts,
     fetchEnquiries,
+    fetchFeedback,
   } = useSite();
 
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState<any>(null);
   const [statsLoading, setStatsLoading] = useState(false);
   const [statsError, setStatsError] = useState("");
   const [lastRefreshed, setLastRefreshed] = useState("");
@@ -55,7 +58,8 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     loadStats();
-  }, []);
+    fetchFeedback();
+  }, [fetchFeedback]);
 
   const refreshAll = () => {
     loadStats();
@@ -63,11 +67,13 @@ export default function AdminDashboardPage() {
     fetchGallery();
     fetchContacts();
     fetchEnquiries();
+    fetchFeedback();
   };
 
   const featured = projects.filter((p) => p.featured).length;
   const unreadContacts = contacts?.filter((c) => !c.read).length || 0;
   const unreadEnquiries = enquiries?.filter((e) => !e.read).length || 0;
+  const pendingFeedbackCount = feedback.filter((f) => !f.isApproved && f.status !== "approved").length;
   const recentEnquiries = enquiries.slice(0, 4);
   const recentContacts = contacts.slice(0, 4);
 
@@ -77,7 +83,7 @@ export default function AdminDashboardPage() {
       <AdminHead
         title="Overview & Activity Dashboard"
         eyebrow="Dashboard Overview"
-        intro="Welcome to the Three Star Enterprises Admin Panel. Review recent quotation requests, incoming client messages, portfolio machines, and workshop photos."
+        intro="Welcome to the Three Star Enterprises Admin Panel. Review recent quotation requests, incoming client messages, portfolio machines, customer reviews, and workshop photos."
         action={
           <div className="flex flex-wrap items-center gap-3">
             {lastRefreshed && (
@@ -93,7 +99,7 @@ export default function AdminDashboardPage() {
       />
 
       {/* KPI Metrics HUD */}
-      <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-2 lg:grid-cols-4 rounded-3xl overflow-hidden shadow-sm">
+      <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-3 lg:grid-cols-5 rounded-3xl overflow-hidden shadow-sm">
         <Stat
           label="Machine Quotes (RFQs)"
           value={stats ? stats.enquiries : enquiries.length}
@@ -111,6 +117,14 @@ export default function AdminDashboardPage() {
         />
 
         <Stat
+          label="Client Feedback"
+          value={stats?.feedback !== undefined ? stats.feedback : feedback.length}
+          note={`${pendingFeedbackCount} pending moderation`}
+          icon={<Star className="h-6 w-6 text-amber-400" />}
+          tone={pendingFeedbackCount > 0 ? "accent" : "default"}
+        />
+
+        <Stat
           label="Delivered Machines"
           value={stats ? stats.projects : projects.length}
           note={`${featured} featured in spotlight`}
@@ -120,7 +134,7 @@ export default function AdminDashboardPage() {
         <Stat
           label="Workshop Photos"
           value={gallery.length}
-          note="High-resolution photos"
+          note="Shop-Floor Archive"
           icon={<ImageIcon className="h-6 w-6 text-accent" />}
         />
       </div>
@@ -260,12 +274,6 @@ export default function AdminDashboardPage() {
 
                     <div className="mt-3 flex items-center justify-between pt-2 border-t border-line/60 text-xs text-muted">
                       <span>{new Date(c.createdAt).toLocaleString()}</span>
-                      <a
-                        href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject || "Your Inquiry to Three Star Enterprises")}`}
-                        className="text-accent hover:underline font-bold"
-                      >
-                        Reply via Email ✉
-                      </a>
                     </div>
                   </div>
                 );

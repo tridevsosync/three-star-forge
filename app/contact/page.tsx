@@ -31,6 +31,7 @@ function ContactPageInner() {
   const searchParams = useSearchParams();
   const { company, createContact, openRfqModal } = useSite();
   const [form, setForm] = useState(emptyContactForm);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
@@ -59,25 +60,64 @@ function ContactPageInner() {
     }
   }, [searchParams]);
 
-  const set = (k: string, v: any) => setForm((p) => ({ ...p, [k]: v }));
+  const validateField = (k: string, v: string) => {
+    let err = "";
+    if (k === "name") {
+      if (!v.trim()) err = "Please enter your full name.";
+      else if (v.trim().length < 2) err = "Name must be at least 2 characters.";
+    } else if (k === "email") {
+      if (!v.trim()) err = "Please enter your email address.";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())) {
+        err = "Please enter a valid email address (e.g. name@company.com).";
+      }
+    } else if (k === "phone") {
+      if (v && v.trim()) {
+        const cleanPhone = v.replace(/[\s\-\(\)\.]/g, "");
+        if (!/^\+?\d{7,15}$/.test(cleanPhone)) {
+          err = "Please enter a valid phone number (7 to 15 digits, e.g. +91 9823463655).";
+        }
+      }
+    } else if (k === "message") {
+      if (!v.trim()) err = "Please enter your message or inquiry.";
+      else if (v.trim().length < 10) err = "Message must be at least 10 characters.";
+    }
+    return err;
+  };
+
+  const set = (k: string, v: any) => {
+    setForm((p) => ({ ...p, [k]: v }));
+    const err = validateField(k, v);
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      if (err) next[k] = err;
+      else delete next[k];
+      return next;
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-      setError("Please provide your name, email address, and message.");
+
+    const errors: Record<string, string> = {};
+    const nameErr = validateField("name", form.name);
+    if (nameErr) errors.name = nameErr;
+
+    const emailErr = validateField("email", form.email);
+    if (emailErr) errors.email = emailErr;
+
+    const phoneErr = validateField("phone", form.phone);
+    if (phoneErr) errors.phone = phoneErr;
+
+    const msgErr = validateField("message", form.message);
+    if (msgErr) errors.message = msgErr;
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError("Please correct the errors in the highlighted fields below.");
       return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    if (form.phone && form.phone.trim()) {
-      const cleanPhone = form.phone.replace(/[\s\-\(\)\.]/g, "");
-      if (!/^\+?\d{7,15}$/.test(cleanPhone)) {
-        setError("Please enter a valid phone number (7 to 15 digits, e.g. +91 9823463655).");
-        return;
-      }
-    }
+
+    setFieldErrors({});
     setError("");
     setSubmitting(true);
 
@@ -224,45 +264,69 @@ function ContactPageInner() {
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="tech-label text-muted block">Your Name *</label>
+                        <label className={`tech-label block ${fieldErrors.name ? "text-danger font-bold" : "text-muted"}`}>
+                          Your Name *
+                        </label>
                         {form.name ? (
                           <span className="font-mono text-[0.68rem] text-muted">{form.name.length}/80</span>
                         ) : null}
                       </div>
                       <input
                         type="text"
-                        required
                         maxLength={80}
                         value={form.name}
                         onChange={(e) => set("name", e.target.value)}
                         placeholder="e.g. Rajesh Patil"
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors ${
+                          fieldErrors.name
+                            ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
+                            : "border-line bg-background focus:border-accent"
+                        }`}
                       />
+                      {fieldErrors.name && (
+                        <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
+                          <span>{fieldErrors.name}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="tech-label text-muted block">Email Address *</label>
+                        <label className={`tech-label block ${fieldErrors.email ? "text-danger font-bold" : "text-muted"}`}>
+                          Email Address *
+                        </label>
                         {form.email ? (
                           <span className="font-mono text-[0.68rem] text-muted">{form.email.length}/100</span>
                         ) : null}
                       </div>
                       <input
                         type="email"
-                        required
                         maxLength={100}
                         value={form.email}
                         onChange={(e) => set("email", e.target.value)}
                         placeholder="e.g. r.patil@company.com"
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors ${
+                          fieldErrors.email
+                            ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
+                            : "border-line bg-background focus:border-accent"
+                        }`}
                       />
+                      {fieldErrors.email && (
+                        <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
+                          <span>{fieldErrors.email}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
 
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="tech-label text-muted block">Phone Number</label>
+                        <label className={`tech-label block ${fieldErrors.phone ? "text-danger font-bold" : "text-muted"}`}>
+                          Phone Number
+                        </label>
                         {form.phone ? (
                           <span className="font-mono text-[0.68rem] text-muted">{form.phone.length}/16</span>
                         ) : null}
@@ -273,8 +337,18 @@ function ContactPageInner() {
                         value={form.phone}
                         onChange={(e) => set("phone", e.target.value.replace(/[^0-9+\s\-()]/g, ""))}
                         placeholder="+91 98XXX XXXXX"
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent font-mono"
+                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors font-mono ${
+                          fieldErrors.phone
+                            ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
+                            : "border-line bg-background focus:border-accent"
+                        }`}
                       />
+                      {fieldErrors.phone && (
+                        <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
+                          <span>{fieldErrors.phone}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -312,20 +386,31 @@ function ContactPageInner() {
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="tech-label text-muted block">Message *</label>
+                      <label className={`tech-label block ${fieldErrors.message ? "text-danger font-bold" : "text-muted"}`}>
+                        Message *
+                      </label>
                       <span className="font-mono text-[0.68rem] text-muted">
                         {form.message.length} / 1500
                       </span>
                     </div>
                     <textarea
-                      required
                       rows={5}
                       maxLength={1500}
                       value={form.message}
                       onChange={(e) => set("message", e.target.value)}
                       placeholder="Write your inquiry or message here..."
-                      className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent resize-y"
+                      className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors resize-y ${
+                        fieldErrors.message
+                          ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
+                          : "border-line bg-background focus:border-accent"
+                      }`}
                     />
+                    {fieldErrors.message && (
+                      <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
+                        <span>{fieldErrors.message}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-line">

@@ -301,14 +301,6 @@ export default function AdminContactsPage() {
                       <option value="resolved">Resolved</option>
                     </select>
 
-                    <a
-                      href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject || "Your Inquiry to Three Star Enterprises")}`}
-                      className="inline-flex items-center gap-1.5 rounded-xl border border-accent/40 bg-accent/10 px-3.5 py-1.5 text-xs font-bold text-accent uppercase tracking-wider transition-colors hover:bg-accent hover:text-navy font-sans"
-                    >
-                      <Send className="h-3 w-3" />
-                      <span>Reply via Email</span>
-                    </a>
-
                     <MiniBtn onClick={() => handleToggleRead(c)}>
                       {c.read ? "Mark Unread" : "Mark Read"}
                     </MiniBtn>
@@ -412,13 +404,6 @@ export default function AdminContactsPage() {
               </div>
 
               <div className="flex items-center gap-2">
-                <a
-                  href={`mailto:${viewingContact.email}?subject=Re: ${encodeURIComponent(viewingContact.subject || "Your Inquiry to Three Star Enterprises")}`}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-accent bg-accent px-4 py-2 font-sans text-xs font-bold text-navy uppercase tracking-wider transition-colors hover:bg-navy hover:text-onnavy shadow-sm"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                  <span>Reply via Email ✉</span>
-                </a>
                 <MiniBtn onClick={() => setViewingContact(null)}>Close</MiniBtn>
               </div>
             </div>

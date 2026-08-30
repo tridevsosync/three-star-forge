@@ -13,6 +13,7 @@ import {
 import { GALLERY_CATEGORIES } from "@/data/site";
 import { useSite } from "@/store/site-store";
 import { Eye, Trash2, Edit, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { ImageMetaBadge } from "@/components/site/ImageMetaBadge";
 
 function emptyItem(defaultCat = "Machines") {
   return {
@@ -796,23 +797,26 @@ export default function AdminGalleryPage() {
                         )}
                       </div>
                       {editing.image && (
-                        <div className="p-2.5 rounded-xl border border-success/30 bg-success/10 flex items-center justify-between gap-2 text-xs text-success font-medium">
-                          <div className="flex items-center gap-2 truncate">
-                            <span className="shrink-0 font-bold">✓ Attached:</span>
-                            <span className="truncate max-w-[200px] text-foreground/80">{editing.image}</span>
+                        <div className="space-y-2">
+                          <ImageMetaBadge
+                            src={editing.image}
+                            variant="upload-preview"
+                            onChange={() => !isUploading && fileInputRef.current?.click()}
+                          />
+                          <div className="flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditing({ ...editing, image: "", cloudinaryPublicId: "" });
+                                if (fileInputRef.current) fileInputRef.current.value = "";
+                              }}
+                              className="px-3 py-1 rounded-xl border border-danger/40 bg-danger/10 text-danger hover:bg-danger hover:text-white transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
+                              title="Remove attached image"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              <span>Remove Image</span>
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditing({ ...editing, image: "", cloudinaryPublicId: "" });
-                              if (fileInputRef.current) fileInputRef.current.value = "";
-                            }}
-                            className="shrink-0 px-2.5 py-1 rounded-lg border border-danger/40 bg-danger/10 text-danger hover:bg-danger hover:text-white transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer"
-                            title="Remove attached image"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                            <span>Remove Image</span>
-                          </button>
                         </div>
                       )}
                     </div>
@@ -820,7 +824,7 @@ export default function AdminGalleryPage() {
 
                   {/* Custom URL */}
                   {imageMode === "url" && (
-                    <div className="mt-3 space-y-1.5">
+                    <div className="mt-3 space-y-2">
                       <div className="flex gap-2">
                         <input
                           type="url"
@@ -840,6 +844,9 @@ export default function AdminGalleryPage() {
                           </button>
                         )}
                       </div>
+                      {editing.image && (
+                        <ImageMetaBadge src={editing.image} variant="upload-preview" />
+                      )}
                       <p className="text-[0.68rem] text-muted">Paste any valid public image link (HTTPS).</p>
                     </div>
                   )}
@@ -904,6 +911,10 @@ export default function AdminGalleryPage() {
                       )}
                     </div>
                   </div>
+
+                  {editing.image && (
+                    <ImageMetaBadge src={editing.image} variant="panel" className="mt-3" />
+                  )}
 
                   <div className="mt-3 space-y-1">
                     <span className="tech-label text-accent">{isAddingNewCat && customCat ? customCat : editing.category}</span>
@@ -1074,11 +1085,14 @@ export default function AdminGalleryPage() {
                         </button>
                       </div>
 
-                      {/* Category Label */}
-                      <div className="absolute bottom-2.5 left-2.5">
-                        <span className="rounded-full bg-navy/90 px-2.5 py-0.5 text-[0.65rem] font-bold text-accent border border-accent/30">
+                      {/* Category Label & Image Size Pill */}
+                      <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between gap-2 pointer-events-none">
+                        <span className="rounded-full bg-navy/90 px-2.5 py-0.5 text-[0.65rem] font-bold text-accent border border-accent/30 pointer-events-auto">
                           {g.category}
                         </span>
+                        {g.image && (
+                          <ImageMetaBadge src={g.image} variant="pill" className="pointer-events-auto shadow-md" />
+                        )}
                       </div>
                     </div>
 
@@ -1214,6 +1228,11 @@ export default function AdminGalleryPage() {
                             <span className="font-bold cursor-pointer hover:text-accent" onClick={() => startEditing(g)} title="Click to edit">
                               {g.title}
                             </span>
+                            {g.image && (
+                              <div className="mt-1">
+                                <ImageMetaBadge src={g.image} variant="pill" />
+                              </div>
+                            )}
                             {g.description && (
                               <p className="text-xs text-muted truncate max-w-sm mt-0.5">{g.description}</p>
                             )}
@@ -1486,6 +1505,11 @@ export default function AdminGalleryPage() {
                 </span>
               </div>
             </div>
+
+            {/* File Specs Panel */}
+            {viewingPhoto.image && (
+              <ImageMetaBadge src={viewingPhoto.image} variant="panel" />
+            )}
 
             {/* Description / Caption */}
             {viewingPhoto.description && (

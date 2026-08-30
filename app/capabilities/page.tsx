@@ -31,7 +31,7 @@ import {
 
 export default function CapabilitiesPage() {
   const router = useRouter();
-  const { capabilities, projects } = useSite();
+  const { capabilities, projects, home } = useSite();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -81,15 +81,24 @@ export default function CapabilitiesPage() {
     }));
   }, [filtered]);
 
-  // Machine builds for the spec matrix (Induction scanners & SPMs)
+  // Machine builds for the spec matrix (Induction scanners & SPMs) dynamically selected and ordered
   const inductionMachines = useMemo(() => {
+    const selectedIds = home?.inductionSpecProjectIds;
+    if (Array.isArray(selectedIds) && selectedIds.length > 0) {
+      const ordered: any[] = [];
+      selectedIds.forEach((id: string) => {
+        const found = projects.find((p) => p.id === id || (p as any)._id === id);
+        if (found) ordered.push(found);
+      });
+      if (ordered.length > 0) return ordered;
+    }
     return projects.filter(
       (p) =>
         p.category === "Induction Hardening" ||
         p.category === "Induction Hardening Machines" ||
         p.category === "Special Purpose Machines (SPM)",
     );
-  }, [projects]);
+  }, [projects, home?.inductionSpecProjectIds]);
 
   const resetFilters = () => {
     setSelectedCategory("All");

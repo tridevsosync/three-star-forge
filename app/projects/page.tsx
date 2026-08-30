@@ -517,7 +517,7 @@ export default function ProjectsPage() {
                         <span className="font-sans text-[0.68rem] font-bold text-accent uppercase tracking-wider block">
                           {p.industry || "Custom Machine"}
                         </span>
-                        <h3 className="font-display text-base font-bold text-onnavy leading-snug group-hover:text-accent transition-colors">
+                        <h3 className="font-display text-base font-bold text-onnavy leading-snug group-hover:text-accent transition-colors truncate">
                           {p.title}
                         </h3>
                       </div>

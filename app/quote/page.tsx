@@ -47,6 +47,7 @@ function QuoteForm() {
   const searchParams = useSearchParams();
   const { createEnquiry } = useSite();
   const [form, setForm] = useState(emptyRfq);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submittedRfq, setSubmittedRfq] = useState(null);
@@ -76,31 +77,72 @@ function QuoteForm() {
     }
   }, [searchParams]);
 
-  const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+  const validateField = (k: string, v: string) => {
+    let err = "";
+    if (k === "name") {
+      if (!v.trim()) err = "Please enter your full name.";
+      else if (v.trim().length < 2) err = "Name must be at least 2 characters.";
+    } else if (k === "email") {
+      if (!v.trim()) err = "Please enter your work email address.";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())) {
+        err = "Please enter a valid email address (e.g. name@company.com).";
+      }
+    } else if (k === "phone") {
+      if (!v.trim()) {
+        err = "Please enter your phone number.";
+      } else {
+        const cleanPhone = v.replace(/[\s\-\(\)\.]/g, "");
+        if (!/^\+?\d{7,15}$/.test(cleanPhone)) {
+          err = "Please enter a valid phone number (7 to 15 digits, e.g. +91 9823463655).";
+        }
+      }
+    } else if (k === "company") {
+      if (!v.trim()) err = "Please enter your company or enterprise name.";
+      else if (v.trim().length < 2) err = "Company name must be at least 2 characters.";
+    } else if (k === "message") {
+      if (!v.trim()) err = "Please describe your machine specifications or scope.";
+      else if (v.trim().length < 10) err = "Technical scope must be at least 10 characters.";
+    }
+    return err;
+  };
+
+  const set = (k: string, v: any) => {
+    setForm((p) => ({ ...p, [k]: v }));
+    const err = validateField(k, v);
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      if (err) next[k] = err;
+      else delete next[k];
+      return next;
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      !form.name.trim() ||
-      !form.email.trim() ||
-      !form.phone.trim() ||
-      !form.company.trim() ||
-      !form.message.trim()
-    ) {
-      setError(
-        "Please fill all required fields (Name, Email, Phone, Company, Project Specifications).",
-      );
+
+    const errors: Record<string, string> = {};
+    const nameErr = validateField("name", form.name);
+    if (nameErr) errors.name = nameErr;
+
+    const emailErr = validateField("email", form.email);
+    if (emailErr) errors.email = emailErr;
+
+    const phoneErr = validateField("phone", form.phone);
+    if (phoneErr) errors.phone = phoneErr;
+
+    const companyErr = validateField("company", form.company);
+    if (companyErr) errors.company = companyErr;
+
+    const msgErr = validateField("message", form.message);
+    if (msgErr) errors.message = msgErr;
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError("Please fill all required fields correctly before submitting.");
       return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    const cleanPhone = form.phone.replace(/[\s\-\(\)\.]/g, "");
-    if (!/^\+?\d{7,15}$/.test(cleanPhone)) {
-      setError("Please enter a valid phone or mobile number (7 to 15 digits, e.g. +91 9823463655).");
-      return;
-    }
+
+    setFieldErrors({});
     setError("");
     setSubmitting(true);
 
@@ -235,20 +277,31 @@ function QuoteForm() {
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="tech-label text-muted block">Full Name *</label>
+                        <label className={`tech-label block ${fieldErrors.name ? "text-danger font-bold" : "text-muted"}`}>
+                          Full Name *
+                        </label>
                         {form.name ? (
                           <span className="font-mono text-[0.68rem] text-muted">{form.name.length}/80</span>
                         ) : null}
                       </div>
                       <input
                         type="text"
-                        required
                         maxLength={80}
                         value={form.name}
                         onChange={(e) => set("name", e.target.value)}
                         placeholder="e.g. Vikram Sharma"
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors ${
+                          fieldErrors.name
+                            ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
+                            : "border-line bg-background focus:border-accent"
+                        }`}
                       />
+                      {fieldErrors.name && (
+                        <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
+                          <span>{fieldErrors.name}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -270,56 +323,89 @@ function QuoteForm() {
 
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="tech-label text-muted block">Work Email Address *</label>
+                        <label className={`tech-label block ${fieldErrors.email ? "text-danger font-bold" : "text-muted"}`}>
+                          Work Email Address *
+                        </label>
                         {form.email ? (
                           <span className="font-mono text-[0.68rem] text-muted">{form.email.length}/100</span>
                         ) : null}
                       </div>
                       <input
                         type="email"
-                        required
                         maxLength={100}
                         value={form.email}
                         onChange={(e) => set("email", e.target.value)}
                         placeholder="e.g. v.sharma@company.com"
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors ${
+                          fieldErrors.email
+                            ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
+                            : "border-line bg-background focus:border-accent"
+                        }`}
                       />
+                      {fieldErrors.email && (
+                        <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
+                          <span>{fieldErrors.email}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="tech-label text-muted block">Direct Phone / Mobile *</label>
+                        <label className={`tech-label block ${fieldErrors.phone ? "text-danger font-bold" : "text-muted"}`}>
+                          Direct Phone / Mobile *
+                        </label>
                         {form.phone ? (
                           <span className="font-mono text-[0.68rem] text-muted">{form.phone.length}/16</span>
                         ) : null}
                       </div>
                       <input
                         type="tel"
-                        required
                         maxLength={16}
                         value={form.phone}
                         onChange={(e) => set("phone", e.target.value.replace(/[^0-9+\s\-()]/g, ""))}
                         placeholder="+91 98234 XXXXX"
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent font-mono"
+                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors font-mono ${
+                          fieldErrors.phone
+                            ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
+                            : "border-line bg-background focus:border-accent"
+                        }`}
                       />
+                      {fieldErrors.phone && (
+                        <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
+                          <span>{fieldErrors.phone}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="tech-label text-muted block">Company / Enterprise Name *</label>
+                        <label className={`tech-label block ${fieldErrors.company ? "text-danger font-bold" : "text-muted"}`}>
+                          Company / Enterprise Name *
+                        </label>
                         {form.company ? (
                           <span className="font-mono text-[0.68rem] text-muted">{form.company.length}/100</span>
                         ) : null}
                       </div>
                       <input
                         type="text"
-                        required
                         maxLength={100}
                         value={form.company}
                         onChange={(e) => set("company", e.target.value)}
                         placeholder="e.g. Precision Components Ltd."
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors ${
+                          fieldErrors.company
+                            ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
+                            : "border-line bg-background focus:border-accent"
+                        }`}
                       />
+                      {fieldErrors.company && (
+                        <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
+                          <span>{fieldErrors.company}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -402,7 +488,7 @@ function QuoteForm() {
 
                     <div className="sm:col-span-2">
                       <div className="flex items-center justify-between mb-2">
-                        <label className="tech-label text-muted block">
+                        <label className={`tech-label block ${fieldErrors.message ? "text-danger font-bold" : "text-muted"}`}>
                           Technical Specifications & Scope Details *
                         </label>
                         <span className="font-mono text-[0.68rem] text-muted">
@@ -410,14 +496,23 @@ function QuoteForm() {
                         </span>
                       </div>
                       <textarea
-                        required
                         rows={6}
                         maxLength={3000}
                         value={form.message}
                         onChange={(e) => set("message", e.target.value)}
                         placeholder="Describe your technical requirements, component drawings, PLC/CNC preferences, hardening depth tolerances, or turnkey assembly scope..."
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent resize-y font-mono text-xs"
+                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors resize-y font-mono text-xs ${
+                          fieldErrors.message
+                            ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
+                            : "border-line bg-background focus:border-accent"
+                        }`}
                       />
+                      {fieldErrors.message && (
+                        <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
+                          <span>{fieldErrors.message}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>

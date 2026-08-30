@@ -227,12 +227,16 @@ export default function GalleryPage() {
                         </strong>
                       </div>
                       <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
-                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Facility</span>
-                        <strong className="font-display text-xs font-bold text-onnavy">Pune Works</strong>
+                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Status</span>
+                        <strong className="font-display text-xs font-bold text-onnavy block">
+                          Hero Build
+                        </strong>
                       </div>
                       <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
-                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Verification</span>
-                        <strong className="font-display text-xs font-bold text-onnavy">100% FAT</strong>
+                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Quality</span>
+                        <strong className="font-display text-xs font-bold text-accent block">
+                          HD Photo
+                        </strong>
                       </div>
                     </div>
                   </div>

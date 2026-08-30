@@ -251,9 +251,6 @@ export function CtaBand() {
             <Btn to="/quote" variant="primary" className="w-full sm:w-auto text-center font-bold">
               {home.ctaButton || "Get a Free Quote"}
             </Btn>
-            <Btn to="/projects" variant="light" className="w-full sm:w-auto text-center">
-              See Our Work
-            </Btn>
           </div>
         </div>
       </Container>

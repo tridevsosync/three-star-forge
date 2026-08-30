@@ -4,6 +4,7 @@ import Contact from "@/models/Contact";
 import Enquiry from "@/models/Enquiry";
 import Project from "@/models/Project";
 import Content from "@/models/Content";
+import Feedback from "@/models/Feedback";
 import { requireAdmin } from "@/lib/admin-auth";
 
 export async function GET(request: NextRequest) {
@@ -11,15 +12,25 @@ export async function GET(request: NextRequest) {
   if (unauthorized) return unauthorized;
   try {
     await connectToDatabase();
-    const [projects, content, enquiries, contacts, latestProject, latestContent] =
-      await Promise.all([
-        Project.countDocuments(),
-        Content.countDocuments(),
-        Enquiry.countDocuments(),
-        Contact.countDocuments(),
-        Project.findOne().sort({ updatedAt: -1 }).select("updatedAt").lean(),
-        Content.findOne().sort({ updatedAt: -1 }).select("updatedAt").lean(),
-      ]);
+    const [
+      projects,
+      content,
+      enquiries,
+      contacts,
+      feedback,
+      pendingFeedback,
+      latestProject,
+      latestContent,
+    ] = await Promise.all([
+      Project.countDocuments(),
+      Content.countDocuments(),
+      Enquiry.countDocuments(),
+      Contact.countDocuments(),
+      Feedback.countDocuments().catch(() => 0),
+      Feedback.countDocuments({ $or: [{ isApproved: false }, { status: "pending" }] }).catch(() => 0),
+      Project.findOne().sort({ updatedAt: -1 }).select("updatedAt").lean(),
+      Content.findOne().sort({ updatedAt: -1 }).select("updatedAt").lean(),
+    ]);
     return NextResponse.json({
       success: true,
       data: {
@@ -27,6 +38,8 @@ export async function GET(request: NextRequest) {
         content,
         enquiries,
         contacts,
+        feedback,
+        pendingFeedback,
         lastProjectUpdated: (latestProject as any)?.updatedAt || null,
         lastContentUpdated: (latestContent as any)?.updatedAt || null,
       },

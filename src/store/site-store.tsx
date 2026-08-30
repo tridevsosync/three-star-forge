@@ -36,6 +36,7 @@ import {
   FaqItem,
   ContactMessage,
   EnquiryRFQ,
+  FeedbackItem,
 } from "@/types";
 
 export interface SiteState {
@@ -52,6 +53,8 @@ export interface SiteState {
   faqs: FaqItem[];
   contacts: ContactMessage[];
   enquiries: EnquiryRFQ[];
+  feedback: FeedbackItem[];
+  publicFeedback: FeedbackItem[];
 }
 
 export interface SiteContextValue extends SiteState {
@@ -62,6 +65,7 @@ export interface SiteContextValue extends SiteState {
   contentLoading: boolean;
   contactsLoading: boolean;
   enquiriesLoading: boolean;
+  feedbackLoading: boolean;
   isRfqOpen: boolean;
   rfqInitialData: any;
   openRfqModal: (initial?: any) => void;
@@ -89,6 +93,11 @@ export interface SiteContextValue extends SiteState {
   createEnquiry: (enquiryData: any) => Promise<{ success: boolean; item?: any; message?: string; error?: string }>;
   updateEnquiry: (id: string, updates: any) => Promise<{ success: boolean; item?: any; error?: string }>;
   deleteEnquiry: (id: string) => Promise<{ success: boolean; error?: string }>;
+  fetchFeedback: () => Promise<void>;
+  fetchPublicFeedback: () => Promise<void>;
+  submitFeedback: (data: any) => Promise<{ success: boolean; item?: any; message?: string; error?: string }>;
+  toggleFeedbackApproval: (id: string, isApproved?: boolean) => Promise<{ success: boolean; item?: any; error?: string }>;
+  deleteFeedback: (id: string) => Promise<{ success: boolean; error?: string }>;
   usedImages: string[];
   reset: () => void;
 }
@@ -107,6 +116,8 @@ const initialState: SiteState = {
   faqs: FAQS as FaqItem[],
   contacts: [],
   enquiries: [],
+  feedback: [],
+  publicFeedback: [],
 };
 
 const SiteContext = createContext<SiteContextValue | null>(null);
@@ -122,6 +133,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   const [contentLoading, setContentLoading] = useState(false);
   const [contactsLoading, setContactsLoading] = useState(false);
   const [enquiriesLoading, setEnquiriesLoading] = useState(false);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
 
   const fetchProjects = useCallback(async () => {
     setProjectsLoading(true);
@@ -245,6 +257,35 @@ export function SiteProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Fetch Feedback from database (Admin)
+  const fetchFeedback = useCallback(async () => {
+    setFeedbackLoading(true);
+    try {
+      const res = await fetch("/api/feedback", { cache: "no-store" });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setState((prev) => ({ ...prev, feedback: data.data }));
+      }
+    } catch (err) {
+      console.warn("Could not fetch admin feedback:", err);
+    } finally {
+      setFeedbackLoading(false);
+    }
+  }, []);
+
+  // Fetch Public Feedback testimonials from database (Public)
+  const fetchPublicFeedback = useCallback(async () => {
+    try {
+      const res = await fetch("/api/feedback/public", { cache: "no-store" });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setState((prev) => ({ ...prev, publicFeedback: data.data }));
+      }
+    } catch (err) {
+      console.warn("Could not fetch public feedback:", err);
+    }
+  }, []);
+
   useEffect(() => {
     try {
       const raw = window.sessionStorage.getItem(STORAGE_KEY);
@@ -270,7 +311,8 @@ export function SiteProvider({ children }: { children: ReactNode }) {
     fetchGallery();
     fetchContacts();
     fetchEnquiries();
-  }, [fetchProjects, fetchContent, fetchGallery, fetchContacts, fetchEnquiries]);
+    fetchPublicFeedback();
+  }, [fetchProjects, fetchContent, fetchGallery, fetchContacts, fetchEnquiries, fetchPublicFeedback]);
 
   useEffect(() => {
     try {
@@ -576,6 +618,65 @@ export function SiteProvider({ children }: { children: ReactNode }) {
     return { success: true };
   }, []);
 
+  const submitFeedback = useCallback(async (feedbackData: any) => {
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(feedbackData),
+      });
+      const data = await res.json();
+      if (data.success && data.item) {
+        setState((prev) => ({ ...prev, feedback: [data.item, ...prev.feedback] }));
+        return { success: true, item: data.item, message: data.message };
+      }
+      return { success: false, error: data.error };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Failed to submit feedback." };
+    }
+  }, []);
+
+  const toggleFeedbackApproval = useCallback(async (id: string, isApproved?: boolean) => {
+    try {
+      const res = await fetch(`/api/feedback/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(typeof isApproved === "boolean" ? { isApproved } : {}),
+      });
+      const data = await res.json();
+      if (data.success && data.item) {
+        setState((prev) => ({
+          ...prev,
+          feedback: prev.feedback.map((f) =>
+            f.id === id || f._id === id ? data.item : f,
+          ),
+          publicFeedback: data.item.isApproved
+            ? [data.item, ...prev.publicFeedback.filter((f) => f.id !== id && f._id !== id)]
+            : prev.publicFeedback.filter((f) => f.id !== id && f._id !== id),
+        }));
+        return { success: true, item: data.item };
+      }
+      return { success: false, error: data.error };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Failed to toggle feedback approval." };
+    }
+  }, []);
+
+  const deleteFeedback = useCallback(async (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      feedback: prev.feedback.filter((f) => f.id !== id && f._id !== id),
+      publicFeedback: prev.publicFeedback.filter((f) => f.id !== id && f._id !== id),
+    }));
+    try {
+      const res = await fetch(`/api/feedback/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      return { success: Boolean(data.success) };
+    } catch {
+      return { success: true };
+    }
+  }, []);
+
   const login = useCallback(async (email?: string, password?: string): Promise<boolean> => {
     try {
       const res = await fetch("/api/auth/login", {
@@ -623,6 +724,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       contentLoading,
       contactsLoading,
       enquiriesLoading,
+      feedbackLoading,
       isRfqOpen,
       rfqInitialData,
       openRfqModal,
@@ -649,6 +751,11 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       createEnquiry,
       updateEnquiry,
       deleteEnquiry,
+      fetchFeedback,
+      fetchPublicFeedback,
+      submitFeedback,
+      toggleFeedbackApproval,
+      deleteFeedback,
       usedImages,
       reset,
     }),
@@ -662,6 +769,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       contentLoading,
       contactsLoading,
       enquiriesLoading,
+      feedbackLoading,
       isRfqOpen,
       rfqInitialData,
       openRfqModal,
@@ -688,6 +796,11 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       createEnquiry,
       updateEnquiry,
       deleteEnquiry,
+      fetchFeedback,
+      fetchPublicFeedback,
+      submitFeedback,
+      toggleFeedbackApproval,
+      deleteFeedback,
       usedImages,
       reset,
     ],
@@ -706,6 +819,7 @@ const defaultContextValue: SiteContextValue = {
   contentLoading: false,
   contactsLoading: false,
   enquiriesLoading: false,
+  feedbackLoading: false,
   isRfqOpen: false,
   rfqInitialData: null,
   openRfqModal: () => {},
@@ -732,6 +846,11 @@ const defaultContextValue: SiteContextValue = {
   createEnquiry: async () => ({ success: false }),
   updateEnquiry: async () => ({ success: false }),
   deleteEnquiry: async () => ({ success: false }),
+  fetchFeedback: async () => {},
+  fetchPublicFeedback: async () => {},
+  submitFeedback: async () => ({ success: false }),
+  toggleFeedbackApproval: async () => ({ success: false }),
+  deleteFeedback: async () => ({ success: false }),
   usedImages: [],
   reset: () => {},
 };

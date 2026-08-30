@@ -106,6 +106,7 @@ export interface HomeData {
   ctaHeading?: string;
   ctaButton?: string;
   clientsHeading?: string;
+  inductionSpecProjectIds?: string[];
 }
 
 export interface ServiceItem {
@@ -168,13 +169,38 @@ export interface EngagementModelItem {
   image?: string;
 }
 
+export interface FeedbackItem {
+  id?: string;
+  _id?: string;
+  fullName: string;
+  company?: string;
+  rating: number;
+  category: string;
+  message: string;
+  avatarUrl?: string;
+  cloudinaryPublicId?: string;
+  type?: "client" | "general";
+  isApproved: boolean;
+  status: "pending" | "approved";
+  submittedDate?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface TestimonialItem {
   id?: string;
   _id?: string;
   author: string;
+  fullName?: string;
   role: string;
+  company?: string;
   quote: string;
+  message?: string;
+  rating?: number;
+  category?: string;
+  avatarUrl?: string;
   enabled?: boolean;
+  isApproved?: boolean;
 }
 
 export interface ServicesSpotlight {

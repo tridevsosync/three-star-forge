@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { IMAGES } from "@/data/images";
 import {
-  AdminHead,
   MiniBtn,
   Panel,
   TextField,
@@ -14,6 +13,7 @@ import {
   ConfirmDeleteModal,
 } from "@/components/site/admin-ui";
 import { useSite } from "@/store/site-store";
+import { ImageMetaBadge } from "@/components/site/ImageMetaBadge";
 import {
   Home,
   Wrench,
@@ -136,6 +136,101 @@ function AdminContentPageInner() {
     } finally {
       setSavingSection(false);
     }
+  };
+
+  // =========================================================================
+  // INDUCTION HARDENING TECHNICAL SPECS MATRIX SELECTION & REORDERING
+  // =========================================================================
+  const [selectedAddProjectId, setSelectedAddProjectId] = useState<string>("");
+  const [savingMatrixOrder, setSavingMatrixOrder] = useState(false);
+
+  // Compute active matrix project items
+  const matrixProjects = useMemo(() => {
+    const currentList = Array.isArray(projects) ? projects : [];
+    const selectedIds = home?.inductionSpecProjectIds;
+
+    if (Array.isArray(selectedIds) && selectedIds.length > 0) {
+      const ordered: any[] = [];
+      selectedIds.forEach((id: string) => {
+        const found = currentList.find((p: any) => p.id === id || p._id === id);
+        if (found) ordered.push(found);
+      });
+      return ordered;
+    }
+
+    // Default fallback: all induction and SPM projects
+    return currentList.filter(
+      (p: any) =>
+        p.category?.toLowerCase().includes("induction") ||
+        p.title?.toLowerCase().includes("induction") ||
+        p.category === "Special Purpose Machines (SPM)",
+    );
+  }, [projects, home?.inductionSpecProjectIds]);
+
+  // Projects from database available to be added to the matrix (not currently in matrix)
+  const availableProjectsToAdd = useMemo(() => {
+    const activeIds = new Set(matrixProjects.map((p: any) => p.id || p._id));
+    return (Array.isArray(projects) ? projects : []).filter(
+      (p: any) => !activeIds.has(p.id || p._id),
+    );
+  }, [projects, matrixProjects]);
+
+  const saveMatrixProjectIds = async (newIds: string[]) => {
+    const updatedHome = { ...home, inductionSpecProjectIds: newIds };
+    update("home", updatedHome);
+    setSavingMatrixOrder(true);
+    try {
+      const res = await fetch("/api/content/home", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedHome),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || "Save failed");
+      flash("✓ Updated Technical Specification Matrix selection & sequence!");
+    } catch (err: any) {
+      flash("Error saving matrix layout: " + err.message);
+    } finally {
+      setSavingMatrixOrder(false);
+    }
+  };
+
+  const handleAddProjectToMatrix = () => {
+    if (!selectedAddProjectId) return;
+    const currentIds = matrixProjects.map((p: any) => p.id || p._id);
+    if (!currentIds.includes(selectedAddProjectId)) {
+      const nextIds = [...currentIds, selectedAddProjectId];
+      saveMatrixProjectIds(nextIds);
+      setSelectedAddProjectId("");
+    }
+  };
+
+  const handleMoveMatrixProject = (index: number, direction: "left" | "right") => {
+    const targetIndex = direction === "left" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= matrixProjects.length) return;
+    const currentIds = matrixProjects.map((p: any) => p.id || p._id);
+    const temp = currentIds[index];
+    currentIds[index] = currentIds[targetIndex];
+    currentIds[targetIndex] = temp;
+    saveMatrixProjectIds(currentIds);
+  };
+
+  const handleRemoveProjectFromMatrix = (projectId: string) => {
+    const currentIds = matrixProjects.map((p: any) => p.id || p._id);
+    const nextIds = currentIds.filter((id: string) => id !== projectId);
+    saveMatrixProjectIds(nextIds);
+  };
+
+  const handleResetMatrixOrder = () => {
+    const defaultIds = (Array.isArray(projects) ? projects : [])
+      .filter(
+        (p: any) =>
+          p.category?.toLowerCase().includes("induction") ||
+          p.title?.toLowerCase().includes("induction") ||
+          p.category === "Special Purpose Machines (SPM)",
+      )
+      .map((p: any) => p.id || p._id);
+    saveMatrixProjectIds(defaultIds);
   };
 
   // Toggle Featured status for a project
@@ -368,53 +463,7 @@ function AdminContentPageInner() {
         </div>
       )}
 
-      {/* Header */}
-      <AdminHead
-        title="Website Content & Pages Manager"
-        eyebrow="Page-by-Page Editor"
-        intro="Select any page below to view and edit all text, machine showcases, photos, and customer sections exactly as they appear on the live website."
-        action={
-          <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href={PAGE_TABS.find((t) => t.key === activeTab)?.href || "/"}
-              target="_blank"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-4 py-2.5 font-sans text-xs font-semibold text-foreground hover:border-accent hover:text-accent transition-all"
-            >
-              <span>Preview Selected Page</span>
-              <ExternalLink className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-        }
-      />
 
-      {/* Page Selector Tabs Strip */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-line pb-4">
-        {PAGE_TABS.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`group inline-flex items-center gap-2.5 rounded-xl border px-4 py-2.5 font-sans text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer ${
-                isActive
-                  ? "border-accent bg-accent text-navy font-bold shadow-md shadow-accent/20"
-                  : "border-line bg-surface text-muted hover:border-accent hover:text-foreground"
-              }`}
-            >
-              <Icon className={`h-4 w-4 ${isActive ? "text-navy" : "text-muted group-hover:text-accent"}`} />
-              <span>{tab.label}</span>
-              <span
-                className={`rounded-full px-2 py-0.5 text-[0.65rem] font-bold ${
-                  isActive ? "bg-navy text-accent" : "bg-background text-muted"
-                }`}
-              >
-                {tab.badge}
-              </span>
-            </button>
-          );
-        })}
-      </div>
 
       {/* ========================================================================= */}
       {/* MODULE 1: HOME PAGE ALL-IN-ONE HUB */}
@@ -1484,29 +1533,170 @@ function AdminContentPageInner() {
             })}
           </div>
 
-          <Panel title="Induction Hardening Technical Specs (Power, Diameters, Stroke)">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {projects
-                .filter((p) => p.category === "Induction Hardening")
-                .map((m, idx) => (
-                  <div key={m.id || idx} className="rounded-2xl border border-line bg-surface p-5">
-                    <span className="rounded-full bg-navy px-2.5 py-0.5 text-[0.65rem] font-bold text-accent">
-                      IH-0{idx + 1}
-                    </span>
-                    <h4 className="mt-3 font-display text-sm font-bold text-foreground">{m.title}</h4>
-                    {m.specs && (
-                      <div className="mt-3 space-y-1.5 border-t border-line pt-3">
-                        {m.specs.slice(0, 3).map((sp: any, spIdx: number) => (
-                          <div key={spIdx} className="flex items-center justify-between text-xs">
-                            <span className="text-muted">{sp.label}</span>
-                            <span className="font-bold text-foreground">{sp.value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+          {/* Dynamic Induction Hardening Technical Specification Matrix Module */}
+          <Panel
+            title="Induction Hardening Technical Specs Matrix (Machine Selection & Sequence)"
+            action={
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleResetMatrixOrder}
+                  disabled={savingMatrixOrder}
+                  className="rounded-xl border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-muted hover:text-foreground hover:border-accent transition cursor-pointer"
+                  title="Reset to default category machines"
+                >
+                  Reset Default
+                </button>
+                <Link
+                  href="/admin/projects"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-bold text-accent hover:bg-accent hover:text-navy transition shadow-xs"
+                >
+                  <span>Projects Studio</span>
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              </div>
+            }
+          >
+            <p className="text-xs text-muted mb-4 font-sans">
+              Choose which machines from your <strong>Projects</strong> appear in the Technical Matrix on <strong>/capabilities</strong> and rearrange their sequence (<strong>IH-01</strong>, <strong>IH-02</strong>, etc.).
+            </p>
+
+            {/* Quick Add Machine Bar */}
+            <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-accent/30 bg-accent/5 p-4">
+              <div className="flex-1 min-w-[240px]">
+                <label className="block text-[0.7rem] font-bold uppercase tracking-wider text-muted mb-1">
+                  Add Machine from Projects
+                </label>
+                <select
+                  value={selectedAddProjectId}
+                  onChange={(e) => setSelectedAddProjectId(e.target.value)}
+                  className="w-full rounded-xl border border-line bg-surface px-3.5 py-2 text-xs font-semibold text-foreground outline-none focus:border-accent"
+                >
+                  <option value="">-- Select a project to add to matrix --</option>
+                  {availableProjectsToAdd.map((p: any) => (
+                    <option key={p.id || p._id} value={p.id || p._id}>
+                      [{p.category || "Project"}] {p.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="pt-4 sm:pt-5">
+                <button
+                  type="button"
+                  disabled={!selectedAddProjectId || savingMatrixOrder}
+                  onClick={handleAddProjectToMatrix}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-xs font-bold text-navy hover:bg-accent-hover transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Add to Matrix</span>
+                </button>
+              </div>
             </div>
+
+            {/* Matrix Cards Grid */}
+            {matrixProjects.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-line p-8 text-center">
+                <p className="text-xs text-muted">No machines currently in the Technical Matrix.</p>
+                <p className="text-[0.7rem] text-muted mt-1">Select a machine from the dropdown above to add it.</p>
+              </div>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {matrixProjects.map((m: any, idx: number) => {
+                  const mId = m.id || m._id;
+                  const rawList =
+                    Array.isArray(m.specs) && m.specs.length > 0
+                      ? m.specs
+                      : Array.isArray(m.parameters) && m.parameters.length > 0
+                        ? m.parameters
+                        : [];
+
+                  const mSpecs = rawList.map((s: any) => ({
+                    label: s.label || s.key || "Parameter",
+                    value: s.value || "Custom",
+                  }));
+
+                  return (
+                    <div
+                      key={mId || idx}
+                      className="group flex flex-col justify-between rounded-2xl border border-line bg-surface p-5 shadow-xs hover:border-accent/60 transition-all"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2 border-b border-line pb-3">
+                          <span className="rounded-full bg-navy px-2.5 py-0.5 text-[0.65rem] font-bold text-accent">
+                            {`IH-0${idx + 1}`}
+                          </span>
+                          <span className="text-[0.68rem] font-bold text-muted uppercase truncate max-w-[140px]">
+                            {m.industry || m.category || "Machinery"}
+                          </span>
+                        </div>
+
+                        <h4 className="mt-3 font-display text-sm font-bold text-foreground group-hover:text-accent transition-colors leading-snug">
+                          {m.title}
+                        </h4>
+
+                        {/* Specs Matrix Preview */}
+                        {mSpecs.length > 0 ? (
+                          <div className="mt-3 space-y-1.5 border-t border-line/60 pt-3">
+                            {mSpecs.slice(0, 3).map((sp: any, spIdx: number) => (
+                              <div
+                                key={spIdx}
+                                className="flex items-center justify-between text-xs rounded-lg bg-background px-2.5 py-1.5 border border-line/40"
+                              >
+                                <span className="text-[0.7rem] font-medium text-muted truncate pr-2">
+                                  {sp.label}
+                                </span>
+                                <span className="font-bold font-mono text-[0.72rem] text-accent truncate">
+                                  {sp.value}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="mt-3 border-t border-line/60 pt-3 text-[0.7rem] text-muted italic">
+                            Specs configured in Projects Studio
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Rearrange & Remove Controls */}
+                      <div className="mt-4 pt-3 border-t border-line flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            disabled={idx === 0 || savingMatrixOrder}
+                            onClick={() => handleMoveMatrixProject(idx, "left")}
+                            className="rounded-lg border border-line bg-background px-2.5 py-1 text-xs font-bold text-muted hover:border-accent hover:text-accent disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                            title="Move Left / Up"
+                          >
+                            ← Move Left
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === matrixProjects.length - 1 || savingMatrixOrder}
+                            onClick={() => handleMoveMatrixProject(idx, "right")}
+                            className="rounded-lg border border-line bg-background px-2.5 py-1 text-xs font-bold text-muted hover:border-accent hover:text-accent disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                            title="Move Right / Down"
+                          >
+                            Move Right →
+                          </button>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveProjectFromMatrix(mId)}
+                          disabled={savingMatrixOrder}
+                          className="rounded-lg border border-line bg-background p-1.5 text-xs text-muted hover:border-danger hover:text-danger transition cursor-pointer"
+                          title="Remove from Matrix (does not delete project)"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </Panel>
         </div>
       )}
@@ -2510,6 +2700,7 @@ function AdminContentPageInner() {
           onConfirm={handleDeleteItem}
         />
       )}
+
     </div>
   );
 }

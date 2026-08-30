@@ -13,6 +13,7 @@ import {
   ConfirmDeleteModal,
 } from "@/components/site/admin-ui";
 import { useSite } from "@/store/site-store";
+import { ImageMetaBadge } from "@/components/site/ImageMetaBadge";
 import {
   Briefcase,
   Plus,
@@ -817,6 +818,9 @@ const DEFAULT_CATEGORIES = [
                       onChange={(v) => setEditing({ ...editing, image: v })}
                       placeholder="https://..."
                     />
+                    {editing.image && (
+                      <ImageMetaBadge src={editing.image} variant="panel" className="mt-2" />
+                    )}
                   </div>
                 </div>
               </div>
@@ -1103,6 +1107,13 @@ const DEFAULT_CATEGORIES = [
                       </span>
                     )}
                   </div>
+
+                  {/* Bottom Image Metadata Pill */}
+                  {p.image && (
+                    <div className="absolute bottom-2.5 right-2.5 z-10">
+                      <ImageMetaBadge src={p.image} variant="pill" className="shadow-md" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Body Content */}

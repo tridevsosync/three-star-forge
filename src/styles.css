@@ -413,3 +413,29 @@
     0 0 0 1px color-mix(in oklab, var(--accent) 40%, transparent),
     0 20px 50px -25px color-mix(in oklab, var(--accent) 60%, transparent);
 }
+
+/* Precision Sleek Scrollbar for Review Cards & Overflows */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--accent) 50%, transparent) color-mix(in oklab, var(--navy-deep) 60%, transparent);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: color-mix(in oklab, var(--navy-deep) 60%, transparent);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--accent) 50%, transparent);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+

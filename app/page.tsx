@@ -14,15 +14,29 @@ import {
   ChevronRight,
   Award,
   Check,
+  Star,
 } from "lucide-react";
+import { FeedbackModal } from "@/components/site/FeedbackModal";
 
 export default function HomePage() {
-  const { home, services, industries, projects, gallery, faqs, testimonials, openRfqModal } = useSite();
+  const {
+    home,
+    services,
+    industries,
+    projects,
+    gallery,
+    faqs,
+    testimonials,
+    publicFeedback,
+    fetchPublicFeedback,
+    openRfqModal,
+  } = useSite();
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [spotlightIndex, setSpotlightIndex] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [lightboxItems, setLightboxItems] = useState<any[]>([]);
+  const [showAllFeedback, setShowAllFeedback] = useState(false);
 
   // Hero Spotlight Machines
   const heroSpotlightProjects = useMemo(() => {
@@ -162,6 +176,54 @@ export default function HomePage() {
       },
     ];
   }, [gallery]);
+
+  // Testimonials combining approved live feedback with site mock fallbacks
+  const displayedTestimonials = useMemo(() => {
+    if (publicFeedback && publicFeedback.length > 0) {
+      return publicFeedback.map((fb) => ({
+        id: fb.id || fb._id,
+        author: fb.fullName,
+        fullName: fb.fullName,
+        role: fb.company || fb.category,
+        company: fb.company,
+        category: fb.category,
+        quote: fb.message,
+        message: fb.message,
+        rating: fb.rating || 5,
+        avatarUrl: fb.avatarUrl,
+      }));
+    }
+
+    // Cleaned authentic fallback testimonials
+    return [
+      {
+        id: "t-1",
+        author: "Plant Head",
+        fullName: "Plant Head",
+        role: "Automotive Parts Manufacturer",
+        company: "Automotive Parts Manufacturer",
+        category: "Vertical Induction Hardening Machines",
+        quote:
+          "Three Star Enterprises built a custom induction hardening machine for our factory. The build quality was solid, and the machine has been running smoothly without any issues.",
+        message:
+          "Three Star Enterprises built a custom induction hardening machine for our factory. The build quality was solid, and the machine has been running smoothly without any issues.",
+        rating: 5,
+      },
+      {
+        id: "t-2",
+        author: "Operations Manager",
+        fullName: "Operations Manager",
+        role: "Industrial Engineering Company",
+        company: "Industrial Engineering Company",
+        category: "Horizontal Induction Machines",
+        quote:
+          "Working with their team was very straightforward. They kept us updated every week, tested the machine thoroughly in Pune, and delivered right on time.",
+        message:
+          "Working with their team was very straightforward. They kept us updated every week, tested the machine thoroughly in Pune, and delivered right on time.",
+        rating: 5,
+      },
+    ];
+  }, [publicFeedback]);
 
   // Handle open lightbox
   const handleOpenLightbox = (items: any[], index: number) => {
@@ -727,28 +789,84 @@ export default function HomePage() {
       <Section dark tight grid>
         <InView>
           <div className="max-w-3xl mx-auto text-center">
-            <span className="font-sans text-xs font-bold text-accent uppercase tracking-wider px-3 py-1 rounded-full bg-accent/10 border border-accent/30 inline-block mb-3">
+            <span className="font-sans text-xs font-bold text-accent uppercase tracking-wider px-3.5 py-1 rounded-full bg-accent/10 border border-accent/30 inline-block mb-3 shadow-xs">
               Client Feedback
             </span>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-onnavy">
-              {home.clientsHeading || "Trusted by Equipment Manufacturers & Industrial Leaders"}
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-onnavy tracking-tight">
+              {home.clientsHeading || "Trusted by OEMs and engineering businesses"}
             </h2>
+            <p className="mt-3 font-sans text-xs sm:text-sm text-onnavy-muted max-w-xl mx-auto leading-relaxed">
+              Verified experiences from plant heads, heat treatment facilities, and automotive component manufacturers who rely on Three Star machinery.
+            </p>
+
+            {/* Share Your Feedback Modal Button */}
+            <div className="mt-6 flex justify-center">
+              <FeedbackModal
+                triggerLabel="Share Your Feedback"
+                triggerClassName="inline-flex items-center gap-2 rounded-full border border-accent/50 bg-accent/15 px-6 py-2.5 text-xs font-bold text-accent uppercase tracking-wider shadow-sm transition-all hover:bg-accent hover:text-navy cursor-pointer"
+                onSubmitted={() => fetchPublicFeedback()}
+              />
+            </div>
           </div>
         </InView>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 max-w-4xl mx-auto">
-          {testimonials.map((t, idx) => (
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 max-w-5xl mx-auto">
+          {(showAllFeedback ? displayedTestimonials : displayedTestimonials.slice(0, 4)).map((t: any, idx: number) => (
             <InView key={t.id || idx} delay={idx * 80}>
-              <div className="rounded-2xl border border-onnavy/15 bg-navy-soft p-6 sm:p-7 flex flex-col justify-between h-full shadow-lg">
-                <p className="text-sm sm:text-base leading-relaxed text-onnavy-muted italic">
-                  "{t.quote}"
-                </p>
-                <div className="mt-6 pt-4 border-t border-onnavy/10 flex items-center justify-between">
-                  <div>
-                    <h4 className="font-display text-sm font-bold text-onnavy">{t.author}</h4>
-                    <p className="text-xs text-accent font-medium mt-0.5">{t.role}</p>
+              <div className="rounded-3xl border border-onnavy/15 bg-navy-soft p-6 sm:p-8 flex flex-col justify-between h-full shadow-lg hover:border-accent/40 transition-all duration-300 group">
+                <div>
+                  {/* 5-Star Rating Header */}
+                  <div className="flex items-center gap-1 text-amber-400 mb-4">
+                    {Array.from({ length: 5 }).map((_, s) => (
+                      <Star
+                        key={s}
+                        className={`h-4 w-4 ${s < (t.rating || 5) ? "fill-amber-400 text-amber-400" : "text-onnavy/20"}`}
+                      />
+                    ))}
                   </div>
-                  <div className="h-9 w-9 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center text-accent">
+
+                  {/* Quote Message with Smooth Scroll for Long Reviews */}
+                  <div className="max-h-40 sm:max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                    <blockquote className="font-sans text-sm sm:text-base leading-relaxed text-onnavy/90 italic break-words">
+                      "{t.message || t.quote}"
+                    </blockquote>
+                  </div>
+                </div>
+
+                {/* Client Profile Footer */}
+                <div className="mt-6 pt-5 border-t border-onnavy/10 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {t.avatarUrl ? (
+                      <img
+                        src={t.avatarUrl}
+                        alt={t.fullName || t.author}
+                        className="h-11 w-11 rounded-full object-cover border border-accent/40 shrink-0"
+                      />
+                    ) : (
+                      <div className="h-11 w-11 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center font-bold text-xs text-accent shrink-0">
+                        {(t.fullName || t.author || "Client")
+                          .split(" ")
+                          .map((n: string) => n.charAt(0))
+                          .join("")
+                          .toUpperCase()
+                          .slice(0, 2)}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <h4 className="font-display text-sm font-bold text-onnavy group-hover:text-accent transition-colors truncate">
+                        {t.fullName || t.author}
+                      </h4>
+                      <p className="font-sans text-xs text-accent font-medium mt-0.5 truncate">
+                        {t.company || t.category || t.role}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Verified Badge Icon */}
+                  <div
+                    className="h-9 w-9 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center text-accent shrink-0 shadow-xs"
+                    title="Verified Client Feedback"
+                  >
                     <Award className="h-4 w-4" />
                   </div>
                 </div>
@@ -756,6 +874,23 @@ export default function HomePage() {
             </InView>
           ))}
         </div>
+
+        {/* Show More / Show Less Toggle if more than 4 reviews exist */}
+        {displayedTestimonials.length > 4 && (
+          <div className="mt-8 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setShowAllFeedback((prev) => !prev)}
+              className="inline-flex items-center gap-2 rounded-full border border-onnavy/20 bg-navy-soft/80 px-6 py-2.5 text-xs font-semibold text-onnavy hover:border-accent hover:text-accent transition cursor-pointer"
+            >
+              <span>
+                {showAllFeedback
+                  ? "Show Fewer Reviews"
+                  : `View All ${displayedTestimonials.length} Client Reviews`}
+              </span>
+            </button>
+          </div>
+        )}
       </Section>
 
       {/* FREQUENTLY ASKED QUESTIONS */}
@@ -766,10 +901,11 @@ export default function HomePage() {
             eyebrow="FAQ"
             title="Frequently Asked Questions"
             intro="Quick answers to common questions about our custom machines, project timelines, testing, and pricing."
+            align="center"
           />
         </InView>
 
-        <div className="mt-10 max-w-3xl space-y-3.5">
+        <div className="mt-10 max-w-3xl mx-auto space-y-3.5">
           {faqs.map((faq, idx) => {
             const isOpen = activeFaq === idx;
             return (
