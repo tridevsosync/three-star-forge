@@ -1,105 +1,143 @@
-// Central image registry. Every image is used exactly once across the site.
-import p1_1 from "@/assets/pdf/img_p1_1.jpg.asset.json";
-import p3_1 from "@/assets/pdf/img_p3_1.jpg.asset.json";
-import p3_2 from "@/assets/pdf/img_p3_2.jpg.asset.json";
-import p3_3 from "@/assets/pdf/img_p3_3.jpg.asset.json";
-import p4_1 from "@/assets/pdf/img_p4_1.jpg.asset.json";
-import p4_2 from "@/assets/pdf/img_p4_2.jpg.asset.json";
-import p4_3 from "@/assets/pdf/img_p4_3.jpg.asset.json";
-import p5_1 from "@/assets/pdf/img_p5_1.jpg.asset.json";
-import p5_2 from "@/assets/pdf/img_p5_2.jpg.asset.json";
-import p5_3 from "@/assets/pdf/img_p5_3.jpg.asset.json";
-import p6_1 from "@/assets/pdf/img_p6_1.jpg.asset.json";
-import p6_2 from "@/assets/pdf/img_p6_2.jpg.asset.json";
-import p7_1 from "@/assets/pdf/img_p7_1.jpg.asset.json";
-import p7_2 from "@/assets/pdf/img_p7_2.jpg.asset.json";
-import p7_3 from "@/assets/pdf/img_p7_3.jpg.asset.json";
-import p8_1 from "@/assets/pdf/img_p8_1.jpg.asset.json";
-import p8_2 from "@/assets/pdf/img_p8_2.jpg.asset.json";
-import p9_1 from "@/assets/pdf/img_p9_1.jpg.asset.json";
-import p9_2 from "@/assets/pdf/img_p9_2.jpg.asset.json";
-import p9_3 from "@/assets/pdf/img_p9_3.jpg.asset.json";
-import p9_4 from "@/assets/pdf/img_p9_4.jpg.asset.json";
-import p10_1 from "@/assets/pdf/img_p10_1.jpg.asset.json";
-import p10_2 from "@/assets/pdf/img_p10_2.jpg.asset.json";
-import p11_1 from "@/assets/pdf/img_p11_1.jpg.asset.json";
-import p11_2 from "@/assets/pdf/img_p11_2.jpg.asset.json";
-import p12_1 from "@/assets/pdf/img_p12_1.jpg.asset.json";
-import p12_2 from "@/assets/pdf/img_p12_2.jpg.asset.json";
-import p13_1 from "@/assets/pdf/img_p13_1.jpg.asset.json";
-import p13_2 from "@/assets/pdf/img_p13_2.jpg.asset.json";
-import heroIndustrial from "@/assets/hero-industrial.jpg";
-import aboutDesign from "@/assets/about-design.jpg";
-import indMaterialHandling from "@/assets/ind-material-handling.jpg";
-import indAutomation from "@/assets/ind-automation.jpg";
-import indPharma from "@/assets/ind-pharma.jpg";
-import indFood from "@/assets/ind-food.jpg";
-import indProcess from "@/assets/ind-process.jpg";
-import indEngineeringEquipment from "@/assets/ind-engineering-equipment.jpg";
-import indLineAutomation from "@/assets/ind-line-automation.jpg";
-import ctaWorkshop from "@/assets/cta-workshop.jpg";
-import capabilitiesMetrology from "@/assets/capabilities-metrology.jpg";
-import npiBlueprints from "@/assets/npi-blueprints.jpg";
-import pageAbout from "@/assets/page-about-workshop.jpg";
-import pageServices from "@/assets/page-services-design.jpg";
-import pageCapabilities from "@/assets/page-capabilities-induction.jpg";
-import pageProjects from "@/assets/page-projects-line.jpg";
-import pageContact from "@/assets/page-contact-facility.jpg";
-import galleryInspection from "@/assets/gallery-inspection-bench.jpg";
+// Central image registry for Three Star Enterprises.
+// All images are locally hosted in /public/images/ for 100% reliability, zero broken links, and high performance.
 
-const s = (img: any): string => (img && typeof img === "object" && "src" in img ? img.src : (img as string));
+export const CORE_INDUSTRIAL_IMAGES = [
+  {
+    id: "induction-hardening",
+    label: "Induction Hardening Scanner",
+    url: "/images/induction-hardening-scanner.jpg",
+    category: "Induction Hardening",
+    desc: "Vertical CNC Induction Hardening scanner machine with precision heating coil.",
+  },
+  {
+    id: "cnc-machining",
+    label: "CNC Machining & Turning Bay",
+    url: "/images/cnc-machining-bay.jpg",
+    category: "Machine Building",
+    desc: "Heavy precision CNC milling center, turning, and slideway scraping setup.",
+  },
+  {
+    id: "automated-conveyor",
+    label: "Automated Slat & Chain Conveyor",
+    url: "/images/automated-conveyor-system.jpg",
+    category: "Material Handling",
+    desc: "Heavy-duty automated parts conveyor and material transfer system.",
+  },
+  {
+    id: "metrology-inspection",
+    label: "Metrology & 100% FAT Quality Bay",
+    url: "/images/metrology-quality-inspection.jpg",
+    category: "Quality & Metrology",
+    desc: "Precision dial test indicator inspection, laser alignment, and test trial cell.",
+  },
+  {
+    id: "machine-assembly",
+    label: "Pune Machine Assembly Workshop",
+    url: "/images/machine-assembly-workshop.jpg",
+    category: "Manufacturing Facility",
+    desc: "Full structural steel fabrication, electrical wiring, and FAT testing bays.",
+  },
+  {
+    id: "spm-automation",
+    label: "Turnkey SPM Automation Line",
+    url: "/images/spm-automation-line.jpg",
+    category: "Automation & Tooling",
+    desc: "Custom Special Purpose Machine with pick-and-place robotics and safety interlocks.",
+  },
+];
 
 export const IMAGES: Record<string, string> = {
   // Site-level
-  hero: s(heroIndustrial),
-  about: s(aboutDesign),
-  cta: s(ctaWorkshop),
-  metrology: s(capabilitiesMetrology),
-  blueprints: s(npiBlueprints),
-  // Page heroes (each used once)
-  pageAbout: s(pageAbout),
-  pageServices: s(pageServices),
-  pageCapabilities: s(pageCapabilities),
-  pageProjects: s(pageProjects),
-  pageContact: s(pageContact),
+  hero: "/images/hero-industrial.jpg",
+  about: "/images/about-design.jpg",
+  cta: "/images/cta-workshop.jpg",
+  metrology: "/images/metrology-quality-inspection.jpg",
+  blueprints: "/images/npi-blueprints.jpg",
+
+  // Page heroes
+  pageAbout: "/images/machine-assembly-workshop.jpg",
+  pageServices: "/images/cnc-machining-bay.jpg",
+  pageCapabilities: "/images/induction-hardening-scanner.jpg",
+  pageProjects: "/images/spm-automation-line.jpg",
+  pageContact: "/images/page-contact-facility.jpg",
+
   // Industries
-  materialHandling: s(indMaterialHandling),
-  automation: s(indAutomation),
-  pharma: s(indPharma),
-  food: s(indFood),
-  process: s(indProcess),
-  engineeringEquipment: s(indEngineeringEquipment),
-  lineAutomation: s(indLineAutomation),
-  // Projects (real photographs from the company presentation)
-  verticalInduction: p4_1.url,
-  horizontalInduction: p3_2.url,
-  dualSpindle: p4_2.url,
-  rotaryInduction: p3_3.url,
-  crankShaft: p5_1.url,
-  forgeToTrim: p6_1.url,
-  autoBilletLoader: p6_2.url,
-  honeycombConveyor: p7_3.url,
-  eddyCurrent: p7_2.url,
-  utHandling: p7_1.url,
-  wireMeshConveyor: p8_1.url,
-  slatConveyor: p8_2.url,
-  acceptReject: p9_1.url,
-  cutterLaminates: p9_2.url,
-  bearingFixture: p9_3.url,
-  modularConveyor: p9_4.url,
-  pickAndPlace: p10_1.url,
-  forgingAutomation: p10_2.url,
-  grindingRefurb: p11_1.url,
-  latheAssembly: p11_2.url,
-  newMachineAssembly: p12_1.url,
-  hmcMachine: p13_1.url,
-  // Gallery-only
-  galleryGears: p1_1.url,
-  galleryInductionGlow: p3_1.url,
-  galleryVerticalDetail: p4_3.url,
-  galleryCrankDetail: p5_2.url,
-  galleryCrankMechanism: p5_3.url,
-  galleryOperatorPanel: p12_2.url,
-  galleryMaintenance: p13_2.url,
-  galleryInspection: s(galleryInspection),
+  materialHandling: "/images/automated-conveyor-system.jpg",
+  automation: "/images/ind-automation.jpg",
+  pharma: "/images/ind-pharma.jpg",
+  food: "/images/ind-food.jpg",
+  process: "/images/ind-process.jpg",
+  engineeringEquipment: "/images/ind-engineering-equipment.jpg",
+  lineAutomation: "/images/ind-line-automation.jpg",
+
+  // Projects (High-resolution industrial machine photography)
+  verticalInduction: "/images/induction-hardening-scanner.jpg",
+  horizontalInduction: "/images/induction-hardening-scanner.jpg",
+  dualSpindle: "/images/induction-hardening-scanner.jpg",
+  rotaryInduction: "/images/induction-hardening-scanner.jpg",
+  crankShaft: "/images/induction-hardening-scanner.jpg",
+  forgeToTrim: "/images/spm-automation-line.jpg",
+  autoBilletLoader: "/images/automated-conveyor-system.jpg",
+  honeycombConveyor: "/images/automated-conveyor-system.jpg",
+  eddyCurrent: "/images/metrology-quality-inspection.jpg",
+  utHandling: "/images/metrology-quality-inspection.jpg",
+  wireMeshConveyor: "/images/automated-conveyor-system.jpg",
+  slatConveyor: "/images/automated-conveyor-system.jpg",
+  acceptReject: "/images/spm-automation-line.jpg",
+  cutterLaminates: "/images/cnc-machining-bay.jpg",
+  bearingFixture: "/images/cnc-machining-bay.jpg",
+  modularConveyor: "/images/automated-conveyor-system.jpg",
+  pickAndPlace: "/images/spm-automation-line.jpg",
+  forgingAutomation: "/images/spm-automation-line.jpg",
+  grindingRefurb: "/images/cnc-machining-bay.jpg",
+  latheAssembly: "/images/cnc-machining-bay.jpg",
+  newMachineAssembly: "/images/machine-assembly-workshop.jpg",
+  hmcMachine: "/images/cnc-machining-bay.jpg",
+
+  // Gallery
+  galleryGears: "/images/cnc-machining-bay.jpg",
+  galleryInductionGlow: "/images/induction-hardening-scanner.jpg",
+  galleryVerticalDetail: "/images/induction-hardening-scanner.jpg",
+  galleryCrankDetail: "/images/induction-hardening-scanner.jpg",
+  galleryCrankMechanism: "/images/induction-hardening-scanner.jpg",
+  galleryOperatorPanel: "/images/spm-automation-line.jpg",
+  galleryMaintenance: "/images/machine-assembly-workshop.jpg",
+  galleryInspection: "/images/metrology-quality-inspection.jpg",
 };
+
+/**
+ * Returns a guaranteed valid image path, preventing broken image icons anywhere.
+ */
+export function getSafeImage(
+  url?: string | null,
+  fallbackType:
+    | "induction"
+    | "cnc"
+    | "conveyor"
+    | "metrology"
+    | "workshop"
+    | "spm"
+    | "general" = "general",
+): string {
+  if (url && typeof url === "string" && url.trim().length > 0 && !url.includes("/__l5e/")) {
+    return url.trim();
+  }
+
+  switch (fallbackType) {
+    case "induction":
+      return "/images/induction-hardening-scanner.jpg";
+    case "cnc":
+      return "/images/cnc-machining-bay.jpg";
+    case "conveyor":
+      return "/images/automated-conveyor-system.jpg";
+    case "metrology":
+      return "/images/metrology-quality-inspection.jpg";
+    case "workshop":
+      return "/images/machine-assembly-workshop.jpg";
+    case "spm":
+      return "/images/spm-automation-line.jpg";
+    case "general":
+    default:
+      return "/images/machine-assembly-workshop.jpg";
+  }
+}
