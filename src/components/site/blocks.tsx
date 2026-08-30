@@ -25,7 +25,7 @@ export function Section({
 }: SectionProps) {
   const bg = dark ? "bg-navy text-onnavy" : "bg-background text-foreground";
   const gridCls = grid ? (dark ? "blueprint-grid-dark" : "blueprint-grid") : "";
-  const pad = tight ? "py-16 sm:py-20" : "py-20 sm:py-28 lg:py-32";
+  const pad = tight ? "py-12 sm:py-16 lg:py-20" : "py-14 sm:py-20 lg:py-28";
   return (
     <section id={id} className={`relative overflow-hidden ${bg} ${gridCls} ${pad} ${className}`}>
       <Container className="relative">{children}</Container>
@@ -44,7 +44,7 @@ export interface PageHeroProps {
 
 export function PageHero({ index, eyebrow, title, intro, image, action }: PageHeroProps) {
   return (
-    <section className="relative overflow-hidden bg-navy pt-32 pb-20 text-onnavy sm:pt-40 sm:pb-28 lg:pb-32">
+    <section className="relative overflow-hidden bg-navy pt-28 pb-16 text-onnavy sm:pt-36 sm:pb-24 lg:pt-40 lg:pb-32">
       {image ? (
         <img
           src={image}

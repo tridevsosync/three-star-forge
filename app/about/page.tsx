@@ -205,34 +205,34 @@ export default function AboutPage() {
                   </span>
                 </div>
 
-                <h1 className="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
+                <h1 className="mt-5 font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
                   Engineering Ideas Into <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent-hover to-white">
                     Industrial Reality.
                   </span>
                 </h1>
 
-                <p className="mt-5 max-w-2xl text-base sm:text-lg text-onnavy-muted leading-relaxed font-sans">
+                <p className="mt-4 sm:mt-5 max-w-2xl text-sm sm:text-base lg:text-lg text-onnavy-muted leading-relaxed font-sans">
                   {company.description ||
                     "For over 25 years, Three Star Enterprises has designed, fabricated, and tested custom industrial machinery in Pune. We deliver turnkey special-purpose machines, automated conveyors, and precision induction hardening systems for equipment manufacturers worldwide."}
                 </p>
 
                 {/* Hero CTA Actions */}
-                <div className="mt-8 flex flex-wrap items-center gap-4">
+                <div className="mt-7 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
                   <Btn
+                    to="/quote"
                     variant="primary"
-                    className="text-sm px-7 py-3.5 font-bold"
-                    onClick={() => openRfqModal({ project: "Plant Engineering Inquiry" })}
+                    className="text-xs sm:text-sm px-6 sm:px-7 py-3 sm:py-3.5 font-bold shadow-lg shadow-accent/25"
                   >
                     Request a Free Quote
                   </Btn>
-                  <Btn to="/projects" variant="light" className="text-sm px-7 py-3.5">
+                  <Btn to="/projects" variant="light" className="text-xs sm:text-sm px-6 sm:px-7 py-3 sm:py-3.5">
                     Explore Delivered Builds
                   </Btn>
                 </div>
 
                 {/* Trust Badges Strip */}
-                <div className="mt-10 flex flex-wrap items-center gap-6 border-t border-onnavy/15 pt-6 text-xs text-onnavy-muted">
+                <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 sm:gap-6 border-t border-onnavy/15 pt-6 text-xs text-onnavy-muted">
                   <span className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-accent" />
                     <span>ISO 9001:2015 Certified Plant</span>

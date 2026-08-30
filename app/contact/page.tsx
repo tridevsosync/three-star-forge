@@ -164,19 +164,18 @@ function ContactPageInner() {
                   </span>
                 </div>
 
-                <h1 className="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
+                <h1 className="mt-5 font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
                   Get in Touch with <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent-hover to-white">
                     Three Star Enterprises
                   </span>
                 </h1>
 
-                <p className="mt-5 max-w-2xl text-base sm:text-lg text-onnavy-muted leading-relaxed font-sans">
+                <p className="mt-4 sm:mt-5 max-w-2xl text-sm sm:text-base lg:text-lg text-onnavy-muted leading-relaxed font-sans">
                   Have a question about our machines, need a price quote, or want to visit our workshop in Pune? Send us a message below or call us directly.
                 </p>
 
-                {/* Trust Badges Strip (No CTA buttons) */}
-                <div className="mt-8 flex flex-wrap items-center gap-6 border-t border-onnavy/15 pt-6 text-xs text-onnavy-muted">
+                <div className="mt-6 sm:mt-8 flex flex-wrap items-center gap-4 sm:gap-6 border-t border-onnavy/15 pt-6 text-xs text-onnavy-muted">
                   <span className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-accent" />
                     <span>Rapid 24-Hour Response</span>
@@ -193,11 +192,9 @@ function ContactPageInner() {
               </Reveal>
             </div>
 
-            {/* Right Hero: Interactive Facility & Works Showcase Card */}
             <div className="lg:col-span-5">
               <InView delay={120}>
                 <div className="group relative rounded-3xl border border-onnavy/20 bg-surface/5 p-4 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:border-accent/50">
-                  {/* Photo Container with Lightbox Trigger */}
                   <div
                     onClick={() => setIsHeroLightboxOpen(true)}
                     className="relative aspect-[16/11] w-full overflow-hidden rounded-2xl bg-navy cursor-pointer"
@@ -210,13 +207,11 @@ function ContactPageInner() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/30 to-transparent" />
 
-                    {/* Floating Zoom Action */}
                     <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-navy/80 px-3 py-1.5 text-xs font-semibold text-accent backdrop-blur-md border border-accent/30 shadow-lg">
                       <Maximize2 className="h-3.5 w-3.5" />
                       <span>Inspect Facility</span>
                     </div>
 
-                    {/* Overlay Facility Telemetry */}
                     <div className="absolute bottom-4 left-4 right-4 text-onnavy">
                       <span className="inline-block rounded-full bg-accent/20 border border-accent/40 px-2.5 py-0.5 text-[0.65rem] font-bold text-accent uppercase">
                         Operating Facility & Works
@@ -230,7 +225,6 @@ function ContactPageInner() {
                     </div>
                   </div>
 
-                  {/* Quick Facts Grid */}
                   <div className="mt-3.5 grid grid-cols-3 gap-2 text-center text-xs">
                     <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
                       <span className="text-[0.65rem] text-onnavy-muted uppercase block">Location</span>
@@ -252,58 +246,76 @@ function ContactPageInner() {
         </Container>
       </section>
 
-      {/* RFQ Prompt Banner */}
       <div className="border-b border-line bg-accent/10 py-4 px-4 text-center">
-        <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
+        <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs font-mono">
           <span className="font-bold text-accent">NEED A FAST PRICE QUOTE FOR A MACHINE?</span>
           <span className="text-muted hidden sm:inline">—</span>
           <span className="text-foreground">Tell us about your machine type, dimensions, and timeline:</span>
           <Link
             href="/quote"
-            className="border border-accent bg-accent text-navy px-3.5 py-1 font-bold uppercase tracking-wider hover:bg-navy hover:text-onnavy transition-colors"
+            className="inline-flex items-center gap-1 font-bold text-accent underline underline-offset-2 hover:opacity-80"
           >
-            Get a Free Quote →
+            <span>Open Fast RFQ Form</span>
+            <span>→</span>
           </Link>
         </div>
       </div>
 
       <Section grid>
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16 items-start">
-          {/* LEFT: Contact Information & Headquarters */}
-          <InView className="lg:col-span-5 space-y-8">
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
+          <InView className="lg:col-span-5 space-y-6">
             <div>
-              <SectionHead index="7.1" eyebrow="Pune Plant" title="Headquarters & Workshop" />
-              <p className="mt-4 text-sm leading-relaxed text-muted">
-                Our plant is located in Dehu Gaon, Pune. Reach out directly by phone, email, or schedule a technical discussion.
+              <TechLabel tone="accent">Direct Factory Communications</TechLabel>
+              <h2 className="mt-2 font-display text-2xl sm:text-3xl font-bold text-foreground">
+                Connect Directly with Our Engineers
+              </h2>
+              <p className="mt-2 text-xs sm:text-sm text-muted leading-relaxed">
+                Contact our factory in Pune directly for machine consultations, trial arrangements, engineering discussions, or plant visits.
               </p>
             </div>
 
-            {/* Quick Contact Cards */}
             <div className="space-y-4">
-              <div className="border border-line bg-surface p-6 flex items-start gap-4">
-                <span className="p-3 bg-accent/10 text-accent border border-accent/30 text-lg font-bold">
+              <div className="group border border-line bg-surface p-4 sm:p-6 flex items-start gap-4">
+                <span className="p-3 bg-accent/10 text-accent border border-accent/30 text-lg font-bold group-hover:bg-accent group-hover:text-navy transition-colors shrink-0">
                   📞
                 </span>
-                <div>
-                  <TechLabel>Phone Support</TechLabel>
-                  <p className="mt-1 font-mono text-sm font-bold text-foreground">{company.phone}</p>
-                  <p className="text-xs text-muted">Mon–Sat, 9:00 AM – 7:00 PM IST</p>
+                <div className="min-w-0">
+                  <TechLabel>Call or WhatsApp</TechLabel>
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    <a
+                      href="tel:+919823463655"
+                      className="font-mono text-xs sm:text-sm font-bold text-foreground hover:text-accent hover:underline transition-colors"
+                    >
+                      +91 98234 63655
+                    </a>
+                    <span className="text-muted text-xs">/</span>
+                    <a
+                      href="tel:+918788848977"
+                      className="font-mono text-xs sm:text-sm font-bold text-foreground hover:text-accent hover:underline transition-colors"
+                    >
+                      +91 87888 48977
+                    </a>
+                  </div>
+                  <p className="mt-1 text-xs text-muted">Direct to Director &amp; Engineering Head</p>
                 </div>
               </div>
 
-              <div className="border border-line bg-surface p-6 flex items-start gap-4">
-                <span className="p-3 bg-accent/10 text-accent border border-accent/30 text-lg font-bold">
+              <a
+                href={`mailto:${company.email || "info@threestarenterprises.in"}`}
+                className="group border border-line bg-surface p-4 sm:p-6 flex items-start gap-4 hover:border-accent transition-colors block"
+              >
+                <span className="p-3 bg-accent/10 text-accent border border-accent/30 text-lg font-bold group-hover:bg-accent group-hover:text-navy transition-colors shrink-0">
                   ✉️
                 </span>
-                <div>
-                  <TechLabel>Official Email</TechLabel>
+                <div className="min-w-0">
+                  <TechLabel>Email Us</TechLabel>
                   <p className="mt-1 font-mono text-sm font-bold text-foreground break-all">{company.email}</p>
                   <p className="text-xs text-muted">Direct correspondence</p>
                 </div>
-              </div>
+              </a>
 
-              <div className="border border-line bg-surface p-6 flex items-start gap-4">
-                <span className="p-3 bg-accent/10 text-accent border border-accent/30 text-lg font-bold">
+              <div className="border border-line bg-surface p-4 sm:p-6 flex items-start gap-4">
+                <span className="p-3 bg-accent/10 text-accent border border-accent/30 text-lg font-bold shrink-0">
                   📍
                 </span>
                 <div>
@@ -315,13 +327,12 @@ function ContactPageInner() {
             </div>
           </InView>
 
-          {/* RIGHT: Contact Message Form */}
           <InView delay={100} className="lg:col-span-7">
             <div id="contact-form" className="scroll-mt-28 corner-marks border border-line bg-surface shadow-lg">
-              <div className="border-b border-line bg-surface-soft px-8 py-6 flex items-center justify-between">
+              <div className="border-b border-line bg-surface-soft px-5 sm:px-8 py-4 sm:py-6 flex items-center justify-between">
                 <div>
                   <TechLabel tone="accent">General Inquiries</TechLabel>
-                  <h2 className="mt-1 font-display text-xl font-bold text-foreground">
+                  <h2 className="mt-1 font-display text-lg sm:text-xl font-bold text-foreground">
                     Send Us a Message
                   </h2>
                 </div>
@@ -329,7 +340,7 @@ function ContactPageInner() {
               </div>
 
               {sent ? (
-                <div className="px-8 py-16 text-center">
+                <div className="px-5 sm:px-8 py-12 sm:py-16 text-center">
                   <div className="mx-auto flex h-16 w-16 items-center justify-center border border-accent bg-accent/10 text-accent">
                     <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <path d="M4 12.5l5 5L20 6.5" />
@@ -338,7 +349,7 @@ function ContactPageInner() {
                   <h3 className="mt-6 font-display text-2xl font-bold text-foreground">
                     Message Sent Successfully
                   </h3>
-                  <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
+                  <p className="mx-auto mt-3 max-w-md text-xs sm:text-sm leading-relaxed text-muted">
                     Thank you, <span className="font-semibold text-foreground">{form.name}</span>. Your message has been received. Our team will review and respond to you at <span className="font-mono text-foreground">{form.email}</span> shortly.
                   </p>
                   <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -348,7 +359,7 @@ function ContactPageInner() {
                         setForm(emptyContactForm);
                         setSent(false);
                       }}
-                      className="border border-line bg-surface px-6 py-2.5 font-mono text-xs uppercase tracking-wider text-foreground hover:border-accent"
+                      className="border border-line bg-surface px-6 py-2.5 font-mono text-xs uppercase tracking-wider text-foreground hover:border-accent cursor-pointer"
                     >
                       Send Another Message
                     </button>
@@ -361,16 +372,16 @@ function ContactPageInner() {
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-4 sm:space-y-6">
                   {error && (
                     <div className="border border-danger/40 bg-danger/10 px-4 py-3 text-xs font-semibold text-danger">
                       {error}
                     </div>
                   )}
 
-                  <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className={`tech-label block ${fieldErrors.name ? "text-danger font-bold" : "text-muted"}`}>
                           Your Name *
                         </label>
@@ -384,7 +395,7 @@ function ContactPageInner() {
                         value={form.name}
                         onChange={(e) => set("name", e.target.value)}
                         placeholder="e.g. Rajesh Patil"
-                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors ${
+                        className={`w-full border px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors ${
                           fieldErrors.name
                             ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
                             : "border-line bg-background focus:border-accent"
@@ -399,7 +410,7 @@ function ContactPageInner() {
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className={`tech-label block ${fieldErrors.email ? "text-danger font-bold" : "text-muted"}`}>
                           Email Address *
                         </label>
@@ -413,7 +424,7 @@ function ContactPageInner() {
                         value={form.email}
                         onChange={(e) => set("email", e.target.value)}
                         placeholder="e.g. r.patil@company.com"
-                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors ${
+                        className={`w-full border px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors ${
                           fieldErrors.email
                             ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
                             : "border-line bg-background focus:border-accent"
@@ -428,9 +439,9 @@ function ContactPageInner() {
                     </div>
                   </div>
 
-                  <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className={`tech-label block ${fieldErrors.phone ? "text-danger font-bold" : "text-muted"}`}>
                           Phone Number
                         </label>
@@ -444,7 +455,7 @@ function ContactPageInner() {
                         value={form.phone}
                         onChange={(e) => set("phone", e.target.value.replace(/[^0-9+\s\-()]/g, ""))}
                         placeholder="+91 98XXX XXXXX"
-                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors font-mono ${
+                        className={`w-full border px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors font-mono ${
                           fieldErrors.phone
                             ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
                             : "border-line bg-background focus:border-accent"
@@ -459,7 +470,7 @@ function ContactPageInner() {
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className="tech-label text-muted block">Company / Organization</label>
                         {form.company ? (
                           <span className="font-mono text-[0.68rem] text-muted">{form.company.length}/100</span>
@@ -471,17 +482,17 @@ function ContactPageInner() {
                         value={form.company}
                         onChange={(e) => set("company", e.target.value)}
                         placeholder="e.g. Tata Motors / Bharat Forge"
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                        className="w-full border border-line bg-background px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors focus:border-accent"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="tech-label text-muted block mb-2">Subject / Inquiry Type</label>
+                    <label className="tech-label text-muted block mb-1.5 sm:mb-2">Subject / Inquiry Type</label>
                     <select
                       value={form.subject}
                       onChange={(e) => set("subject", e.target.value)}
-                      className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                      className="w-full border border-line bg-background px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors focus:border-accent cursor-pointer"
                     >
                       {SUBJECT_OPTIONS.map((s) => (
                         <option key={s} value={s}>
@@ -492,7 +503,7 @@ function ContactPageInner() {
                   </div>
 
                   <div>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                       <label className={`tech-label block ${fieldErrors.message ? "text-danger font-bold" : "text-muted"}`}>
                         Message *
                       </label>
@@ -506,7 +517,7 @@ function ContactPageInner() {
                       value={form.message}
                       onChange={(e) => set("message", e.target.value)}
                       placeholder="Write your inquiry or message here..."
-                      className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors resize-y ${
+                      className={`w-full border px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors resize-y ${
                         fieldErrors.message
                           ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
                           : "border-line bg-background focus:border-accent"

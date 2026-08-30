@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IMAGES } from "@/data/images";
 import { useSite } from "@/store/site-store";
-import { Reveal, Badge, Btn, Container, Lightbox } from "@/components/site/ui";
+import { Reveal, Badge, Btn, Container, Lightbox, TechLabel } from "@/components/site/ui";
 import { CtaBand, Section } from "@/components/site/blocks";
 import { InView } from "@/components/site/reveal";
 import {
@@ -126,33 +126,33 @@ export default function ProjectsPage() {
                   </span>
                 </div>
 
-                <h1 className="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
+                <h1 className="mt-5 font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
                   Precision Machinery & SPM Automation <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent-hover to-white">
                     Engineered for High&#8209;Throughput Manufacturing.
                   </span>
                 </h1>
 
-                <p className="mt-5 max-w-3xl text-base sm:text-lg text-onnavy-muted leading-relaxed font-sans">
+                <p className="mt-4 sm:mt-5 max-w-3xl text-sm sm:text-base lg:text-lg text-onnavy-muted leading-relaxed font-sans">
                   Explore our comprehensive portfolio of custom induction hardening scanners, automated conveyor lines, special purpose drilling & tapping machines, and heavy structural tooling manufactured and 100% FAT-tested at our Pune facility.
                 </p>
 
                 {/* Hero CTAs */}
-                <div className="mt-8 flex flex-wrap items-center gap-4">
+                <div className="mt-7 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
                   <Btn
                     to="/quote#quote-form"
                     variant="primary"
-                    className="text-sm px-7 py-3.5 font-bold shadow-lg shadow-accent/25"
+                    className="text-xs sm:text-sm px-6 sm:px-7 py-3 sm:py-3.5 font-bold shadow-lg shadow-accent/25"
                   >
                     Request a Custom Machine Quote
                   </Btn>
-                  <Btn to="/gallery" variant="light" className="text-sm px-7 py-3.5 font-semibold">
+                  <Btn to="/gallery" variant="light" className="text-xs sm:text-sm px-6 sm:px-7 py-3 sm:py-3.5 font-semibold">
                     Explore Shop-Floor Gallery
                   </Btn>
                 </div>
 
                 {/* Trust Badges Strip */}
-                <div className="mt-10 flex flex-wrap items-center gap-6 border-t border-onnavy/15 pt-6 text-xs text-onnavy-muted">
+                <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 sm:gap-6 border-t border-onnavy/15 pt-6 text-xs text-onnavy-muted">
                   <span className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-accent" />
                     <span>{projects.length} Verified Turnkey Builds</span>
@@ -204,17 +204,17 @@ export default function ProjectsPage() {
                       <div className="absolute bottom-4 left-4 right-4 text-onnavy">
                         <div className="flex items-center gap-2">
                           <span className="inline-block rounded-full bg-accent/20 border border-accent/40 px-2.5 py-0.5 text-[0.65rem] font-bold text-accent uppercase">
-                            Featured Engineering Build
+                            Delivered Machinery
                           </span>
-                          <span className="text-[0.65rem] text-onnavy-muted font-sans">
-                            {featuredProject.industry}
+                          <span className="text-[0.65rem] text-onnavy-muted font-mono">
+                            {featuredProject.category || "SPM"}
                           </span>
                         </div>
                         <h3 className="mt-1 font-display text-base font-bold text-onnavy leading-snug group-hover:text-accent transition-colors">
                           {featuredProject.title}
                         </h3>
-                        <p className="mt-0.5 text-xs text-onnavy-muted leading-relaxed">
-                          {featuredProject.summary || featuredProject.overview}
+                        <p className="mt-0.5 text-xs text-onnavy-muted leading-relaxed line-clamp-1">
+                          {featuredProject.short || featuredProject.summary}
                         </p>
                       </div>
                     </div>
@@ -222,18 +222,18 @@ export default function ProjectsPage() {
                     {/* Quick Facts Grid */}
                     <div className="mt-3.5 grid grid-cols-3 gap-2 text-center text-xs">
                       <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
-                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Category</span>
-                        <strong className="font-display text-xs font-bold text-onnavy truncate block">
-                          {featuredProject.category || "SPM Build"}
+                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Sector</span>
+                        <strong className="font-display text-xs font-bold text-accent truncate block">
+                          {featuredProject.industry || "Custom"}
                         </strong>
                       </div>
                       <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
-                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Verification</span>
-                        <strong className="font-display text-xs font-bold text-accent">100% FAT</strong>
+                        <span className="text-[0.65rem] text-onnavy-muted uppercase block">Testing</span>
+                        <strong className="font-display text-xs font-bold text-onnavy">100% FAT</strong>
                       </div>
                       <div className="rounded-xl border border-onnavy/15 bg-navy/40 p-2.5">
                         <span className="text-[0.65rem] text-onnavy-muted uppercase block">Origin</span>
-                        <strong className="font-display text-xs font-bold text-onnavy">Pune Works</strong>
+                        <strong className="font-display text-xs font-bold text-onnavy">Pune Bay</strong>
                       </div>
                     </div>
                   </div>
@@ -245,97 +245,33 @@ export default function ProjectsPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. LIVE CAPABILITY METRICS STRIP */}
+      {/* 2. INDUSTRIAL BUILDS BROWSER & FILTER SECTION */}
       {/* ========================================================================= */}
-      <div className="border-y border-line bg-surface py-8">
-        <Container>
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <div className="flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent shrink-0">
-                <Factory className="h-6 w-6" />
-              </span>
-              <div>
-                <div className="font-display text-2xl font-extrabold text-foreground">{projects.length}+ Builds</div>
-                <div className="text-xs text-muted">Delivered & Commissioned</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent shrink-0">
-                <ShieldCheck className="h-6 w-6" />
-              </span>
-              <div>
-                <div className="font-display text-2xl font-extrabold text-foreground">100% FAT</div>
-                <div className="text-xs text-muted">Shop-Floor Trial Signoff</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent shrink-0">
-                <Zap className="h-6 w-6" />
-              </span>
-              <div>
-                <div className="font-display text-2xl font-extrabold text-foreground">±0.005mm</div>
-                <div className="text-xs text-muted">Precision CNC Tolerance</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent shrink-0">
-                <Wrench className="h-6 w-6" />
-              </span>
-              <div>
-                <div className="font-display text-2xl font-extrabold text-foreground">SolidWorks</div>
-                <div className="text-xs text-muted">Parametric 3D CAD Bureau</div>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* 3. INTERACTIVE VISUAL FILTER & SEARCH SUITE */}
-      {/* ========================================================================= */}
-      <Section grid className="scroll-mt-12" id="portfolio-grid">
+      <Section grid id="projects-grid" className="scroll-mt-12">
         <InView>
           <div className="flex flex-wrap items-end justify-between gap-6 border-b border-line pb-8">
             <div>
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-accent uppercase tracking-wider mb-2">
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-                <span>Machinery Directory</span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-bold text-accent px-2.5 py-1 rounded-md bg-accent/10 border border-accent/30">
+                  SECTION 02
+                </span>
+                <TechLabel tone="muted">Equipment Catalogue</TechLabel>
               </div>
-              <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-                Filter & Explore Delivered Machinery
+              <h2 className="mt-3 font-display text-2xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+                All Delivered Machine Builds &amp; Automation
               </h2>
-              <p className="mt-2 text-sm text-muted max-w-xl">
-                Browse our real-world special purpose machines, hardening rigs, and automation assemblies by category, industry sector, or keyword.
+              <p className="mt-2 text-xs sm:text-sm text-muted max-w-2xl">
+                Filter by machine category or manufacturing sector to inspect technical capabilities, machine parameters, and delivered shop-floor photographs.
               </p>
-            </div>
-
-            {/* Results Pill */}
-            <div className="flex items-center gap-3">
-              <Badge variant="accent">
-                {filtered.length} of {projects.length} MACHINES
-              </Badge>
-              {hasActiveFilters && (
-                <button
-                  type="button"
-                  onClick={resetFilters}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline cursor-pointer"
-                >
-                  <RotateCcw className="h-3.5 w-3.5" />
-                  <span>Reset Filters</span>
-                </button>
-              )}
             </div>
           </div>
         </InView>
 
         {/* Filter Controls Strip */}
         <InView delay={60}>
-          <div className="mt-8 space-y-6">
-            {/* Category Pills Bar */}
-            <div className="flex flex-wrap gap-2.5">
+          <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
+            {/* Category Pills Bar (Touch Scrollable on Mobile) */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-5 px-5 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible sm:pb-0 scrollbar-none w-full">
               {categories.map((cat) => {
                 const count = categoryCounts[cat] || 0;
                 const isActive = selectedCategory === cat;
@@ -344,7 +280,7 @@ export default function ProjectsPage() {
                     key={cat}
                     type="button"
                     onClick={() => setSelectedCategory(cat)}
-                    className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-2xl border px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold transition-all duration-200 cursor-pointer shrink-0 ${
                       isActive
                         ? "border-accent bg-accent text-navy font-bold shadow-md shadow-accent/25"
                         : "border-line bg-surface text-muted hover:border-accent hover:text-foreground"
@@ -352,7 +288,7 @@ export default function ProjectsPage() {
                   >
                     <span>{cat === "All" ? "All Categories" : cat}</span>
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[0.65rem] font-bold ${
+                      className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[0.65rem] font-bold ${
                         isActive ? "bg-navy text-accent" : "bg-background text-muted"
                       }`}
                     >
@@ -364,13 +300,13 @@ export default function ProjectsPage() {
             </div>
 
             {/* Secondary Controls Bar: Sector Selector + Search */}
-            <div className="grid gap-4 sm:grid-cols-12 items-center bg-surface border border-line p-4 rounded-2xl shadow-xs">
+            <div className="grid gap-3 sm:gap-4 sm:grid-cols-12 items-center bg-surface border border-line p-3 sm:p-4 rounded-2xl shadow-xs">
               {/* Sector Dropdown */}
               <div className="sm:col-span-5 relative">
                 <select
                   value={selectedIndustry}
                   onChange={(e) => setSelectedIndustry(e.target.value)}
-                  className="w-full appearance-none rounded-xl border border-line bg-background px-4 py-2.5 pr-10 text-xs font-semibold text-foreground outline-none transition-all focus:border-accent hover:border-line-strong cursor-pointer"
+                  className="w-full appearance-none rounded-xl border border-line bg-background px-4 py-2.5 pr-10 text-base sm:text-xs font-semibold text-foreground outline-none transition-all focus:border-accent hover:border-line-strong cursor-pointer"
                 >
                   {industries.map((ind) => (
                     <option key={ind} value={ind}>
@@ -387,8 +323,8 @@ export default function ProjectsPage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search machine models, specs, PLC controls, cycle times..."
-                  className="w-full rounded-xl border border-line bg-background pl-9 pr-16 py-2.5 text-xs text-foreground placeholder:text-muted/60 outline-none transition-all focus:border-accent"
+                  placeholder="Search machine models, specs, controls..."
+                  className="w-full rounded-xl border border-line bg-background pl-9 pr-16 py-2.5 text-base sm:text-xs text-foreground placeholder:text-muted/60 outline-none transition-all focus:border-accent"
                 />
                 <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted" />
                 {searchQuery && (
@@ -434,7 +370,7 @@ export default function ProjectsPage() {
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="ml-auto text-xs font-bold text-accent hover:underline"
+                  className="ml-auto text-xs font-bold text-accent hover:underline cursor-pointer"
                 >
                   Clear All Filters
                 </button>

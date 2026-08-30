@@ -130,33 +130,33 @@ export default function CapabilitiesPage() {
                   </span>
                 </div>
 
-                <h1 className="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
+                <h1 className="mt-5 font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
                   Precision Engineering & Machine Building <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent-hover to-white">
                     From 3D Design to 100% FAT&#8209;Tested Machinery.
                   </span>
                 </h1>
 
-                <p className="mt-5 max-w-3xl text-base sm:text-lg text-onnavy-muted leading-relaxed font-sans">
+                <p className="mt-4 sm:mt-5 max-w-3xl text-sm sm:text-base lg:text-lg text-onnavy-muted leading-relaxed font-sans">
                   From custom induction hardening scanners and high-heat conveyor systems to inline NDT crack inspection stations and precision machine tool scraping, explore our end-to-end manufacturing and trial capabilities under one roof in Pune.
                 </p>
 
                 {/* Hero CTAs */}
-                <div className="mt-8 flex flex-wrap items-center gap-4">
+                <div className="mt-7 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
                   <Btn
                     to="/quote#quote-form"
                     variant="primary"
-                    className="text-sm px-7 py-3.5 font-bold shadow-lg shadow-accent/25"
+                    className="text-xs sm:text-sm px-6 sm:px-7 py-3 sm:py-3.5 font-bold shadow-lg shadow-accent/25"
                   >
                     Request a Technical Quote
                   </Btn>
-                  <Btn to="/gallery" variant="light" className="text-sm px-7 py-3.5 font-semibold">
+                  <Btn to="/gallery" variant="light" className="text-xs sm:text-sm px-6 sm:px-7 py-3 sm:py-3.5 font-semibold">
                     Explore Shop-Floor Gallery
                   </Btn>
                 </div>
 
                 {/* Trust Badges Strip */}
-                <div className="mt-10 flex flex-wrap items-center gap-6 border-t border-onnavy/15 pt-6 text-xs text-onnavy-muted">
+                <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 sm:gap-6 border-t border-onnavy/15 pt-6 text-xs text-onnavy-muted">
                   <span className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-accent" />
                     <span>{capabilities.length} In-House Engineering Domains</span>
@@ -224,7 +224,7 @@ export default function CapabilitiesPage() {
                         <h3 className="mt-1 font-display text-base font-bold text-onnavy leading-snug group-hover:text-accent transition-colors">
                           {featuredCapability.title}
                         </h3>
-                        <p className="mt-0.5 text-xs text-onnavy-muted leading-relaxed">
+                        <p className="mt-0.5 text-xs text-onnavy-muted leading-relaxed line-clamp-1">
                           {featuredCapability.tagline || featuredCapability.description}
                         </p>
                       </div>
@@ -303,39 +303,41 @@ export default function CapabilitiesPage() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. CAPABILITY DOMAINS & SHOWCASE GRID */}
+      {/* 2. CAPABILITIES FILTER & BROWSER SECTION */}
       {/* ========================================================================= */}
-      <Section id="capability-domains">
+      <Section grid id="capabilities-grid" className="scroll-mt-12">
         <InView>
-          <div className="flex flex-wrap items-end justify-between gap-6 border-b border-line pb-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-line pb-8">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 px-3.5 py-1 text-xs font-bold text-accent">
-                <Cpu className="h-3.5 w-3.5" />
-                <span>IN-HOUSE MANUFACTURING DOMAINS</span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-bold text-accent px-2.5 py-1 rounded-md bg-accent/10 border border-accent/30">
+                  SECTION 02
+                </span>
+                <span className="text-xs font-bold text-muted uppercase tracking-wider">Technical Catalogue</span>
               </div>
-              <h2 className="mt-3 font-display text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+              <h2 className="mt-3 font-display text-2xl sm:text-4xl font-extrabold text-foreground tracking-tight">
                 Our Full Scope of Machine Engineering & Tooling
               </h2>
-              <p className="mt-2 text-sm text-muted max-w-2xl">
+              <p className="mt-2 text-xs sm:text-sm text-muted max-w-2xl">
                 Explore our core capabilities across induction hardening, automated conveying, NDT inspection stations, precision machine tool scraping, and custom tooling.
               </p>
             </div>
 
             {/* Keyword Search Input */}
-            <div className="relative w-full sm:w-80">
+            <div className="relative w-full md:w-80 shrink-0">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search capabilities & keywords..."
-                className="w-full rounded-2xl border border-line bg-background pl-10 pr-4 py-3 text-xs text-foreground placeholder:text-muted outline-none transition-all focus:border-accent font-medium shadow-xs"
+                className="w-full rounded-2xl border border-line bg-background pl-10 pr-4 py-3 text-base sm:text-xs text-foreground placeholder:text-muted outline-none transition-all focus:border-accent font-medium shadow-xs"
               />
               <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-xs text-muted hover:text-foreground cursor-pointer"
                 >
                   ✕
                 </button>
@@ -343,8 +345,8 @@ export default function CapabilitiesPage() {
             </div>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="mt-8 flex flex-wrap items-center gap-2 overflow-x-auto pb-2">
+          {/* Category Filter Pills (Touch Scrollable on Mobile) */}
+          <div className="mt-6 sm:mt-8 flex items-center gap-2 overflow-x-auto pb-2 -mx-5 px-5 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible sm:pb-0 scrollbar-none w-full">
             {categories.map((cat) => {
               const active = selectedCategory === cat;
               const count = categoryCounts[cat] || 0;
@@ -353,7 +355,7 @@ export default function CapabilitiesPage() {
                   key={cat}
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
+                  className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-full px-3.5 sm:px-4 py-2 text-xs font-bold transition-all cursor-pointer shrink-0 ${
                     active
                       ? "bg-accent text-navy shadow-md shadow-accent/20 scale-[1.02]"
                       : "bg-surface border border-line text-muted hover:border-accent hover:text-foreground"
@@ -375,10 +377,10 @@ export default function CapabilitiesPage() {
               <button
                 type="button"
                 onClick={resetFilters}
-                className="inline-flex items-center gap-1 text-xs font-bold text-accent hover:underline ml-2 cursor-pointer"
+                className="inline-flex items-center gap-1 text-xs font-bold text-accent hover:underline ml-2 cursor-pointer shrink-0 py-2"
               >
                 <RotateCcw className="h-3 w-3" />
-                <span>Reset Filters</span>
+                <span>Reset</span>
               </button>
             )}
           </div>

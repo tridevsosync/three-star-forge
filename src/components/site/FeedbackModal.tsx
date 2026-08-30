@@ -220,14 +220,14 @@ export function FeedbackModal({
               />
 
               {/* Modal Card */}
-              <div className="relative w-full max-w-lg rounded-3xl border border-onnavy/20 bg-navy text-onnavy shadow-2xl overflow-hidden z-10 my-auto animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+              <div className="relative w-full max-w-lg rounded-3xl border border-onnavy/20 bg-navy text-onnavy shadow-2xl overflow-hidden z-10 my-auto animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[92dvh] sm:max-h-[85vh]">
                 {/* Header */}
-                <div className="relative border-b border-onnavy/15 bg-navy-soft p-5 sm:p-7 shrink-0">
+                <div className="relative border-b border-onnavy/15 bg-navy-soft p-4 sm:p-7 shrink-0">
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
                     disabled={submitting}
-                    className="absolute top-5 right-5 rounded-full border border-onnavy/20 bg-navy/60 p-2 text-onnavy-muted hover:text-onnavy hover:border-accent transition cursor-pointer disabled:opacity-40"
+                    className="absolute top-4 right-4 sm:top-5 sm:right-5 rounded-full border border-onnavy/20 bg-navy/60 p-2 sm:p-2 text-onnavy-muted hover:text-onnavy hover:border-accent transition cursor-pointer disabled:opacity-40"
                     aria-label="Close dialog"
                   >
                     <X className="h-4 w-4" />
@@ -238,7 +238,7 @@ export function FeedbackModal({
                     <span>Client Experience Form</span>
                   </div>
 
-                  <h3 className="mt-2.5 font-display text-xl sm:text-2xl font-bold text-onnavy">
+                  <h3 className="mt-2 font-display text-lg sm:text-2xl font-bold text-onnavy">
                     {title || "Share Your Machinery Experience"}
                   </h3>
                   <p className="mt-1 font-sans text-xs sm:text-sm text-onnavy-muted leading-relaxed">
@@ -248,7 +248,7 @@ export function FeedbackModal({
                 </div>
 
                 {/* Body */}
-                <div className="p-5 sm:p-7 overflow-y-auto flex-1 min-h-0">
+                <div className="p-4 sm:p-7 overflow-y-auto flex-1 min-h-0">
                   {submitted ? (
                     <div className="py-8 sm:py-12 text-center space-y-4">
                       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
@@ -267,7 +267,7 @@ export function FeedbackModal({
                             setOpen(false);
                             if (onSubmitted) onSubmitted();
                           }}
-                          className="rounded-full bg-accent px-6 py-2 text-xs font-bold text-navy uppercase tracking-wider shadow-sm hover:opacity-90 transition cursor-pointer"
+                          className="rounded-full bg-accent px-6 py-2.5 text-xs font-bold text-navy uppercase tracking-wider shadow-sm hover:opacity-90 transition cursor-pointer"
                         >
                           Done
                         </button>
@@ -304,7 +304,7 @@ export function FeedbackModal({
                                   });
                                 }
                               }}
-                              className={`w-full rounded-2xl border px-3.5 py-2.5 text-xs text-onnavy placeholder:text-onnavy-muted/50 outline-none transition disabled:opacity-50 ${
+                              className={`w-full rounded-2xl border px-3.5 py-2.5 text-base sm:text-xs text-onnavy placeholder:text-onnavy-muted/50 outline-none transition disabled:opacity-50 ${
                                 fieldErrors.fullName
                                   ? "border-danger bg-danger/10 focus:border-danger focus:ring-1 focus:ring-danger"
                                   : "border-onnavy/20 bg-navy-soft focus:border-accent focus:ring-1 focus:ring-accent"
@@ -339,7 +339,7 @@ export function FeedbackModal({
                                 });
                               }
                             }}
-                            className={`w-full rounded-2xl border px-3.5 py-2.5 text-xs text-onnavy placeholder:text-onnavy-muted/50 outline-none transition disabled:opacity-50 ${
+                            className={`w-full rounded-2xl border px-3.5 py-2.5 text-base sm:text-xs text-onnavy placeholder:text-onnavy-muted/50 outline-none transition disabled:opacity-50 ${
                               fieldErrors.company
                                 ? "border-danger bg-danger/10 focus:border-danger focus:ring-1 focus:ring-danger"
                                 : "border-onnavy/20 bg-navy-soft focus:border-accent focus:ring-1 focus:ring-accent"
@@ -369,7 +369,7 @@ export function FeedbackModal({
                                 onClick={() => setRating(star)}
                                 onMouseEnter={() => setHoverRating(star)}
                                 onMouseLeave={() => setHoverRating(null)}
-                                className="transition hover:scale-110 disabled:opacity-50 cursor-pointer p-0.5"
+                                className="transition hover:scale-110 disabled:opacity-50 cursor-pointer p-1.5 sm:p-0.5 min-w-[32px] min-h-[32px] flex items-center justify-center"
                                 title={`${star} Star${star > 1 ? "s" : ""}`}
                               >
                                 <Star
@@ -392,7 +392,7 @@ export function FeedbackModal({
                             value={category}
                             disabled={submitting}
                             onChange={(e) => setCategory(e.target.value)}
-                            className="w-full rounded-2xl border border-onnavy/20 bg-navy-soft px-3 py-2 text-xs text-onnavy outline-none transition focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-50 cursor-pointer"
+                            className="w-full rounded-2xl border border-onnavy/20 bg-navy-soft px-3.5 py-2.5 text-base sm:text-xs text-onnavy outline-none transition focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-50 cursor-pointer"
                           >
                             {MACHINERY_CATEGORIES.map((cat) => (
                               <option key={cat} value={cat} className="bg-navy text-onnavy">
@@ -517,7 +517,7 @@ export function FeedbackModal({
                               });
                             }
                           }}
-                          className={`w-full rounded-2xl border px-3.5 py-2.5 text-xs text-onnavy placeholder:text-onnavy-muted/50 outline-none transition disabled:opacity-50 resize-y leading-relaxed ${
+                          className={`w-full rounded-2xl border px-3.5 py-2.5 text-base sm:text-xs text-onnavy placeholder:text-onnavy-muted/50 outline-none transition disabled:opacity-50 resize-y leading-relaxed ${
                             fieldErrors.message
                               ? "border-danger bg-danger/10 focus:border-danger focus:ring-1 focus:ring-danger"
                               : "border-onnavy/20 bg-navy-soft focus:border-accent focus:ring-1 focus:ring-accent"

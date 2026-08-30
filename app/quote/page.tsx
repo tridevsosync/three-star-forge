@@ -174,22 +174,22 @@ function QuoteForm() {
         <div className="mx-auto max-w-4xl">
           <div id="quote-form" className="scroll-mt-28 corner-marks border border-line bg-surface shadow-xl">
             {/* Header */}
-            <div className="border-b border-line bg-navy text-onnavy px-8 py-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="border-b border-line bg-navy text-onnavy px-5 sm:px-8 py-5 sm:py-6 flex flex-wrap items-center justify-between gap-4">
               <div>
                 <TechLabel tone="accent">Fast 2-Step Quote Request</TechLabel>
-                <h2 className="mt-1 font-display text-2xl font-bold text-onnavy">
+                <h2 className="mt-1 font-display text-xl sm:text-2xl font-bold text-onnavy">
                   Machine & Tooling Quotation Form
                 </h2>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs text-accent border border-accent/40 bg-accent/10 px-3 py-1">
+                <span className="font-mono text-[0.7rem] sm:text-xs text-accent border border-accent/40 bg-accent/10 px-2.5 py-1">
                   100% CONFIDENTIAL & SECURE
                 </span>
               </div>
             </div>
 
             {submittedRfq ? (
-              <div className="px-8 py-16 text-center space-y-6">
+              <div className="px-5 sm:px-8 py-12 sm:py-16 text-center space-y-6">
                 <div className="mx-auto flex h-20 w-20 items-center justify-center border-2 border-accent bg-accent/10 text-accent">
                   <svg
                     viewBox="0 0 24 24"
@@ -217,7 +217,7 @@ function QuoteForm() {
                   </p>
                 </div>
 
-                <div className="mx-auto max-w-lg border border-line bg-background p-6 text-left space-y-3 font-mono text-xs">
+                <div className="mx-auto max-w-lg border border-line bg-background p-4 sm:p-6 text-left space-y-3 font-mono text-xs">
                   <div className="flex justify-between border-b border-line pb-2">
                     <span className="text-muted">Your Name:</span>
                     <span className="font-bold text-foreground">{submittedRfq.name}</span>
@@ -260,7 +260,7 @@ function QuoteForm() {
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="p-8 space-y-8">
+              <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-6 sm:space-y-8">
                 {error && (
                   <div className="border border-danger/40 bg-danger/10 px-4 py-3 text-xs font-semibold text-danger">
                     {error}
@@ -269,14 +269,14 @@ function QuoteForm() {
 
                 {/* Section 1: Contact & Organization */}
                 <div>
-                  <div className="border-b border-line pb-2 mb-6">
+                  <div className="border-b border-line pb-2 mb-5 sm:mb-6">
                     <span className="tech-label text-accent font-bold">
                       Step 1 // Your Contact Details
                     </span>
                   </div>
-                  <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className={`tech-label block ${fieldErrors.name ? "text-danger font-bold" : "text-muted"}`}>
                           Full Name *
                         </label>
@@ -290,7 +290,7 @@ function QuoteForm() {
                         value={form.name}
                         onChange={(e) => set("name", e.target.value)}
                         placeholder="e.g. Vikram Sharma"
-                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors ${
+                        className={`w-full border px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors ${
                           fieldErrors.name
                             ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
                             : "border-line bg-background focus:border-accent"
@@ -305,7 +305,7 @@ function QuoteForm() {
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className="tech-label text-muted block">Designation / Role</label>
                         {form.designation ? (
                           <span className="font-mono text-[0.68rem] text-muted">{form.designation.length}/80</span>
@@ -317,12 +317,12 @@ function QuoteForm() {
                         value={form.designation}
                         onChange={(e) => set("designation", e.target.value)}
                         placeholder="e.g. VP Operations / Chief Engineer"
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                        className="w-full border border-line bg-background px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors focus:border-accent"
                       />
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className={`tech-label block ${fieldErrors.email ? "text-danger font-bold" : "text-muted"}`}>
                           Work Email Address *
                         </label>
@@ -336,7 +336,7 @@ function QuoteForm() {
                         value={form.email}
                         onChange={(e) => set("email", e.target.value)}
                         placeholder="e.g. v.sharma@company.com"
-                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors ${
+                        className={`w-full border px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors ${
                           fieldErrors.email
                             ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
                             : "border-line bg-background focus:border-accent"
@@ -351,7 +351,7 @@ function QuoteForm() {
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className={`tech-label block ${fieldErrors.phone ? "text-danger font-bold" : "text-muted"}`}>
                           Direct Phone / Mobile *
                         </label>
@@ -365,7 +365,7 @@ function QuoteForm() {
                         value={form.phone}
                         onChange={(e) => set("phone", e.target.value.replace(/[^0-9+\s\-()]/g, ""))}
                         placeholder="+91 98234 XXXXX"
-                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors font-mono ${
+                        className={`w-full border px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors font-mono ${
                           fieldErrors.phone
                             ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
                             : "border-line bg-background focus:border-accent"
@@ -380,7 +380,7 @@ function QuoteForm() {
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className={`tech-label block ${fieldErrors.company ? "text-danger font-bold" : "text-muted"}`}>
                           Company / Enterprise Name *
                         </label>
@@ -394,7 +394,7 @@ function QuoteForm() {
                         value={form.company}
                         onChange={(e) => set("company", e.target.value)}
                         placeholder="e.g. Precision Components Ltd."
-                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors ${
+                        className={`w-full border px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors ${
                           fieldErrors.company
                             ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
                             : "border-line bg-background focus:border-accent"
@@ -409,7 +409,7 @@ function QuoteForm() {
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className="tech-label text-muted block">Plant Location / City</label>
                         {form.location ? (
                           <span className="font-mono text-[0.68rem] text-muted">{form.location.length}/100</span>
@@ -421,7 +421,7 @@ function QuoteForm() {
                         value={form.location}
                         onChange={(e) => set("location", e.target.value)}
                         placeholder="e.g. Pune / Chennai / Gurgaon / International"
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                        className="w-full border border-line bg-background px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors focus:border-accent"
                       />
                     </div>
                   </div>
@@ -429,20 +429,20 @@ function QuoteForm() {
 
                 {/* Section 2: Machine Specifications */}
                 <div>
-                  <div className="border-b border-line pb-2 mb-6">
+                  <div className="border-b border-line pb-2 mb-5 sm:mb-6">
                     <span className="tech-label text-accent font-bold">
                       Step 2 // Equipment & Project Scope
                     </span>
                   </div>
-                  <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
                     <div>
-                      <label className="tech-label text-muted block mb-2">
+                      <label className="tech-label text-muted block mb-1.5 sm:mb-2">
                         Target Machine / System Type *
                       </label>
                       <select
                         value={form.machineType}
                         onChange={(e) => set("machineType", e.target.value)}
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent font-medium"
+                        className="w-full border border-line bg-background px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors focus:border-accent font-medium cursor-pointer"
                       >
                         {MACHINE_TYPES.map((m) => (
                           <option key={m} value={m}>
@@ -453,11 +453,11 @@ function QuoteForm() {
                     </div>
 
                     <div>
-                      <label className="tech-label text-muted block mb-2">Target Timeline *</label>
+                      <label className="tech-label text-muted block mb-1.5 sm:mb-2">Target Timeline *</label>
                       <select
                         value={form.timeline}
                         onChange={(e) => set("timeline", e.target.value)}
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent font-medium"
+                        className="w-full border border-line bg-background px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors focus:border-accent font-medium cursor-pointer"
                       >
                         {TIMELINE_OPTIONS.map((t) => (
                           <option key={t} value={t}>
@@ -468,7 +468,7 @@ function QuoteForm() {
                     </div>
 
                     <div className="sm:col-span-2">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className="tech-label text-muted block">
                           Target Production Volume / Part Geometry / Cycle Time
                         </label>
@@ -482,12 +482,12 @@ function QuoteForm() {
                         value={form.targetVolume}
                         onChange={(e) => set("targetVolume", e.target.value)}
                         placeholder="e.g. 500 parts/shift, shaft length 400mm, dia 45mm, case depth 2.5mm"
-                        className="w-full border border-line bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                        className="w-full border border-line bg-background px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors focus:border-accent"
                       />
                     </div>
 
                     <div className="sm:col-span-2">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                         <label className={`tech-label block ${fieldErrors.message ? "text-danger font-bold" : "text-muted"}`}>
                           Technical Specifications & Scope Details *
                         </label>
@@ -496,12 +496,12 @@ function QuoteForm() {
                         </span>
                       </div>
                       <textarea
-                        rows={6}
+                        rows={5}
                         maxLength={3000}
                         value={form.message}
                         onChange={(e) => set("message", e.target.value)}
                         placeholder="Describe your technical requirements, component drawings, PLC/CNC preferences, hardening depth tolerances, or turnkey assembly scope..."
-                        className={`w-full border px-4 py-3 text-sm text-foreground outline-none transition-colors resize-y font-mono text-xs ${
+                        className={`w-full border px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground outline-none transition-colors resize-y font-mono ${
                           fieldErrors.message
                             ? "border-danger bg-danger/5 focus:border-danger focus:ring-1 focus:ring-danger/40"
                             : "border-line bg-background focus:border-accent"

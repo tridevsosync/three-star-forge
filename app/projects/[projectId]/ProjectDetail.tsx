@@ -61,31 +61,31 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
         <div className="absolute top-1/2 -left-40 h-[400px] w-[400px] rounded-full bg-accent/5 blur-3xl pointer-events-none" />
 
         <Container className="relative">
-          {/* Breadcrumbs Navigation */}
+          {/* Breadcrumbs Navigation (Touch Scrollable on Mobile) */}
           <nav
             aria-label="Breadcrumb"
-            className="flex flex-wrap items-center gap-2 text-xs font-sans font-semibold text-onnavy-muted mb-6"
+            className="flex items-center gap-2 text-xs font-sans font-semibold text-onnavy-muted mb-5 sm:mb-6 overflow-x-auto whitespace-nowrap scrollbar-none pb-1"
           >
-            <Link href="/projects" className="transition-colors hover:text-accent flex items-center gap-1">
+            <Link href="/projects" className="transition-colors hover:text-accent flex items-center gap-1 shrink-0">
               <span>PORTFOLIO</span>
             </Link>
-            <span className="text-accent/60">/</span>
+            <span className="text-accent/60 shrink-0">/</span>
             <Link
               href="/projects"
-              className="transition-colors hover:text-accent uppercase"
+              className="transition-colors hover:text-accent uppercase shrink-0"
             >
               {project.industry || "MANUFACTURING"}
             </Link>
-            <span className="text-accent/60">/</span>
-            <span className="text-onnavy uppercase font-bold">{project.category || "MACHINES"}</span>
+            <span className="text-accent/60 shrink-0">/</span>
+            <span className="text-onnavy uppercase font-bold shrink-0">{project.category || "MACHINES"}</span>
           </nav>
 
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12 items-center">
+          <div className="grid gap-8 sm:gap-10 lg:grid-cols-12 lg:gap-12 items-center">
             {/* Left Column: Project Overview & Meta Matrix */}
             <div className="lg:col-span-7">
               <Reveal>
                 {/* Badges Row */}
-                <div className="flex flex-wrap items-center gap-2.5">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                   <Badge variant="accent" className="font-bold">
                     {project.category || "Custom Machine"}
                   </Badge>
@@ -107,21 +107,21 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
                 </div>
 
                 {/* Main Heading */}
-                <h1 className="mt-5 font-display text-3xl leading-[1.08] font-extrabold tracking-tight sm:text-4xl lg:text-[3.25rem] text-onnavy">
+                <h1 className="mt-4 sm:mt-5 font-display text-2xl sm:text-4xl lg:text-[3.25rem] font-extrabold tracking-tight sm:leading-[1.08] text-onnavy">
                   {project.title}
                 </h1>
 
                 {/* Subtitle / Short Overview */}
-                <p className="mt-4 max-w-2xl text-base leading-relaxed text-onnavy-muted sm:text-lg">
+                <p className="mt-3 sm:mt-4 max-w-2xl text-sm sm:text-base lg:text-lg leading-relaxed text-onnavy-muted">
                   {project.short || project.overview || project.summary}
                 </p>
 
                 {/* Action CTAs */}
-                <div className="mt-8 flex flex-wrap items-center gap-4">
+                <div className="mt-6 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
                   <Btn
                     to={`/quote?project=${encodeURIComponent(project.title)}#quote-form`}
                     variant="primary"
-                    className="text-sm px-7 py-3.5 font-bold shadow-lg shadow-accent/25"
+                    className="text-xs sm:text-sm px-6 sm:px-7 py-3 sm:py-3.5 font-bold shadow-lg shadow-accent/25"
                   >
                     Request Quote for This Build
                   </Btn>
@@ -129,7 +129,7 @@ export function ProjectDetail({ projectId }: { projectId?: string }) {
                     <button
                       type="button"
                       onClick={() => setIsLightboxOpen(true)}
-                      className="inline-flex items-center gap-2 rounded-xl border border-onnavy/20 bg-navy-soft/80 px-5 py-3.5 text-sm font-semibold text-onnavy hover:border-accent hover:text-accent transition-all cursor-pointer backdrop-blur-sm"
+                      className="inline-flex items-center gap-2 rounded-xl border border-onnavy/20 bg-navy-soft/80 px-4 sm:px-5 py-3 sm:py-3.5 text-xs sm:text-sm font-semibold text-onnavy hover:border-accent hover:text-accent transition-all cursor-pointer backdrop-blur-sm"
                     >
                       <Maximize2 className="h-4 w-4" />
                       <span>Inspect Machine Photos</span>

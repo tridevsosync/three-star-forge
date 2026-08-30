@@ -224,6 +224,8 @@ export function Lightbox({
   onPrev,
 }: LightboxProps) {
   const [zoom, setZoom] = useState(false);
+  const touchStartXRef = React.useRef<number | null>(null);
+  const touchStartYRef = React.useRef<number | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -249,6 +251,18 @@ export function Lightbox({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose, onNext, onPrev, items, currentIndex, onChangeIndex]);
 
+  // Lock body scroll when Lightbox is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const currentItem = items.length > 0 && items[currentIndex] ? items[currentIndex] : null;
@@ -271,30 +285,55 @@ export function Lightbox({
     }
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartYRef.current;
+    // Only trigger swipe if horizontal movement is significantly larger than vertical movement
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+      if (deltaX < 0) {
+        handleNextAction();
+      } else {
+        handlePrevAction();
+      }
+    }
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+  };
+
   const total = items.length > 0 ? items.length : 1;
   const currentNum = items.length > 0 ? currentIndex + 1 : 1;
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-between bg-navy/95 backdrop-blur-md p-3 sm:p-6 overflow-hidden select-none">
+    <div
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-between bg-navy/95 backdrop-blur-md p-3 sm:p-6 overflow-hidden select-none h-[100dvh]"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Top Header Bar */}
-      <div className="w-full flex items-center justify-between max-w-6xl py-2 z-10 border-b border-onnavy/15 text-onnavy">
-        <div className="flex items-center gap-3">
-          <span className="font-sans text-xs font-bold text-accent px-3 py-1 bg-accent/10 border border-accent/30 rounded-full">
+      <div className="w-full flex items-center justify-between max-w-6xl py-1.5 sm:py-2 z-10 border-b border-onnavy/15 text-onnavy shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <span className="font-sans text-[0.7rem] sm:text-xs font-bold text-accent px-2.5 py-0.5 sm:px-3 sm:py-1 bg-accent/10 border border-accent/30 rounded-full shrink-0">
             {String(currentNum).padStart(2, "0")} / {String(total).padStart(2, "0")}
           </span>
           {displayCategory && (
-            <span className="tech-label text-onnavy-muted hidden sm:inline-block">
+            <span className="tech-label text-onnavy-muted text-[0.65rem] sm:text-xs truncate max-w-[140px] sm:max-w-none">
               {displayCategory}
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Zoom Toggle */}
           <button
             type="button"
             onClick={() => setZoom(!zoom)}
-            className="px-3.5 py-1.5 rounded-lg border border-onnavy/20 text-onnavy-muted hover:text-accent hover:border-accent font-sans font-semibold text-xs transition-colors flex items-center gap-1.5"
+            className="px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg border border-onnavy/20 text-onnavy-muted hover:text-accent hover:border-accent font-sans font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
             title={zoom ? "Normal view" : "Zoom in"}
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,7 +350,7 @@ export function Lightbox({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 rounded-lg border border-accent/40 bg-accent/10 text-accent hover:bg-accent hover:text-navy font-sans text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+            className="px-3 py-1 sm:px-4 sm:py-1.5 rounded-lg border border-accent/40 bg-accent/10 text-accent hover:bg-accent hover:text-navy font-sans text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <span>Close</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -322,16 +361,16 @@ export function Lightbox({
       </div>
 
       {/* Main Center Stage */}
-      <div className="relative w-full max-w-6xl flex-1 flex items-center justify-center min-h-0 my-2">
+      <div className="relative w-full max-w-6xl flex-1 flex items-center justify-center min-h-0 my-1 sm:my-2">
         {/* Prev Button */}
         {total > 1 && (
           <button
             type="button"
             onClick={handlePrevAction}
-            className="absolute left-1 sm:left-4 z-20 p-3.5 bg-navy/80 border border-onnavy/20 text-onnavy hover:text-accent hover:border-accent hover:bg-navy transition-all backdrop-blur-sm"
+            className="absolute left-1 sm:left-4 z-20 p-2.5 sm:p-3.5 rounded-xl bg-navy/85 border border-onnavy/20 text-onnavy hover:text-accent hover:border-accent hover:bg-navy transition-all backdrop-blur-sm shadow-md cursor-pointer"
             aria-label="Previous image"
           >
-            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
@@ -342,10 +381,10 @@ export function Lightbox({
           <button
             type="button"
             onClick={handleNextAction}
-            className="absolute right-1 sm:right-4 z-20 p-3.5 bg-navy/80 border border-onnavy/20 text-onnavy hover:text-accent hover:border-accent hover:bg-navy transition-all backdrop-blur-sm"
+            className="absolute right-1 sm:right-4 z-20 p-2.5 sm:p-3.5 rounded-xl bg-navy/85 border border-onnavy/20 text-onnavy hover:text-accent hover:border-accent hover:bg-navy transition-all backdrop-blur-sm shadow-md cursor-pointer"
             aria-label="Next image"
           >
-            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
@@ -353,15 +392,15 @@ export function Lightbox({
 
         {/* Image Container */}
         <div
-          className={`relative max-h-[68vh] w-full flex items-center justify-center overflow-auto p-1 transition-all ${zoom ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+          className={`relative max-h-[52vh] sm:max-h-[66vh] w-full flex items-center justify-center overflow-auto p-1 transition-all ${zoom ? "cursor-zoom-out" : "cursor-zoom-in"}`}
           onClick={() => setZoom(!zoom)}
         >
           {displayImage ? (
             <img
               src={displayImage}
               alt={displayTitle}
-              className={`object-contain transition-all duration-300 ${
-                zoom ? "max-h-none max-w-none scale-125 my-auto" : "max-h-[68vh] max-w-full"
+              className={`object-contain transition-all duration-300 rounded-lg ${
+                zoom ? "max-h-none max-w-none scale-125 my-auto" : "max-h-[52vh] sm:max-h-[66vh] max-w-full"
               }`}
             />
           ) : (
@@ -373,18 +412,23 @@ export function Lightbox({
       </div>
 
       {/* Bottom Info Bar & Thumbnails */}
-      <div className="w-full max-w-6xl border-t border-onnavy/15 pt-3 z-10 flex flex-col gap-3 text-onnavy">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="max-w-2xl">
-            <h4 className="text-base sm:text-lg font-semibold text-onnavy leading-snug">{displayTitle}</h4>
+      <div className="w-full max-w-6xl border-t border-onnavy/15 pt-2 sm:pt-3 z-10 flex flex-col gap-2 sm:gap-3 text-onnavy shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+          <div className="max-w-2xl min-w-0">
+            <h4 className="text-sm sm:text-base font-bold text-onnavy leading-snug truncate sm:whitespace-normal">
+              {displayTitle}
+            </h4>
             {displayDesc && (
-              <p className="mt-1 text-xs text-onnavy-muted leading-relaxed">{displayDesc}</p>
+              <p className="mt-0.5 text-[0.72rem] sm:text-xs text-onnavy-muted leading-relaxed line-clamp-1 sm:line-clamp-2">
+                {displayDesc}
+              </p>
             )}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0">
             <Link
               href={`/quote?project=${encodeURIComponent(displayTitle)}&machine=${encodeURIComponent(displayCategory || "Induction Hardening Machine")}`}
-              className="rounded-xl border border-accent bg-accent/15 px-4 py-2 text-xs font-semibold tracking-wider text-accent uppercase hover:bg-accent hover:text-navy transition-all flex items-center gap-2"
+              onClick={onClose}
+              className="w-full sm:w-auto text-center rounded-xl border border-accent bg-accent/15 px-3 py-1.5 sm:px-4 sm:py-2 text-[0.72rem] sm:text-xs font-bold tracking-wider text-accent uppercase hover:bg-accent hover:text-navy transition-all flex items-center justify-center gap-2"
             >
               <span>Request Quote for This Build</span>
               <span>→</span>
@@ -400,7 +444,7 @@ export function Lightbox({
                 key={it.id || idx}
                 type="button"
                 onClick={() => (onChangeIndex ? onChangeIndex(idx) : null)}
-                className={`relative h-12 w-16 shrink-0 rounded-lg border overflow-hidden transition-all cursor-pointer ${
+                className={`relative h-10 w-14 sm:h-12 sm:w-16 shrink-0 rounded-lg border overflow-hidden transition-all cursor-pointer ${
                   idx === currentIndex
                     ? "border-accent ring-2 ring-accent/50 opacity-100 scale-105"
                     : "border-onnavy/20 opacity-50 hover:opacity-100"

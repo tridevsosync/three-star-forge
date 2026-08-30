@@ -124,23 +124,23 @@ export default function GalleryPage() {
                   </span>
                 </div>
 
-                <h1 className="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
+                <h1 className="mt-5 font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-onnavy leading-[1.1]">
                   Precision Machinery &amp; Tooling <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent-hover to-white">
                     High&#8209;Resolution Shop&#8209;Floor Archive.
                   </span>
                 </h1>
 
-                <p className="mt-5 max-w-2xl text-base sm:text-lg text-onnavy-muted leading-relaxed font-sans">
+                <p className="mt-4 sm:mt-5 max-w-2xl text-sm sm:text-base lg:text-lg text-onnavy-muted leading-relaxed font-sans">
                   A comprehensive photographic record of custom induction hardening machines, automated material handling conveyors, robotic cells, and precision fixtures manufactured and FAT-trialled at our Pune works.
                 </p>
 
                 {/* Hero CTAs */}
-                <div className="mt-8 flex flex-wrap items-center gap-4">
+                <div className="mt-7 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
                   <Btn
                     to="/quote#quote-form"
                     variant="primary"
-                    className="text-xs sm:text-sm px-7 py-3.5 font-bold shadow-lg shadow-accent/25"
+                    className="text-xs sm:text-sm px-6 sm:px-7 py-3 sm:py-3.5 font-bold shadow-lg shadow-accent/25"
                   >
                     Submit Machinery RFQ
                   </Btn>
@@ -211,7 +211,7 @@ export default function GalleryPage() {
                           {featuredPhoto.title}
                         </h3>
                         {featuredPhoto.description && (
-                          <p className="mt-0.5 text-xs text-onnavy-muted leading-relaxed">
+                          <p className="mt-0.5 text-xs text-onnavy-muted leading-relaxed line-clamp-1">
                             {featuredPhoto.description}
                           </p>
                         )}
@@ -248,25 +248,30 @@ export default function GalleryPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. MAIN GALLERY SECTION & INTERACTIVE FLOATING COMMAND DOCK */}
+      {/* 2. DENSE MEDIA MOSAIC & COMMAND FILTER DOCK */}
       {/* ========================================================================= */}
-      <div id="gallery-grid" className="scroll-mt-12 bg-background py-14 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
+      <Section grid id="gallery-grid" className="scroll-mt-12">
+        <div className="space-y-8">
           {/* Section Header */}
           <InView>
-            <div className="flex flex-wrap items-end justify-between gap-6 border-b border-line pb-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-line pb-8">
               <div>
-                <TechLabel tone="accent">Engineering Visuals</TechLabel>
-                <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-foreground">
-                  Browse Machinery &amp; Tooling Records
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold text-accent px-2.5 py-1 rounded-md bg-accent/10 border border-accent/30">
+                    SECTION 02
+                  </span>
+                  <span className="text-xs font-bold text-muted uppercase tracking-wider">High-Resolution Showcase</span>
+                </div>
+                <h2 className="mt-3 font-display text-2xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+                  Shop-Floor Machinery &amp; Tooling Gallery
                 </h2>
-                <p className="mt-1.5 text-xs sm:text-sm text-muted max-w-xl">
-                  Select any category to inspect close-up machining tolerances, component assemblies, and surface finishes in full-resolution lightbox.
+                <p className="mt-2 text-xs sm:text-sm text-muted max-w-2xl">
+                  Click any image to inspect high-resolution photographs, machine specifications, and request tailored quotes for specific configurations.
                 </p>
               </div>
 
-              {/* Status Chips */}
-              <div className="flex flex-wrap gap-2">
+              {/* Status Counters */}
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-semibold text-foreground shadow-xs">
                   {String(filteredItems.length).padStart(2, "0")} / {String(gallery.length).padStart(2, "0")} Photographs
                 </span>
@@ -281,15 +286,15 @@ export default function GalleryPage() {
           {/* Interactive Floating Command & Filter Dock */}
           <InView delay={50}>
             <div className="rounded-3xl border border-line bg-surface shadow-sm p-4 sm:p-5 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
                 {/* Search Input */}
-                <div className="relative flex-1 min-w-[260px] max-w-md">
+                <div className="relative flex-1 min-w-[240px] max-w-md">
                   <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search machines, coils, fixtures, automation..."
-                    className="w-full rounded-2xl border border-line bg-background pl-10 pr-9 py-2.5 text-xs font-medium text-foreground placeholder:text-muted outline-none transition-all focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    placeholder="Search machines, coils, fixtures..."
+                    className="w-full rounded-2xl border border-line bg-background pl-10 pr-9 py-2.5 text-base sm:text-xs font-medium text-foreground placeholder:text-muted outline-none transition-all focus:border-accent focus:ring-2 focus:ring-accent/20"
                   />
                   <Search className="absolute left-3.5 top-3 h-4 w-4 text-muted" />
                   {search && (
@@ -304,12 +309,12 @@ export default function GalleryPage() {
                 </div>
 
                 {/* Filter Controls & Layout Toggles */}
-                <div className="flex flex-wrap items-center gap-2.5">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                   {/* Featured Button */}
                   <button
                     type="button"
                     onClick={() => setOnlyFeatured(!onlyFeatured)}
-                    className={`inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 rounded-xl border px-3 sm:px-3.5 py-2 text-xs font-semibold transition-all cursor-pointer ${
                       onlyFeatured
                         ? "border-accent bg-accent text-navy font-bold shadow-sm"
                         : "border-line bg-background text-muted hover:border-line-strong hover:text-foreground"
@@ -327,7 +332,7 @@ export default function GalleryPage() {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="rounded-xl border border-line bg-background px-3 py-2 text-xs font-medium text-foreground outline-none focus:border-accent cursor-pointer"
+                      className="rounded-xl border border-line bg-background px-3 py-2 text-base sm:text-xs font-medium text-foreground outline-none focus:border-accent cursor-pointer"
                     >
                       <option value="default">Default Order</option>
                       <option value="featured">Featured First</option>
@@ -368,8 +373,8 @@ export default function GalleryPage() {
                 </div>
               </div>
 
-              {/* Dynamic Category Tabs */}
-              <div className="flex flex-wrap gap-1.5 pt-3 border-t border-line">
+              {/* Dynamic Category Tabs (Touch Scrollable on Mobile) */}
+              <div className="flex items-center gap-1.5 pt-3 border-t border-line overflow-x-auto pb-1 -mx-2 px-2 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible scrollbar-none w-full">
                 {allCategories.map((c) => {
                   const count = categoryCounts[c] || 0;
                   const active = cat === c;
@@ -381,7 +386,7 @@ export default function GalleryPage() {
                         setCat(c);
                         setLightboxIndex(null);
                       }}
-                      className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                      className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer shrink-0 whitespace-nowrap ${
                         active
                           ? "border-accent bg-accent text-navy font-bold shadow-xs"
                           : "border-line bg-background text-muted hover:border-accent hover:text-foreground"
@@ -579,7 +584,7 @@ export default function GalleryPage() {
             </div>
           )}
         </div>
-      </div>
+      </Section>
 
       {/* ========================================================================= */}
       {/* 4. QUALITY VALIDATION & STANDARDS GUARANTEE MATRIX */}

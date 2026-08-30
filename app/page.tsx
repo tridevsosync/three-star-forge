@@ -275,25 +275,25 @@ export default function HomePage() {
                   </span>
                 </div>
 
-                <h1 className="mt-6 font-display text-4xl leading-[1.08] font-extrabold tracking-tight sm:text-5xl lg:text-[3.85rem] text-onnavy">
+                <h1 className="mt-5 sm:mt-6 font-display text-3xl sm:text-5xl lg:text-[3.85rem] font-extrabold tracking-tight sm:leading-[1.08] text-onnavy">
                   {home.heroTitle || "We Turn Engineering Ideas Into Reliable Machines."}
                 </h1>
 
-                <p className="mt-5 max-w-2xl text-base leading-relaxed text-onnavy-muted sm:text-lg">
+                <p className="mt-4 sm:mt-5 max-w-2xl text-sm sm:text-base lg:text-lg leading-relaxed text-onnavy-muted">
                   {home.heroSubtitle ||
                     "Custom machine design, complete in-house manufacturing, and live testing for factories and equipment makers worldwide."}
                 </p>
 
                 {/* Hero CTAs */}
-                <div className="mt-8 flex flex-wrap items-center gap-4">
+                <div className="mt-7 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
                   <Btn
+                    to="/quote"
                     variant="primary"
-                    className="text-sm px-7 py-3.5 font-bold"
-                    onClick={() => openRfqModal({ project: "General Machine Inquiry" })}
+                    className="text-xs sm:text-sm px-6 sm:px-7 py-3 sm:py-3.5 font-bold shadow-lg shadow-accent/25"
                   >
                     {home.primaryCta || "Get a Free Quote"}
                   </Btn>
-                  <Btn to="/projects" variant="light" className="text-sm px-7 py-3.5">
+                  <Btn to="/projects" variant="light" className="text-xs sm:text-sm px-6 sm:px-7 py-3 sm:py-3.5">
                     {home.secondaryCta || "See Our Work"}
                   </Btn>
                 </div>
@@ -491,8 +491,8 @@ export default function HomePage() {
               intro="Browse real machinery, induction hardening rigs, conveyors, and custom assembly setups engineered and tested in our Pune workshop."
             />
 
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap gap-2">
+            {/* Category Filter Pills (Touch Scrollable on Mobile) */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-5 px-5 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible sm:pb-0 scrollbar-none w-full lg:w-auto">
               {allCategories.map((cat) => {
                 const count =
                   cat === "All"
@@ -503,7 +503,7 @@ export default function HomePage() {
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 font-sans text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-xl border px-3 sm:px-3.5 py-2 font-sans text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer shrink-0 ${
                       active
                         ? "border-accent bg-accent text-navy font-bold shadow-sm shadow-accent/20"
                         : "border-line bg-surface text-muted hover:border-accent hover:text-foreground"
@@ -511,7 +511,7 @@ export default function HomePage() {
                   >
                     <span>{cat}</span>
                     <span
-                      className={`text-[0.68rem] px-1.5 py-0.5 rounded-full font-bold ${
+                      className={`text-[0.65rem] sm:text-[0.68rem] px-1.5 py-0.5 rounded-full font-bold ${
                         active ? "bg-navy text-accent" : "bg-background text-muted"
                       }`}
                     >

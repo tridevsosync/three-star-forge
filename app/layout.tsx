@@ -1,12 +1,25 @@
 import "@/styles.css";
 import { AppShell } from "./AppShell";
 
-export const metadata = {
+import type { Viewport, Metadata } from "next";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#0b1329",
+  colorScheme: "dark light",
+};
+
+export const metadata: Metadata = {
   title: "Three Star Enterprises — Engineering Ideas Into Industrial Reality",
   description:
     "Design engineering, turnkey manufacturing, NPI and product management for global OEMs. Induction hardening machines, conveyors, automation and material handling equipment from Pune.",
   icons: {
     icon: "/favicon.ico",
+  },
+  formatDetection: {
+    telephone: false,
   },
 };
 

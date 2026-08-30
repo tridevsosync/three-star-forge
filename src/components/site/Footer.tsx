@@ -50,7 +50,7 @@ export function Footer() {
       </div>
 
       <Container className="relative">
-        <div className="grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-12 lg:py-20">
+        <div className="grid gap-8 py-10 sm:gap-12 sm:py-16 md:grid-cols-2 lg:grid-cols-12 lg:py-20">
           {/* Brand Col */}
           <div className="lg:col-span-4">
             <div className="flex items-center gap-3.5">
@@ -64,10 +64,10 @@ export function Footer() {
                 <TechLabel tone="accent">ENTERPRISES</TechLabel>
               </span>
             </div>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-onnavy-muted">
+            <p className="mt-4 sm:mt-6 max-w-sm text-xs sm:text-sm leading-relaxed text-onnavy-muted">
               {company.positioning}
             </p>
-            <div className="mt-6 flex flex-wrap gap-2">
+            <div className="mt-4 sm:mt-6 flex flex-wrap gap-2">
               <Badge variant="navy">Custom Machines</Badge>
               <Badge variant="navy">Induction Heating</Badge>
               <Badge variant="navy">Conveyor Systems</Badge>
@@ -77,7 +77,7 @@ export function Footer() {
           {/* Quick Links */}
           <nav className="lg:col-span-2">
             <TechLabel tone="light">Navigation</TechLabel>
-            <ul className="mt-5 space-y-2.5 text-sm text-onnavy-muted">
+            <ul className="mt-4 sm:mt-5 space-y-2 text-xs sm:text-sm text-onnavy-muted">
               {[
                 { label: "Company Profile", to: "/about" },
                 { label: "Service Lines", to: "/services" },
@@ -98,7 +98,7 @@ export function Footer() {
           {/* Services & Industries */}
           <nav className="lg:col-span-3">
             <TechLabel tone="light">Services & Sectors</TechLabel>
-            <ul className="mt-5 space-y-2.5 text-sm text-onnavy-muted">
+            <ul className="mt-4 sm:mt-5 space-y-2 text-xs sm:text-sm text-onnavy-muted">
               {serviceLinks.slice(0, 3).map((l) => (
                 <li key={l.label}>
                   <Link href={l.to} className="transition-colors duration-200 hover:text-accent">
@@ -119,19 +119,19 @@ export function Footer() {
           {/* Direct Contact */}
           <div className="lg:col-span-3">
             <TechLabel tone="light">Pune Works</TechLabel>
-            <address className="mt-5 space-y-3 text-sm leading-relaxed text-onnavy-muted not-italic">
+            <address className="mt-4 sm:mt-5 space-y-2.5 text-xs sm:text-sm leading-relaxed text-onnavy-muted not-italic">
               <p className="font-semibold text-onnavy">{company.contactPerson}</p>
               <p className="text-xs leading-relaxed">{company.address}</p>
-              <div className="pt-2 text-xs space-y-1">
+              <div className="pt-2 text-xs space-y-1.5">
                 <p>
                   <span className="text-onnavy-muted/70">Phone: </span>
-                  <a href={`tel:${(company.phone.split("/")[0] ?? "").replace(/\s/g, "")}`} className="text-accent hover:underline">
+                  <a href={`tel:${(company.phone.split("/")[0] ?? "").replace(/\s/g, "")}`} className="text-accent hover:underline font-mono">
                     {company.phone}
                   </a>
                 </p>
                 <p>
                   <span className="text-onnavy-muted/70">Email: </span>
-                  <a href={`mailto:${company.email}`} className="text-accent hover:underline break-all">
+                  <a href={`mailto:${company.email}`} className="text-accent hover:underline break-all font-mono">
                     {company.email}
                   </a>
                 </p>
