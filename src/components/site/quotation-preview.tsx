@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { formatINR, numberToIndianWords } from "@/lib/numberToWords";
-import { downloadQuotationPDF } from "@/lib/pdfExport";
+import { downloadQuotationDirectly, downloadQuotationPDF } from "@/lib/pdfExport";
 import { Quotation } from "@/types";
 import {
   Printer,
@@ -28,18 +28,24 @@ import {
   FileText,
 } from "lucide-react";
 
-export default function QuotationPreviewView({ params }: { params: Promise<{ id: string }> | { id: string } }) {
-  const [resolvedId, setResolvedId] = useState<string>("");
+export default function QuotationPreviewView({ params }: { params?: Promise<{ id: string }> | { id: string } }) {
+  const routeParams = useParams();
+  const rawId = (routeParams?.id as string) || "";
+  const [resolvedId, setResolvedId] = useState<string>(rawId);
   const searchParams = useSearchParams();
   const router = useRouter();
 
   useEffect(() => {
-    if (params && typeof (params as any).then === "function") {
-      (params as Promise<{ id: string }>).then((p) => setResolvedId(p.id));
+    if (rawId) {
+      setResolvedId(rawId);
+    } else if (params && typeof (params as any).then === "function") {
+      (params as Promise<{ id: string }>).then((p) => {
+        if (p?.id) setResolvedId(p.id);
+      });
     } else if (params && (params as any).id) {
       setResolvedId((params as any).id);
     }
-  }, [params]);
+  }, [params, rawId]);
 
   const [quotation, setQuotation] = useState<Quotation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,7 +60,7 @@ export default function QuotationPreviewView({ params }: { params: Promise<{ id:
     async function fetchQuotation() {
       try {
         setLoading(true);
-        const res = await fetch(`/api/quotations/${resolvedId}`, { cache: "no-store" });
+        const res = await fetch(`/api/quotations/${encodeURIComponent(resolvedId)}`, { cache: "no-store" });
         const json = await res.json();
         if (!res.ok || !json.success || !json.data) {
           throw new Error(json.error || "Could not find quotation");
@@ -91,14 +97,14 @@ export default function QuotationPreviewView({ params }: { params: Promise<{ id:
   const handleDirectDownload = async () => {
     if (!quotation) return;
     setIsDownloadingPdf(true);
-    const quoteNo = quotation.quoteNumber.replace(/[\/\\]/g, "-");
-    const filename = `Quotation-${quoteNo}-${(quotation.client?.company || "Client").replace(/\s+/g, "_")}.pdf`;
-    const element = document.getElementById("printable-quotation-sheet") || document.body;
-
     try {
-      await downloadQuotationPDF(element, filename);
+      await downloadQuotationDirectly(quotation);
     } catch (err) {
-      console.error(err);
+      console.error("Direct PDF download fallback:", err);
+      const quoteNo = (quotation.quoteNumber || "Quotation").replace(/[\/\\]/g, "-");
+      const filename = `Quotation-${quoteNo}-${(quotation.client?.company || "Client").replace(/\s+/g, "_")}.pdf`;
+      const element = document.getElementById("printable-quotation-sheet") || document.body;
+      await downloadQuotationPDF(element, filename);
     } finally {
       setIsDownloadingPdf(false);
     }

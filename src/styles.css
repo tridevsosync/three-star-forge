@@ -38,30 +38,30 @@
 
 :root {
   /* Surface & Base */
-  --background: oklch(0.984 0.004 247.86);
-  --surface: oklch(1 0 0);
-  --surface-soft: oklch(0.965 0.005 250);
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-soft: #f1f5f9;
 
   /* Deep Precision Industrial Navy */
-  --foreground: oklch(0.208 0.042 265.75);
-  --navy: oklch(0.18 0.045 265.75);
-  --navy-soft: oklch(0.24 0.042 264);
-  --navy-deep: oklch(0.13 0.04 266);
-  --steel: oklch(0.38 0.048 250.5);
+  --foreground: #0c1829;
+  --navy: #0b192c;
+  --navy-soft: #162a45;
+  --navy-deep: #07111e;
+  --steel: #334155;
 
   /* Engineering Electric Cyan / Precision Accent */
-  --accent: oklch(0.685 0.148 237.32);
-  --accent-soft: oklch(0.92 0.04 232);
-  --accent-hover: oklch(0.74 0.15 235);
+  --accent: #0284c7;
+  --accent-soft: #e0f2fe;
+  --accent-hover: #0369a1;
 
   /* Neutral & Utility */
-  --muted: oklch(0.52 0.04 257.42);
-  --line: oklch(0.90 0.012 255.5);
-  --line-strong: oklch(0.80 0.02 255.5);
-  --onnavy: oklch(0.985 0.003 247.86);
-  --onnavy-muted: oklch(0.78 0.024 255);
-  --danger: oklch(0.577 0.245 27.32);
-  --success: oklch(0.64 0.16 155);
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+  --onnavy: #f8fafc;
+  --onnavy-muted: #94a3b8;
+  --danger: #ef4444;
+  --success: #10b981;
 }
 
 @layer base {
@@ -153,12 +153,12 @@
   background-image:
     linear-gradient(
       to right,
-      color-mix(in oklab, var(--steel) 10%, transparent) 1px,
+      rgba(51, 65, 85, 0.1) 1px,
       transparent 1px
     ),
     linear-gradient(
       to bottom,
-      color-mix(in oklab, var(--steel) 10%, transparent) 1px,
+      rgba(51, 65, 85, 0.1) 1px,
       transparent 1px
     );
   background-size: 48px 48px;
@@ -168,12 +168,12 @@
   background-image:
     linear-gradient(
       to right,
-      color-mix(in oklab, var(--onnavy) 6%, transparent) 1px,
+      rgba(248, 250, 252, 0.06) 1px,
       transparent 1px
     ),
     linear-gradient(
       to bottom,
-      color-mix(in oklab, var(--onnavy) 6%, transparent) 1px,
+      rgba(248, 250, 252, 0.06) 1px,
       transparent 1px
     );
   background-size: 48px 48px;
@@ -199,7 +199,7 @@
   text-transform: uppercase;
   border: 1px solid var(--line);
   border-radius: 9999px;
-  background: color-mix(in oklab, var(--surface) 85%, transparent);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
 }
 
@@ -380,30 +380,30 @@
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
-  box-shadow: 0 4px 20px -4px color-mix(in oklab, var(--navy) 6%, transparent);
+  box-shadow: 0 4px 20px -4px rgba(11, 25, 44, 0.06);
   transition:
     box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.45s ease,
     transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   &:hover {
-    border-color: color-mix(in oklab, var(--accent) 55%, transparent);
-    box-shadow: 0 20px 45px -15px color-mix(in oklab, var(--navy) 20%, transparent);
+    border-color: rgba(2, 132, 199, 0.55);
+    box-shadow: 0 20px 45px -15px rgba(11, 25, 44, 0.2);
     transform: translateY(-4px);
   }
 }
 
 @utility card-navy {
   background: var(--navy);
-  border: 1px solid color-mix(in oklab, var(--onnavy) 14%, transparent);
+  border: 1px solid rgba(248, 250, 252, 0.14);
   border-radius: var(--radius-card);
-  box-shadow: 0 4px 20px -4px color-mix(in oklab, var(--navy-deep) 40%, transparent);
+  box-shadow: 0 4px 20px -4px rgba(7, 17, 30, 0.4);
   transition:
     box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.45s ease,
     transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   &:hover {
     border-color: var(--accent);
-    box-shadow: 0 20px 45px -15px color-mix(in oklab, var(--accent) 25%, transparent);
+    box-shadow: 0 20px 45px -15px rgba(2, 132, 199, 0.25);
     transform: translateY(-4px);
   }
 }
@@ -412,7 +412,7 @@
   background-image: linear-gradient(
     to right,
     transparent,
-    color-mix(in oklab, var(--steel) 30%, transparent),
+    rgba(51, 65, 85, 0.3),
     transparent
   );
   height: 1px;
@@ -420,14 +420,14 @@
 
 @utility glow-accent {
   box-shadow:
-    0 0 0 1px color-mix(in oklab, var(--accent) 40%, transparent),
-    0 20px 50px -25px color-mix(in oklab, var(--accent) 60%, transparent);
+    0 0 0 1px rgba(2, 132, 199, 0.4),
+    0 20px 50px -25px rgba(2, 132, 199, 0.6);
 }
 
 /* Precision Sleek Scrollbar for Review Cards & Overflows */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklab, var(--accent) 50%, transparent) color-mix(in oklab, var(--navy-deep) 60%, transparent);
+  scrollbar-color: rgba(2, 132, 199, 0.5) rgba(7, 17, 30, 0.6);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -436,12 +436,12 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: color-mix(in oklab, var(--navy-deep) 60%, transparent);
+  background: rgba(7, 17, 30, 0.6);
   border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: color-mix(in oklab, var(--accent) 50%, transparent);
+  background: rgba(2, 132, 199, 0.5);
   border-radius: 9999px;
 }
 
@@ -463,5 +463,56 @@
 }
 .scrollbar-none::-webkit-scrollbar {
   display: none;
+}
+
+/* ---------- High Precision Print Rules for Quotations ---------- */
+@media print {
+  @page {
+    margin: 8mm 8mm 8mm 8mm;
+    size: A4 portrait;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0c1829 !important;
+    font-size: 10pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+  }
+
+  header,
+  footer,
+  nav,
+  aside,
+  .print\:hidden,
+  [data-print-hidden="true"] {
+    display: none !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  #printable-quotation-sheet {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+
+  tr,
+  .avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
 }
 

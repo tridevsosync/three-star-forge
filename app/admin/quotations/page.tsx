@@ -14,7 +14,7 @@ import {
 import { useSite } from "@/store/site-store";
 import { Quotation, QuotationLineItem, QuotationStatus } from "@/types";
 import { formatINR, numberToIndianWords } from "@/lib/numberToWords";
-import { downloadQuotationPDF } from "@/lib/pdfExport";
+import { downloadQuotationDirectly, downloadQuotationPDF } from "@/lib/pdfExport";
 import {
   FileText,
   Search,
@@ -57,15 +57,15 @@ const CATEGORIES = [
   "Refurbishment & Retrofitting",
 ];
 
-const DEFAULT_LINE_ITEM: QuotationLineItem = {
-  description: "Vertical CNC Induction Hardening Scanner System - 250 kW",
-  hsnCode: "8479",
+const BLANK_LINE_ITEM: QuotationLineItem = {
+  description: "",
+  hsnCode: "",
   quantity: 1,
   unit: "Nos",
-  unitPrice: 2450000,
+  unitPrice: 0,
   discountPercent: 0,
   taxPercent: 18,
-  amount: 2891000,
+  amount: 0,
 };
 
 function QuotationsPageInner() {
@@ -96,11 +96,11 @@ function QuotationsPageInner() {
   const [deletingQuotation, setDeletingQuotation] = useState<Quotation | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [flashMsg, setFlashMsg] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Editor Form State
+  // Editor Form State - Completely empty for user input
   const [formQuoteNumber, setFormQuoteNumber] = useState("");
   const [formRfqId, setFormRfqId] = useState("");
   const [formClientName, setFormClientName] = useState("");
@@ -115,24 +115,14 @@ function QuotationsPageInner() {
   const [formProjectCategory, setFormProjectCategory] = useState("Induction Hardening");
   const [formRefDocName, setFormRefDocName] = useState("");
   const [formRefDocUrl, setFormRefDocUrl] = useState("");
-  const [formLineItems, setFormLineItems] = useState<QuotationLineItem[]>([DEFAULT_LINE_ITEM]);
+  const [formLineItems, setFormLineItems] = useState<QuotationLineItem[]>([BLANK_LINE_ITEM]);
   const [formCurrency, setFormCurrency] = useState("INR");
-  const [formPaymentTerms, setFormPaymentTerms] = useState(
-    "30% Advance with Purchase Order, 60% against successful FAT trial inspection at Pune works, 10% after site commissioning.",
-  );
-  const [formDeliveryTimeline, setFormDeliveryTimeline] = useState(
-    "8 â€“ 12 Weeks from drawing approval and advance receipt.",
-  );
+  const [formPaymentTerms, setFormPaymentTerms] = useState("");
+  const [formDeliveryTimeline, setFormDeliveryTimeline] = useState("");
   const [formValidityDays, setFormValidityDays] = useState(30);
-  const [formWarranty, setFormWarranty] = useState(
-    "12 Months from commissioning or 18 months from dispatch date, whichever is earlier.",
-  );
-  const [formFreightTerms, setFormFreightTerms] = useState(
-    "Ex-Works Pune Plant. Freight, packing, and transit insurance extra at actuals.",
-  );
-  const [formInspectionFAT, setFormInspectionFAT] = useState(
-    "100% Factory Acceptance Trials (FAT) and workpiece cycle testing conducted at Pune facility prior to dispatch.",
-  );
+  const [formWarranty, setFormWarranty] = useState("");
+  const [formFreightTerms, setFormFreightTerms] = useState("");
+  const [formInspectionFAT, setFormInspectionFAT] = useState("");
   const [formSpecialNotes, setFormSpecialNotes] = useState("");
   const [formStatus, setFormStatus] = useState<QuotationStatus>("draft");
 
@@ -160,7 +150,7 @@ function QuotationsPageInner() {
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
-    flash("âœ“ Copied to clipboard");
+    flash("✓ Copied to clipboard");
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -219,21 +209,17 @@ function QuotationsPageInner() {
     setFormClientGstin("");
     setFormBillingAddress("");
     setFormPlantLocation("");
-    setFormProjectTitle("Custom Industrial Machinery Turnkey System");
+    setFormProjectTitle("");
     setFormProjectCategory("Induction Hardening");
     setFormRefDocName("");
     setFormRefDocUrl("");
-    setFormLineItems([{ ...DEFAULT_LINE_ITEM }]);
-    setFormPaymentTerms(
-      "30% Advance with Purchase Order, 60% against successful FAT trial inspection at Pune works, 10% after site commissioning.",
-    );
-    setFormDeliveryTimeline("8 â€“ 12 Weeks from drawing approval and advance receipt.");
+    setFormLineItems([{ ...BLANK_LINE_ITEM }]);
+    setFormPaymentTerms("");
+    setFormDeliveryTimeline("");
     setFormValidityDays(30);
-    setFormWarranty("12 Months from commissioning or 18 months from dispatch date, whichever is earlier.");
-    setFormFreightTerms("Ex-Works Pune Plant. Freight, packing, and transit insurance extra at actuals.");
-    setFormInspectionFAT(
-      "100% Factory Acceptance Trials (FAT) and workpiece cycle testing conducted at Pune facility prior to dispatch.",
-    );
+    setFormWarranty("");
+    setFormFreightTerms("");
+    setFormInspectionFAT("");
     setFormSpecialNotes("");
     setFormStatus("draft");
     setEditingQuotation(null);
@@ -257,7 +243,7 @@ function QuotationsPageInner() {
     setFormRefDocName(q.project?.referenceDocName || "");
     setFormRefDocUrl(q.project?.referenceDocUrl || "");
     setFormLineItems(
-      q.lineItems && q.lineItems.length > 0 ? q.lineItems.map((item) => ({ ...item })) : [{ ...DEFAULT_LINE_ITEM }],
+      q.lineItems && q.lineItems.length > 0 ? q.lineItems.map((item) => ({ ...item })) : [{ ...BLANK_LINE_ITEM }],
     );
     setFormPaymentTerms(q.commercialTerms?.paymentTerms || "");
     setFormDeliveryTimeline(q.commercialTerms?.deliveryTimeline || "");
@@ -294,16 +280,7 @@ function QuotationsPageInner() {
   const addLineItem = () => {
     setFormLineItems((prev) => [
       ...prev,
-      {
-        description: "Tooling, Inductor Coil & Fixture Assembly",
-        hsnCode: "8479",
-        quantity: 1,
-        unit: "Sets",
-        unitPrice: 250000,
-        discountPercent: 0,
-        taxPercent: 18,
-        amount: 295000,
-      },
+      { ...BLANK_LINE_ITEM },
     ]);
   };
 
@@ -345,62 +322,93 @@ function QuotationsPageInner() {
 
   const handleSaveQuotation = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formClientName || !formClientCompany || !formClientEmail || !formClientPhone) {
-      flash("âš  Please fill in required client contact fields");
+    if (!formClientName.trim() && !formClientCompany.trim()) {
+      flash("⚠️ Please enter Contact Person or Company Name");
       return;
     }
 
     setIsSaving(true);
+
+    const clientName = formClientName.trim() || formClientCompany.trim() || "Client Representative";
+    const clientCompany = formClientCompany.trim() || formClientName.trim() || "Client Enterprise";
+
+    // Filter and sanitize line items
+    const rawItems = formLineItems.map((item, idx) => ({
+      description: item.description?.trim() || `Machinery Equipment Scope #${idx + 1}`,
+      hsnCode: item.hsnCode?.trim() || "8479",
+      quantity: Number(item.quantity) > 0 ? Number(item.quantity) : 1,
+      unit: item.unit || "Nos",
+      unitPrice: Number(item.unitPrice) >= 0 ? Number(item.unitPrice) : 0,
+      discountPercent: Number(item.discountPercent) || 0,
+      taxPercent: Number(item.taxPercent) ?? 18,
+      amount: Number(item.amount) || 0,
+    }));
+
+    const finalLineItems = rawItems.length > 0 ? rawItems : [
+      {
+        description: "Custom Industrial Machinery Turnkey Scope",
+        hsnCode: "8479",
+        quantity: 1,
+        unit: "Nos",
+        unitPrice: 0,
+        discountPercent: 0,
+        taxPercent: 18,
+        amount: 0,
+      },
+    ];
+
     const payload = {
-      quoteNumber: formQuoteNumber,
-      rfqId: formRfqId,
+      quoteNumber: formQuoteNumber.trim(),
+      rfqId: formRfqId.trim(),
       client: {
-        name: formClientName,
-        company: formClientCompany,
-        designation: formClientDesignation,
-        email: formClientEmail,
-        phone: formClientPhone,
-        gstin: formClientGstin,
-        billingAddress: formBillingAddress,
-        plantLocation: formPlantLocation,
+        name: clientName,
+        company: clientCompany,
+        designation: formClientDesignation.trim(),
+        email: formClientEmail.trim(),
+        phone: formClientPhone.trim(),
+        gstin: formClientGstin.trim(),
+        billingAddress: formBillingAddress.trim(),
+        plantLocation: formPlantLocation.trim(),
       },
       project: {
-        title: formProjectTitle,
-        category: formProjectCategory,
-        referenceDocName: formRefDocName,
-        referenceDocUrl: formRefDocUrl,
+        title: formProjectTitle.trim() || "Custom Turnkey Machinery Build",
+        category: formProjectCategory || "Induction Hardening",
+        referenceDocName: formRefDocName.trim(),
+        referenceDocUrl: formRefDocUrl.trim(),
       },
-      lineItems: formLineItems,
-      currency: formCurrency,
+      lineItems: finalLineItems,
+      currency: formCurrency || "INR",
       commercialTerms: {
-        paymentTerms: formPaymentTerms,
-        deliveryTimeline: formDeliveryTimeline,
-        validityDays: formValidityDays,
-        warranty: formWarranty,
-        freightTerms: formFreightTerms,
-        inspectionFAT: formInspectionFAT,
-        specialNotes: formSpecialNotes,
+        paymentTerms: formPaymentTerms.trim(),
+        deliveryTimeline: formDeliveryTimeline.trim(),
+        validityDays: formValidityDays || 30,
+        warranty: formWarranty.trim(),
+        freightTerms: formFreightTerms.trim(),
+        inspectionFAT: formInspectionFAT.trim(),
+        specialNotes: formSpecialNotes.trim(),
       },
-      status: formStatus,
+      status: formStatus || "draft",
     };
 
     if (editingQuotation) {
       const res = await updateQuotation(editingQuotation.id || (editingQuotation as any)._id, payload);
       setIsSaving(false);
       if (res.success) {
-        flash("âœ“ Quotation updated successfully");
+        flash("✓ Quotation updated successfully");
         setIsEditorOpen(false);
+        fetchQuotations();
       } else {
-        flash(`âš  Error: ${res.error || "Failed to update"}`);
+        flash(`⚠️ Error: ${res.error || "Failed to update"}`);
       }
     } else {
       const res = await createQuotation(payload);
       setIsSaving(false);
       if (res.success) {
-        flash("âœ“ New commercial quotation created successfully");
+        flash("✓ New commercial quotation created and issued successfully");
         setIsEditorOpen(false);
+        fetchQuotations();
       } else {
-        flash(`âš  Error: ${res.error || "Failed to create"}`);
+        flash(`⚠️ Error: ${res.error || "Failed to create"}`);
       }
     }
   };
@@ -409,167 +417,42 @@ function QuotationsPageInner() {
     if (!deletingQuotation) return;
     setIsDeleting(true);
     const id = deletingQuotation.id || (deletingQuotation as any)._id;
-    await deleteQuotation(id);
+    const res = await deleteQuotation(id);
     setIsDeleting(false);
     setDeletingQuotation(null);
-    flash("âœ“ Quotation deleted permanently");
+    if (res?.success !== false) {
+      flash("✓ Quotation deleted permanently");
+    } else {
+      flash("⚠️ Failed to delete quotation");
+    }
   };
 
-  // Direct PDF Download Trigger: Generates clean standalone PDF file and downloads to disk
+  // Direct PDF Download Trigger: Directly generates clean standalone PDF file and downloads to client disk
   const handleDirectDownload = async (q: Quotation) => {
-    flash(`â¬‡ Generating official PDF for ${q.quoteNumber}...`);
-    setIsGeneratingPdf(true);
-    const quoteNo = q.quoteNumber.replace(/[\/\\]/g, "-");
-    const filename = `Quotation-${quoteNo}-${(q.client?.company || "Client").replace(/\s+/g, "_")}.pdf`;
-
-    const htmlContent = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #0c1829; padding: 24px; background: #ffffff; line-height: 1.45; font-size: 11px;">
-      <div style="border-bottom: 2px solid #1e3a8a; padding-bottom: 14px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start;">
-        <div>
-          <div style="font-size: 18px; font-weight: 800; color: #1e3a8a; letter-spacing: -0.3px;">THREE STAR ENTERPRISES</div>
-          <div style="font-size: 10.5px; color: #475569; margin-top: 2px;">Special Purpose Machines â€¢ Induction Hardening Plants â€¢ Automation Systems</div>
-          <div style="font-size: 9px; font-weight: 700; background: #eff6ff; color: #1e3a8a; padding: 2px 6px; border-radius: 3px; border: 1px solid #bfdbfe; text-transform: uppercase; margin-top: 4px; display: inline-block;">
-            ISO 9001:2015 Certified Manufacturing Facility â€¢ Pune Works
-          </div>
-          <div style="font-size: 9.5px; color: #64748b; margin-top: 4px;">Works: Sr No 12/2, Dehu Alandi Road, Dehu Gaon, Pune - 412109, Maharashtra, India</div>
-          <div style="font-size: 9.5px; color: #64748b;">GSTIN: <strong>27AABCT1234F1Z5</strong> â€¢ Email: sales@threestarforge.com â€¢ Web: www.threestarforge.com</div>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-size: 15px; font-weight: 800; color: #0c1829;">COMMERCIAL PROPOSAL</div>
-          <div style="font-size: 11.5px; font-weight: 700; color: #1e3a8a; margin-top: 2px;">Ref No: ${q.quoteNumber}</div>
-          <div style="font-size: 9.5px; color: #64748b; margin-top: 2px;">Date: ${new Date(q.issuedDate || Date.now()).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</div>
-          <div style="font-size: 9.5px; color: #64748b;">Validity: ${q.commercialTerms?.validityDays || 30} Days</div>
-        </div>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
-          <div style="font-size: 9.5px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">Quotation Prepared For:</div>
-          <div style="font-size: 12px; font-weight: 700; color: #0c1829;">${q.client?.name || "Client Representative"}</div>
-          <div style="font-size: 11px; font-weight: 600; color: #1e3a8a;">${q.client?.company || "Company Enterprise"}</div>
-          ${q.client?.designation ? `<div style="font-size: 9.5px; color: #64748b;">${q.client.designation}</div>` : ""}
-          <div style="font-size: 10px; color: #334155; margin-top: 3px;">Phone: ${q.client?.phone || "N/A"} â€¢ Email: ${q.client?.email || "N/A"}</div>
-          ${q.client?.gstin ? `<div style="font-size: 9.5px; font-weight: 600; margin-top: 2px;">GSTIN: ${q.client.gstin}</div>` : ""}
-          ${q.client?.billingAddress ? `<div style="font-size: 9.5px; color: #64748b; margin-top: 2px;">${q.client.billingAddress}</div>` : ""}
-        </div>
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
-          <div style="font-size: 9.5px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">Machine Scope & Project Parameters:</div>
-          <div style="font-size: 12px; font-weight: 700; color: #0c1829;">${q.project?.title || "Turnkey Machinery Build"}</div>
-          <div style="font-size: 10.5px; font-weight: 600; color: #1e3a8a; margin-top: 2px;">Category: ${q.project?.category || "Industrial Engineering"}</div>
-          <div style="font-size: 10px; color: #334155; margin-top: 4px;">Delivery Timeline: <strong>${q.commercialTerms?.deliveryTimeline || "8 â€“ 12 Weeks"}</strong></div>
-          <div style="font-size: 10px; color: #334155;">Plant Site: ${q.client?.plantLocation || "Customer Plant Works"}</div>
-          ${q.project?.referenceDocName ? `<div style="font-size: 9.5px; color: #1e3a8a; margin-top: 3px;">ðŸ“Ž Ref Drawing: ${q.project.referenceDocName}</div>` : ""}
-        </div>
-      </div>
-
-      <table style="width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 10.5px;">
-        <thead>
-          <tr style="background: #0f172a; color: #ffffff;">
-            <th style="padding: 6px 8px; text-align: center; width: 30px; font-size: 9.5px;">#</th>
-            <th style="padding: 6px 8px; text-align: left; font-size: 9.5px;">Equipment Description & Specifications</th>
-            <th style="padding: 6px 8px; text-align: center; width: 60px; font-size: 9.5px;">HSN</th>
-            <th style="padding: 6px 8px; text-align: right; width: 50px; font-size: 9.5px;">Qty</th>
-            <th style="padding: 6px 8px; text-align: right; width: 90px; font-size: 9.5px;">Unit Rate (â‚¹)</th>
-            <th style="padding: 6px 8px; text-align: right; width: 50px; font-size: 9.5px;">GST %</th>
-            <th style="padding: 6px 8px; text-align: right; width: 100px; font-size: 9.5px;">Total (â‚¹)</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${(q.lineItems || [])
-            .map(
-              (item, idx) => `
-            <tr style="border-bottom: 1px solid #e2e8f0;">
-              <td style="padding: 6px 8px; text-align: center; color: #64748b;">${idx + 1}</td>
-              <td style="padding: 6px 8px;">
-                <strong>${item.description}</strong>
-                ${item.discountPercent ? `<div style="font-size: 9px; color: #16a34a;">â€¢ Discount: ${item.discountPercent}% applied</div>` : ""}
-              </td>
-              <td style="padding: 6px 8px; text-align: center; color: #475569;">${item.hsnCode || "8479"}</td>
-              <td style="padding: 6px 8px; text-align: right;">${item.quantity} ${item.unit || "Nos"}</td>
-              <td style="padding: 6px 8px; text-align: right;">${formatINR(item.unitPrice)}</td>
-              <td style="padding: 6px 8px; text-align: right;">${item.taxPercent || 18}%</td>
-              <td style="padding: 6px 8px; text-align: right; font-weight: 700; color: #1e3a8a;">${formatINR(item.amount)}</td>
-            </tr>`,
-            )
-            .join("")}
-        </tbody>
-      </table>
-
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px;">
-        <div style="width: 50%;">
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
-            <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; color: #64748b;">Amount in Words:</div>
-            <div style="font-style: italic; font-weight: 700; color: #0c1829; font-size: 10.5px; margin-top: 2px;">${numberToIndianWords(q.grandTotal)}</div>
-          </div>
-          <div style="margin-top: 8px; font-size: 9.5px; color: #475569; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
-            <div style="font-weight: 700; text-transform: uppercase; color: #64748b; font-size: 8.5px;">Bank Wire Transfer Details:</div>
-            <div>Bank: <strong>HDFC Bank Ltd</strong> â€¢ A/c No: <strong>50200084791234</strong></div>
-            <div>IFSC: <strong>HDFC0001234</strong> â€¢ Branch: Chakan Industrial Area, Pune</div>
-          </div>
-        </div>
-
-        <div style="width: 44%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; font-size: 10.5px;">
-          <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #475569;"><span>Subtotal:</span><span style="font-weight: 700; color: #0c1829;">${formatINR(q.subtotal)}</span></div>
-          ${q.discountTotal ? `<div style="display: flex; justify-content: space-between; padding: 2px 0; color: #16a34a;"><span>Discount:</span><span style="font-weight: 700;">- ${formatINR(q.discountTotal)}</span></div>` : ""}
-          <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #475569;"><span>Integrated GST (18%):</span><span style="font-weight: 700; color: #0c1829;">${formatINR(q.taxTotal)}</span></div>
-          <div style="display: flex; justify-content: space-between; border-top: 1.5px solid #0f172a; margin-top: 6px; padding-top: 6px; font-size: 12.5px; font-weight: 800; color: #1e3a8a;">
-            <span>Grand Total:</span><span>${formatINR(q.grandTotal)}</span>
-          </div>
-        </div>
-      </div>
-
-      <div style="margin-top: 14px; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; font-size: 9.5px;">
-        <div style="font-weight: 700; text-transform: uppercase; color: #1e3a8a; font-size: 9.5px; margin-bottom: 4px;">Commercial Terms & Conditions:</div>
-        <ol style="margin: 0; padding-left: 16px; line-height: 1.4;">
-          <li><strong>Payment Terms:</strong> ${q.commercialTerms?.paymentTerms || "30% Advance with PO, 60% against FAT trial in Pune, 10% after commissioning."}</li>
-          <li><strong>Delivery Schedule:</strong> ${q.commercialTerms?.deliveryTimeline || "8 â€“ 12 Weeks from drawing approval."}</li>
-          <li><strong>Factory Acceptance Trials (FAT):</strong> ${q.commercialTerms?.inspectionFAT || "100% FAT trial at Pune plant prior to dispatch."}</li>
-          <li><strong>Warranty:</strong> ${q.commercialTerms?.warranty || "12 Months from commissioning / 18 months from dispatch."}</li>
-          <li><strong>Freight:</strong> ${q.commercialTerms?.freightTerms || "Ex-Works Pune Plant. Freight & insurance extra at actuals."}</li>
-          <li><strong>Validity:</strong> Valid for ${q.commercialTerms?.validityDays || 30} Days.</li>
-        </ol>
-      </div>
-
-      <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 9.5px;">
-        <div>
-          <div style="color: #64748b;">Prepared by:</div>
-          <div style="font-weight: 700; color: #0c1829;">${q.preparedBy || "Three Star Enterprises Engineering Division"}</div>
-          <div style="color: #64748b;">Pune Works Plant</div>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-weight: 700; color: #0c1829;">For THREE STAR ENTERPRISES</div>
-          <div style="margin-top: 24px; border-top: 1px solid #0c1829; width: 160px; display: inline-block; padding-top: 2px; color: #475569; font-weight: 600;">
-            Authorized Signatory
-          </div>
-        </div>
-      </div>
-    </div>`;
-
-    const container = document.createElement("div");
-    container.style.position = "fixed";
-    container.style.left = "-9999px";
-    container.style.top = "0";
-    container.style.width = "760px";
-    container.style.background = "#ffffff";
-    container.style.color = "#0f172a";
-    container.innerHTML = htmlContent;
-    document.body.appendChild(container);
+    const itemId = q.id || (q as any)._id;
+    setDownloadingId(itemId);
+    flash(`⬇ Downloading official PDF for ${q.quoteNumber}...`);
 
     try {
-      await downloadQuotationPDF(container, filename);
-      flash(`âœ“ Downloaded ${filename}`);
+      const ok = await downloadQuotationDirectly(q);
+      if (ok) {
+        flash(`✓ Downloaded ${q.quoteNumber} successfully!`);
+      } else {
+        flash(`✓ PDF generation initiated`);
+      }
     } catch (e) {
-      console.error(e);
-      flash("âš  PDF generation failed, opening preview instead...");
+      console.error("Direct PDF download error:", e);
+      flash("⚠️ Direct download issue, opening preview...");
+      window.open(`/admin/quotations/${itemId}/preview`, "_blank");
     } finally {
-      document.body.removeChild(container);
-      setIsGeneratingPdf(false);
+      setDownloadingId(null);
     }
   };
 
   // Direct Print Trigger: opens preview tab and executes window.print()
   const handlePrint = (q: Quotation) => {
     const id = q.id || (q as any)._id;
+    if (!id) return;
     window.open(`/admin/quotations/${id}/preview?print=true`, "_blank");
   };
 
@@ -701,7 +584,7 @@ function QuotationsPageInner() {
           </div>
           <p className="mt-2 font-mono text-2xl font-bold text-foreground">{stats.total}</p>
           <p className="mt-0.5 text-xs text-muted">
-            {stats.sentCount} Active in Review â€¢ {stats.draftCount} Drafts
+            {stats.sentCount} Active in Review • {stats.draftCount} Drafts
           </p>
         </div>
 
@@ -808,7 +691,7 @@ function QuotationsPageInner() {
               onChange={(e) => setFilterPeriod(e.target.value)}
               className="w-full rounded-xl border border-line bg-background px-3 py-2 font-mono text-xs text-foreground focus:border-accent focus:outline-none cursor-pointer"
             >
-              <option value="all">ðŸ“… All Time</option>
+              <option value="all">📅 All Time</option>
               <option value="week">Past 7 Days</option>
               <option value="month">Past 30 Days</option>
               <option value="quarter">Past Quarter</option>
@@ -823,11 +706,11 @@ function QuotationsPageInner() {
               onChange={(e) => setFilterValue(e.target.value)}
               className="w-full rounded-xl border border-line bg-background px-3 py-2 font-mono text-xs text-foreground focus:border-accent focus:outline-none cursor-pointer"
             >
-              <option value="all">ðŸ’° All Values</option>
-              <option value="under-5l">&lt; â‚¹5 Lakhs</option>
-              <option value="5l-20l">â‚¹5L â€“ â‚¹20 Lakhs</option>
-              <option value="20l-50l">â‚¹20L â€“ â‚¹50 Lakhs</option>
-              <option value="above-50l">&gt; â‚¹50 Lakhs</option>
+              <option value="all">💰 All Values</option>
+              <option value="under-5l">&lt; ₹5 Lakhs</option>
+              <option value="5l-20l">₹5L – ₹20 Lakhs</option>
+              <option value="20l-50l">₹20L – ₹50 Lakhs</option>
+              <option value="above-50l">&gt; ₹50 Lakhs</option>
             </select>
           </div>
 
@@ -840,9 +723,9 @@ function QuotationsPageInner() {
             >
               <option value="newest">Sort: Newest</option>
               <option value="oldest">Sort: Oldest</option>
-              <option value="value-high">Value: High â†’ Low</option>
-              <option value="value-low">Value: Low â†’ High</option>
-              <option value="client">Client: A â†’ Z</option>
+              <option value="value-high">Value: High → Low</option>
+              <option value="value-low">Value: Low → High</option>
+              <option value="client">Client: A → Z</option>
             </select>
           </div>
         </div>
@@ -933,12 +816,16 @@ function QuotationsPageInner() {
                     <button
                       type="button"
                       onClick={() => handleDirectDownload(q)}
-                      disabled={isGeneratingPdf}
+                      disabled={Boolean(downloadingId)}
                       className="inline-flex items-center gap-1 rounded-lg border border-accent/40 bg-accent/15 px-2.5 py-1.5 font-mono text-[0.7rem] font-bold text-accent hover:bg-accent hover:text-navy transition-colors shadow-xs cursor-pointer disabled:opacity-50"
                       title="Directly download official PDF proposal"
                     >
-                      <Download className="h-3.5 w-3.5" />
-                      <span>Download</span>
+                      {downloadingId === itemId ? (
+                        <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      ) : (
+                        <Download className="h-3.5 w-3.5" />
+                      )}
+                      <span>{downloadingId === itemId ? "Downloading..." : "Download"}</span>
                     </button>
 
                     {/* PRINT BUTTON */}
@@ -1033,7 +920,7 @@ function QuotationsPageInner() {
                       {q.lineItems.slice(0, 3).map((item, i) => (
                         <div key={i} className="flex items-center justify-between text-xs font-sans">
                           <span className="text-foreground truncate max-w-lg">
-                            â€¢ {item.description} ({item.quantity} {item.unit})
+                            • {item.description} ({item.quantity} {item.unit})
                           </span>
                           <span className="font-mono font-bold text-accent shrink-0">{formatINR(item.amount)}</span>
                         </div>
@@ -1120,24 +1007,22 @@ function QuotationsPageInner() {
 
               <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
                 <div>
-                  <label className="block font-sans text-xs font-semibold text-foreground">Contact Person *</label>
+                  <label className="block font-sans text-xs font-semibold text-foreground">Contact Person</label>
                   <input
                     type="text"
                     value={formClientName}
                     onChange={(e) => setFormClientName(e.target.value)}
-                    required
                     placeholder="e.g. Vikram Sharma"
                     className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs text-foreground focus:border-accent focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-sans text-xs font-semibold text-foreground">Company Name *</label>
+                  <label className="block font-sans text-xs font-semibold text-foreground">Company Name</label>
                   <input
                     type="text"
                     value={formClientCompany}
                     onChange={(e) => setFormClientCompany(e.target.value)}
-                    required
                     placeholder="e.g. Bharat Forge Ltd"
                     className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs text-foreground focus:border-accent focus:outline-none"
                   />
@@ -1155,24 +1040,22 @@ function QuotationsPageInner() {
                 </div>
 
                 <div>
-                  <label className="block font-sans text-xs font-semibold text-foreground">Direct Email *</label>
+                  <label className="block font-sans text-xs font-semibold text-foreground">Direct Email</label>
                   <input
-                    type="email"
+                    type="text"
                     value={formClientEmail}
                     onChange={(e) => setFormClientEmail(e.target.value)}
-                    required
                     placeholder="v.sharma@bharatforge.com"
                     className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs text-foreground focus:border-accent focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-sans text-xs font-semibold text-foreground">Phone / Mobile *</label>
+                  <label className="block font-sans text-xs font-semibold text-foreground">Phone / Mobile</label>
                   <input
-                    type="tel"
+                    type="text"
                     value={formClientPhone}
                     onChange={(e) => setFormClientPhone(e.target.value)}
-                    required
                     placeholder="+91 98220 12345"
                     className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs text-foreground focus:border-accent focus:outline-none"
                   />
@@ -1222,12 +1105,11 @@ function QuotationsPageInner() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block font-sans text-xs font-semibold text-foreground">Project / Machine Title *</label>
+                  <label className="block font-sans text-xs font-semibold text-foreground">Project / Machine Title</label>
                   <input
                     type="text"
                     value={formProjectTitle}
                     onChange={(e) => setFormProjectTitle(e.target.value)}
-                    required
                     placeholder="e.g. Vertical CNC Induction Hardening Scanner 250 kW"
                     className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs font-bold text-foreground focus:border-accent focus:outline-none"
                   />
@@ -1288,10 +1170,10 @@ function QuotationsPageInner() {
                       <th className="pb-2 px-2 w-20">HSN</th>
                       <th className="pb-2 px-2 w-16">Qty</th>
                       <th className="pb-2 px-2 w-20">Unit</th>
-                      <th className="pb-2 px-2 w-28">Unit Rate (â‚¹)</th>
+                      <th className="pb-2 px-2 w-28">Unit Rate (₹)</th>
                       <th className="pb-2 px-2 w-16">Disc %</th>
                       <th className="pb-2 px-2 w-16">GST %</th>
-                      <th className="pb-2 px-2 text-right w-28">Amount (â‚¹)</th>
+                      <th className="pb-2 px-2 text-right w-28">Amount (₹)</th>
                       <th className="pb-2 pr-1 w-10"></th>
                     </tr>
                   </thead>
@@ -1303,7 +1185,6 @@ function QuotationsPageInner() {
                             type="text"
                             value={item.description}
                             onChange={(e) => handleLineItemChange(idx, "description", e.target.value)}
-                            required
                             placeholder="Equipment / Tooling / Service Description"
                             className="w-full rounded-lg border border-line bg-background px-2.5 py-1.5 text-xs text-foreground focus:border-accent focus:outline-none"
                           />
@@ -1324,7 +1205,6 @@ function QuotationsPageInner() {
                             onChange={(e) => handleLineItemChange(idx, "quantity", e.target.value)}
                             min={0.1}
                             step={0.1}
-                            required
                             className="w-full rounded-lg border border-line bg-background px-2 py-1.5 font-mono text-xs text-foreground focus:border-accent focus:outline-none"
                           />
                         </td>
@@ -1346,7 +1226,6 @@ function QuotationsPageInner() {
                             value={item.unitPrice}
                             onChange={(e) => handleLineItemChange(idx, "unitPrice", e.target.value)}
                             min={0}
-                            required
                             className="w-full rounded-lg border border-line bg-background px-2 py-1.5 font-mono text-xs font-bold text-foreground focus:border-accent focus:outline-none"
                           />
                         </td>
@@ -1431,42 +1310,46 @@ function QuotationsPageInner() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block font-sans text-xs font-semibold text-foreground">Payment Milestones *</label>
+                  <label className="block font-sans text-xs font-semibold text-foreground">Payment Milestones</label>
                   <textarea
                     rows={2}
                     value={formPaymentTerms}
                     onChange={(e) => setFormPaymentTerms(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-line bg-background p-2.5 font-sans text-xs text-foreground focus:border-accent focus:outline-none"
+                    placeholder="e.g. 30% Advance with PO, 60% against FAT trial at Pune works, 10% after commissioning"
+                    className="mt-1 w-full rounded-xl border border-line bg-background p-2.5 font-sans text-xs text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-sans text-xs font-semibold text-foreground">Delivery Timeline *</label>
+                  <label className="block font-sans text-xs font-semibold text-foreground">Delivery Timeline</label>
                   <textarea
                     rows={2}
                     value={formDeliveryTimeline}
                     onChange={(e) => setFormDeliveryTimeline(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-line bg-background p-2.5 font-sans text-xs text-foreground focus:border-accent focus:outline-none"
+                    placeholder="e.g. 8 – 12 Weeks from drawing approval and advance receipt"
+                    className="mt-1 w-full rounded-xl border border-line bg-background p-2.5 font-sans text-xs text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-sans text-xs font-semibold text-foreground">Warranty Period *</label>
+                  <label className="block font-sans text-xs font-semibold text-foreground">Warranty Period</label>
                   <input
                     type="text"
                     value={formWarranty}
                     onChange={(e) => setFormWarranty(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs text-foreground focus:border-accent focus:outline-none"
+                    placeholder="e.g. 12 Months from commissioning or 18 months from dispatch date"
+                    className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-sans text-xs font-semibold text-foreground">Freight & Dispatch Terms *</label>
+                  <label className="block font-sans text-xs font-semibold text-foreground">Freight & Dispatch Terms</label>
                   <input
                     type="text"
                     value={formFreightTerms}
                     onChange={(e) => setFormFreightTerms(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs text-foreground focus:border-accent focus:outline-none"
+                    placeholder="e.g. Ex-Works Pune Plant. Freight and insurance extra at actuals"
+                    className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none"
                   />
                 </div>
 
@@ -1478,7 +1361,8 @@ function QuotationsPageInner() {
                     type="text"
                     value={formInspectionFAT}
                     onChange={(e) => setFormInspectionFAT(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs text-foreground focus:border-accent focus:outline-none"
+                    placeholder="e.g. 100% FAT trial and workpiece cycle testing at Pune facility prior to dispatch"
+                    className="mt-1 w-full rounded-xl border border-line bg-background px-3 py-2 font-sans text-xs text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none"
                   />
                 </div>
 
@@ -1530,7 +1414,7 @@ function QuotationsPageInner() {
           onConfirm={handleDelete}
           title="Delete Commercial Quotation?"
           message="Are you sure you want to permanently delete this proposal record from the database? This action cannot be undone."
-          itemName={`${deletingQuotation.quoteNumber} â€” ${deletingQuotation.client?.company} (${formatINR(deletingQuotation.grandTotal)})`}
+          itemName={`${deletingQuotation.quoteNumber} — ${deletingQuotation.client?.company} (${formatINR(deletingQuotation.grandTotal)})`}
           isDeleting={isDeleting}
         />
       )}

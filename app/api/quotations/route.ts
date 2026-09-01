@@ -223,20 +223,30 @@ export async function POST(request: NextRequest) {
       notes,
     } = body;
 
-    if (!client || !client.name || !client.company || !client.email || !client.phone) {
+    if (!client || (!client.name && !client.company)) {
       return NextResponse.json(
-        { success: false, error: "Client name, company, email, and phone number are required." },
+        { success: false, error: "Client name or company name is required." },
         { status: 400 },
       );
     }
 
-    // Auto-generate consecutive quote number if not provided: TSE-QT-YYYY-XXXX
-    let finalQuoteNumber = customQuoteNumber;
-    if (!finalQuoteNumber || !finalQuoteNumber.trim()) {
-      const year = new Date().getFullYear();
-      const countThisYear = await Quotation.countDocuments({});
-      const seq = String(countThisYear + 1).padStart(4, "0");
-      finalQuoteNumber = `TSE/QT/${year}/${seq}`;
+    // Auto-generate consecutive quote number if not provided or if duplicate exists
+    let finalQuoteNumber = customQuoteNumber ? String(customQuoteNumber).trim() : "";
+    const year = new Date().getFullYear();
+
+    if (!finalQuoteNumber) {
+      let seqNum = (await Quotation.countDocuments({})) + 1;
+      finalQuoteNumber = `TSE/QT/${year}/${String(seqNum).padStart(4, "0")}`;
+      while (await Quotation.exists({ quoteNumber: finalQuoteNumber })) {
+        seqNum += 1;
+        finalQuoteNumber = `TSE/QT/${year}/${String(seqNum).padStart(4, "0")}`;
+      }
+    } else {
+      // If user-provided quote number already exists in DB, make unique by appending suffix
+      const existing = await Quotation.findOne({ quoteNumber: finalQuoteNumber });
+      if (existing) {
+        finalQuoteNumber = `${finalQuoteNumber}-${Date.now().toString().slice(-4)}`;
+      }
     }
 
     // Compute line item amounts & totals
@@ -244,9 +254,10 @@ export async function POST(request: NextRequest) {
     let discountTotal = 0;
     let taxTotal = 0;
 
-    const computedLineItems = lineItems.map((item: any) => {
-      const qty = Number(item.quantity) || 1;
-      const rate = Number(item.unitPrice) || 0;
+    const itemsToProcess = Array.isArray(lineItems) && lineItems.length > 0 ? lineItems : [{}];
+    const computedLineItems = itemsToProcess.map((item: any, idx: number) => {
+      const qty = Number(item.quantity) > 0 ? Number(item.quantity) : 1;
+      const rate = Number(item.unitPrice) >= 0 ? Number(item.unitPrice) : 0;
       const discPct = Number(item.discountPercent) || 0;
       const taxPct = Number(item.taxPercent) ?? 18;
 
@@ -261,8 +272,8 @@ export async function POST(request: NextRequest) {
       taxTotal += itemTax;
 
       return {
-        description: item.description || "Industrial Machinery Item",
-        hsnCode: item.hsnCode || "8479",
+        description: item.description?.trim() || `Industrial Machinery Scope Item #${idx + 1}`,
+        hsnCode: item.hsnCode?.trim() || "8479",
         quantity: qty,
         unit: item.unit || "Nos",
         unitPrice: rate,
@@ -276,15 +287,18 @@ export async function POST(request: NextRequest) {
     const issuedDate = new Date();
     const validUntil = new Date(issuedDate.getTime() + (validityDays || 30) * 24 * 60 * 60 * 1000);
 
+    const clientName = (client.name || "Client Representative").trim();
+    const clientCompany = (client.company || clientName || "Client Enterprise").trim();
+
     const newQuotation = await Quotation.create({
       quoteNumber: finalQuoteNumber.trim(),
       rfqId: rfqId ? String(rfqId).trim() : "",
       client: {
-        name: client.name.trim(),
-        company: client.company.trim(),
+        name: clientName,
+        company: clientCompany,
         designation: client.designation ? client.designation.trim() : "",
-        email: client.email.trim().toLowerCase(),
-        phone: client.phone.trim(),
+        email: client.email ? client.email.trim().toLowerCase() : "",
+        phone: client.phone ? client.phone.trim() : "",
         gstin: client.gstin ? client.gstin.trim().toUpperCase() : "",
         billingAddress: client.billingAddress ? client.billingAddress.trim() : "",
         plantLocation: client.plantLocation ? client.plantLocation.trim() : "",

@@ -1,4 +1,4 @@
-﻿import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IQuotationLineItem {
   id?: string;
@@ -61,14 +61,14 @@ export interface IQuotation extends Document {
 
 const QuotationLineItemSchema = new Schema<IQuotationLineItem>(
   {
-    description: { type: String, required: true, trim: true },
+    description: { type: String, default: "Industrial Machinery Equipment", trim: true },
     hsnCode: { type: String, default: "8479", trim: true },
-    quantity: { type: Number, required: true, default: 1, min: 0.01 },
+    quantity: { type: Number, default: 1, min: 0.01 },
     unit: { type: String, default: "Nos", trim: true },
-    unitPrice: { type: Number, required: true, default: 0, min: 0 },
+    unitPrice: { type: Number, default: 0, min: 0 },
     discountPercent: { type: Number, default: 0, min: 0, max: 100 },
     taxPercent: { type: Number, default: 18, min: 0, max: 100 },
-    amount: { type: Number, required: true, default: 0 },
+    amount: { type: Number, default: 0 },
   },
   { _id: true },
 );
@@ -88,17 +88,17 @@ const QuotationSchema = new Schema<IQuotation>(
       trim: true,
     },
     client: {
-      name: { type: String, required: true, trim: true },
-      company: { type: String, required: true, trim: true },
+      name: { type: String, required: true, default: "Client Representative", trim: true },
+      company: { type: String, required: true, default: "Industrial Client", trim: true },
       designation: { type: String, default: "", trim: true },
-      email: { type: String, required: true, trim: true, lowercase: true },
-      phone: { type: String, required: true, trim: true },
+      email: { type: String, default: "", trim: true, lowercase: true },
+      phone: { type: String, default: "", trim: true },
       gstin: { type: String, default: "", trim: true, uppercase: true },
       billingAddress: { type: String, default: "", trim: true },
       plantLocation: { type: String, default: "", trim: true },
     },
     project: {
-      title: { type: String, required: true, default: "Custom Industrial Machinery Build", trim: true },
+      title: { type: String, default: "Custom Industrial Machinery Build", trim: true },
       category: { type: String, default: "Induction Hardening", trim: true },
       referenceDocName: { type: String, default: "", trim: true },
       referenceDocUrl: { type: String, default: "", trim: true },
