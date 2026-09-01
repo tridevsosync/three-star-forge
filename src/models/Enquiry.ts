@@ -13,6 +13,9 @@ export interface IEnquiry extends Document {
   targetVolume?: string;
   message: string;
   referenceProject?: string;
+  referenceDocument?: string;
+  referenceDocumentName?: string;
+  referenceDocumentSize?: string;
   read?: boolean;
   status?: "new" | "under-review" | "quoted" | "closed";
   priority?: "standard" | "high" | "urgent";
@@ -79,6 +82,21 @@ const EnquirySchema = new Schema<IEnquiry>(
       trim: true,
     },
     referenceProject: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    referenceDocument: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    referenceDocumentName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    referenceDocumentSize: {
       type: String,
       default: "",
       trim: true,

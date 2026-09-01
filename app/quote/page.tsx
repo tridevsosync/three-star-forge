@@ -8,6 +8,7 @@ import { useSite } from "@/store/site-store";
 import { TechLabel, Badge, Btn } from "@/components/site/ui";
 import { PageHero, Section } from "@/components/site/blocks";
 import { InView } from "@/components/site/reveal";
+import { FileText, UploadCloud, X, Paperclip, Loader2, FileSpreadsheet, Download } from "lucide-react";
 
 const MACHINE_TYPES = [
   "Vertical Induction Hardening Machine",
@@ -41,6 +42,9 @@ const emptyRfq = {
   targetVolume: "",
   message: "",
   referenceProject: "",
+  referenceDocument: "",
+  referenceDocumentName: "",
+  referenceDocumentSize: "",
 };
 
 function QuoteForm() {
@@ -50,7 +54,89 @@ function QuoteForm() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [submittedRfq, setSubmittedRfq] = useState(null);
+  const [submittedRfq, setSubmittedRfq] = useState<any>(null);
+  const [isUploadingDoc, setIsUploadingDoc] = useState(false);
+  const [docUploadError, setDocUploadError] = useState("");
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 15 * 1024 * 1024) {
+      setDocUploadError("File size exceeds 15 MB limit. Please attach a smaller file.");
+      return;
+    }
+
+    setDocUploadError("");
+    setIsUploadingDoc(true);
+
+    const formattedSize = formatFileSize(file.size);
+    const fileName = file.name;
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "three-star-forge/rfq-documents");
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const json = await res.json();
+      if (json.success && json.url) {
+        setForm((p) => ({
+          ...p,
+          referenceDocument: json.url,
+          referenceDocumentName: fileName,
+          referenceDocumentSize: formattedSize,
+        }));
+      } else {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setForm((p) => ({
+            ...p,
+            referenceDocument: reader.result as string,
+            referenceDocumentName: fileName,
+            referenceDocumentSize: formattedSize,
+          }));
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch (err: any) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setForm((p) => ({
+          ...p,
+          referenceDocument: reader.result as string,
+          referenceDocumentName: fileName,
+          referenceDocumentSize: formattedSize,
+        }));
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setIsUploadingDoc(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setForm((p) => ({
+      ...p,
+      referenceDocument: "",
+      referenceDocumentName: "",
+      referenceDocumentSize: "",
+    }));
+    setDocUploadError("");
+  };
 
   useEffect(() => {
     const project = searchParams?.get("project") || "";
@@ -230,10 +316,20 @@ function QuoteForm() {
                     <span className="text-muted">Machine Type:</span>
                     <span className="font-bold text-accent">{submittedRfq.machineType}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between border-b border-line pb-2">
                     <span className="text-muted">Target Timeline:</span>
                     <span className="text-foreground">{submittedRfq.timeline}</span>
                   </div>
+                  {submittedRfq.referenceDocumentName && (
+                    <div className="flex justify-between items-center pt-1">
+                      <span className="text-muted">Reference Document:</span>
+                      <span className="font-bold text-accent flex items-center gap-1.5 truncate max-w-[200px] sm:max-w-xs">
+                        <FileText className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">{submittedRfq.referenceDocumentName}</span>
+                        <span className="text-[0.68rem] text-muted shrink-0">({submittedRfq.referenceDocumentSize})</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <p className="mx-auto max-w-md text-xs text-muted leading-relaxed">
@@ -511,6 +607,92 @@ function QuoteForm() {
                         <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
                           <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
                           <span>{fieldErrors.message}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Reference Document / Technical Drawings Field */}
+                    <div className="sm:col-span-2 space-y-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="tech-label text-muted block font-bold">
+                          Reference Document / Technical Drawings (Optional)
+                        </label>
+                        <span className="font-mono text-[0.68rem] text-muted">
+                          PDF, CAD/DWG, STEP, DOCX, ZIP up to 15MB
+                        </span>
+                      </div>
+
+                      {!form.referenceDocumentName ? (
+                        <div className="relative border-2 border-dashed border-line hover:border-accent bg-background/60 hover:bg-surface/80 p-5 text-center transition-all group">
+                          <input
+                            type="file"
+                            id="rfq-reference-document"
+                            onChange={handleFileUpload}
+                            disabled={isUploadingDoc}
+                            accept=".pdf,.doc,.docx,.dwg,.dxf,.step,.stp,.iges,.igs,.png,.jpg,.jpeg,.zip,.rar"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                          />
+                          <div className="flex flex-col items-center justify-center gap-2 pointer-events-none">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-muted group-hover:border-accent group-hover:text-accent transition-colors">
+                              {isUploadingDoc ? (
+                                <Loader2 className="h-5 w-5 animate-spin text-accent" />
+                              ) : (
+                                <UploadCloud className="h-5 w-5" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-mono text-xs font-bold text-foreground">
+                                {isUploadingDoc ? "Uploading Reference Document..." : "Click to Browse or Drag & Drop Reference Document"}
+                              </p>
+                              <p className="text-[0.7rem] text-muted mt-0.5 font-sans">
+                                Attach component CAD drawing, datasheet, or RFP scope document
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap items-center justify-between gap-3 border border-accent/40 bg-accent/5 p-3.5 sm:p-4 rounded-none transition-all">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-accent/30 bg-accent/15 text-accent font-bold">
+                              <FileText className="h-5 w-5" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-xs font-bold text-foreground truncate block max-w-[220px] sm:max-w-md">
+                                  {form.referenceDocumentName}
+                                </span>
+                                <span className="shrink-0 border border-accent/40 bg-accent/20 px-2 py-0.5 text-[0.65rem] font-mono font-bold text-accent">
+                                  ✓ Attached
+                                </span>
+                              </div>
+                              <p className="font-mono text-[0.7rem] text-muted mt-0.5 flex items-center gap-2">
+                                <span>
+                                  File Size: <strong className="text-foreground">{form.referenceDocumentSize || "Unknown"}</strong>
+                                </span>
+                                <span>•</span>
+                                <span className="text-accent font-semibold">Reference Document</span>
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              type="button"
+                              onClick={handleRemoveFile}
+                              className="inline-flex items-center gap-1 border border-line bg-surface px-3 py-1.5 font-mono text-xs text-muted hover:text-danger hover:border-danger transition-colors cursor-pointer"
+                              title="Remove attached document"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                              <span>Remove</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {docUploadError && (
+                        <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-danger animate-fadeIn">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger shrink-0" />
+                          <span>{docUploadError}</span>
                         </p>
                       )}
                     </div>

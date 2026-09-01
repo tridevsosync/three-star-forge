@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import {
   AdminHead,
   MiniBtn,
@@ -31,6 +32,10 @@ import {
   Cpu,
   Eye,
   ExternalLink,
+  FileText,
+  Paperclip,
+  Download,
+  Receipt,
 } from "lucide-react";
 
 export default function AdminEnquiriesPage() {
@@ -58,6 +63,38 @@ export default function AdminEnquiriesPage() {
     setCopiedId(id);
     flash("✓ Copied specs to clipboard");
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleDownloadDocument = async (url: string, fileName?: string) => {
+    if (!url) return;
+    const name = fileName || "reference-document";
+    flash("⬇ Starting document download...");
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Fetch failed");
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+      flash("✓ Document downloaded successfully");
+    } catch (e) {
+      let dlUrl = url;
+      if (url.includes("cloudinary.com") && url.includes("/upload/")) {
+        dlUrl = url.replace("/upload/", `/upload/fl_attachment:${encodeURIComponent(name)}/`);
+      }
+      const link = document.createElement("a");
+      link.href = dlUrl;
+      link.download = name;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const filtered = useMemo(() => {
@@ -337,6 +374,15 @@ export default function AdminEnquiriesPage() {
                       <option value="urgent">Priority: Urgent</option>
                     </select>
 
+                    <Link
+                      href={`/admin/quotations?createFromRfq=${itemId}`}
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-accent bg-accent text-navy px-3 py-1.5 font-mono text-xs font-bold hover:bg-navy hover:text-onnavy transition-colors shadow-xs shrink-0"
+                      title="Generate formal commercial proposal from this RFQ"
+                    >
+                      <Receipt className="h-3.5 w-3.5" />
+                      <span>Create Quote</span>
+                    </Link>
+
                     <MiniBtn onClick={() => handleToggleRead(e)}>
                       {e.read ? "Mark Unread" : "Mark Read"}
                     </MiniBtn>
@@ -407,6 +453,56 @@ export default function AdminEnquiriesPage() {
                     </span>
                   </div>
                 </div>
+
+                {/* Attached Reference Document Banner if available */}
+                {(e.referenceDocument || e.referenceDocumentName) && (
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-accent/30 bg-accent/10 p-3 text-xs font-sans">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent/20 text-accent font-bold">
+                        <FileText className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[0.65rem] text-accent uppercase font-bold tracking-wider block">
+                          Attached Reference Document
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-foreground truncate block max-w-[200px] sm:max-w-xs">
+                            {e.referenceDocumentName || "Technical Document"}
+                          </span>
+                          {e.referenceDocumentSize && (
+                            <span className="font-mono text-[0.68rem] text-muted shrink-0">
+                              ({e.referenceDocumentSize})
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {e.referenceDocument && (
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <a
+                          href={e.referenceDocument}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 font-mono text-[0.7rem] font-bold text-foreground hover:border-accent hover:text-accent transition-colors cursor-pointer shadow-xs"
+                          title="View document in new tab"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          <span>View</span>
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadDocument(e.referenceDocument, e.referenceDocumentName)}
+                          className="inline-flex items-center gap-1 rounded-lg border border-accent bg-accent text-navy px-2.5 py-1.5 font-mono text-[0.7rem] font-bold hover:bg-navy hover:text-onnavy transition-colors cursor-pointer shadow-xs"
+                          title="Download document directly"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          <span>Download</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Scope Description & Specifications */}
                 <div className="mt-4 rounded-xl border border-line bg-background/50 p-4">
@@ -504,6 +600,14 @@ export default function AdminEnquiriesPage() {
                   <option value="high">High</option>
                   <option value="urgent">Urgent</option>
                 </select>
+
+                <Link
+                  href={`/admin/quotations?createFromRfq=${viewingEnquiry.id || viewingEnquiry._id}`}
+                  className="ml-auto inline-flex items-center gap-1.5 rounded-xl border border-accent bg-accent text-navy px-3.5 py-1.5 font-mono text-xs font-bold hover:bg-navy hover:text-onnavy transition-colors shadow-xs shrink-0"
+                >
+                  <Receipt className="h-3.5 w-3.5" />
+                  <span>Convert to Formal Quotation</span>
+                </Link>
               </div>
 
               <div className="flex items-center gap-2 font-sans text-xs text-muted">
@@ -580,6 +684,59 @@ export default function AdminEnquiriesPage() {
                 </div>
               </div>
             </div>
+
+            {/* Attached Reference Document & Drawing */}
+            {(viewingEnquiry.referenceDocument || viewingEnquiry.referenceDocumentName) && (
+              <div className="rounded-2xl border border-accent/40 bg-accent/5 p-5 space-y-3 font-sans">
+                <div className="flex items-center justify-between">
+                  <span className="text-accent font-bold text-xs uppercase tracking-wider flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    <span>Attached Reference Document & Drawings:</span>
+                  </span>
+                  {viewingEnquiry.referenceDocumentSize && (
+                    <span className="rounded-lg border border-accent/40 bg-accent/20 px-2.5 py-0.5 font-mono text-[0.68rem] text-accent font-bold">
+                      {viewingEnquiry.referenceDocumentSize}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-accent/20">
+                  <div>
+                    <p className="font-mono text-xs font-bold text-foreground">
+                      {viewingEnquiry.referenceDocumentName || "Technical Document"}
+                    </p>
+                    <p className="text-[0.7rem] text-muted mt-0.5">
+                      Component drawing, CAD model, or technical specification sheet
+                    </p>
+                  </div>
+
+                  {viewingEnquiry.referenceDocument && (
+                    <div className="flex items-center gap-2 shrink-0">
+                      <a
+                        href={viewingEnquiry.referenceDocument}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface text-foreground px-3.5 py-2 font-mono text-xs font-bold hover:border-accent hover:text-accent transition-colors shadow-sm cursor-pointer"
+                        title="Open and view document in a new tab"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        <span>View Document</span>
+                        <ExternalLink className="h-3 w-3 ml-0.5 text-muted" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadDocument(viewingEnquiry.referenceDocument, viewingEnquiry.referenceDocumentName)}
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-accent bg-accent text-navy px-4 py-2 font-mono text-xs font-bold hover:bg-navy hover:text-onnavy transition-colors shadow-sm cursor-pointer"
+                        title="Directly download document file"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        <span>Download File</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Full Technical Scope Description */}
             <div className="rounded-2xl border border-line bg-surface p-5 space-y-2">

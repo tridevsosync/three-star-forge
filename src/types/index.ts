@@ -76,9 +76,77 @@ export interface EnquiryRFQ {
   timeline?: string;
   targetVolume?: string;
   message: string;
+  referenceProject?: string;
+  referenceDocument?: string;
+  referenceDocumentName?: string;
+  referenceDocumentSize?: string;
   priority?: "standard" | "high" | "urgent";
   status?: "new" | "under-review" | "quoted" | "closed";
   read?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface QuotationLineItem {
+  id?: string;
+  _id?: string;
+  description: string;
+  hsnCode?: string;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  discountPercent?: number;
+  taxPercent?: number;
+  amount: number;
+}
+
+export interface QuotationClient {
+  name: string;
+  company: string;
+  designation?: string;
+  email: string;
+  phone: string;
+  gstin?: string;
+  billingAddress?: string;
+  plantLocation?: string;
+}
+
+export interface QuotationTerms {
+  paymentTerms?: string;
+  deliveryTimeline?: string;
+  validityDays?: number;
+  warranty?: string;
+  freightTerms?: string;
+  inspectionFAT?: string;
+  specialNotes?: string;
+}
+
+export type QuotationStatus = "draft" | "sent" | "under-review" | "accepted" | "declined" | "expired";
+
+export interface Quotation {
+  id?: string;
+  _id?: string;
+  quoteNumber: string;
+  rfqId?: string;
+  client: QuotationClient;
+  project: {
+    title: string;
+    category?: string;
+    referenceDocName?: string;
+    referenceDocUrl?: string;
+  };
+  lineItems: QuotationLineItem[];
+  subtotal: number;
+  discountTotal: number;
+  taxTotal: number;
+  grandTotal: number;
+  currency: string;
+  commercialTerms: QuotationTerms;
+  status: QuotationStatus;
+  issuedDate: string;
+  validUntil: string;
+  preparedBy?: string;
+  notes?: string;
   createdAt?: string;
   updatedAt?: string;
 }

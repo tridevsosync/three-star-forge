@@ -34,6 +34,9 @@ export async function POST(request: NextRequest) {
       targetVolume,
       message,
       referenceProject,
+      referenceDocument,
+      referenceDocumentName,
+      referenceDocumentSize,
       priority,
     } = body;
 
@@ -65,6 +68,9 @@ export async function POST(request: NextRequest) {
       targetVolume: targetVolume ? targetVolume.trim() : "",
       message: message.trim(),
       referenceProject: referenceProject ? referenceProject.trim() : "",
+      referenceDocument: referenceDocument ? referenceDocument.trim() : "",
+      referenceDocumentName: referenceDocumentName ? referenceDocumentName.trim() : "",
+      referenceDocumentSize: referenceDocumentSize ? referenceDocumentSize.trim() : "",
       priority: priority || "standard",
     });
 

@@ -37,6 +37,7 @@ import {
   ContactMessage,
   EnquiryRFQ,
   FeedbackItem,
+  Quotation,
 } from "@/types";
 
 export interface SiteState {
@@ -55,6 +56,7 @@ export interface SiteState {
   enquiries: EnquiryRFQ[];
   feedback: FeedbackItem[];
   publicFeedback: FeedbackItem[];
+  quotations: Quotation[];
 }
 
 export interface SiteContextValue extends SiteState {
@@ -66,6 +68,7 @@ export interface SiteContextValue extends SiteState {
   contactsLoading: boolean;
   enquiriesLoading: boolean;
   feedbackLoading: boolean;
+  quotationsLoading: boolean;
   isRfqOpen: boolean;
   rfqInitialData: any;
   openRfqModal: (initial?: any) => void;
@@ -98,6 +101,10 @@ export interface SiteContextValue extends SiteState {
   submitFeedback: (data: any) => Promise<{ success: boolean; item?: any; message?: string; error?: string }>;
   toggleFeedbackApproval: (id: string, isApproved?: boolean) => Promise<{ success: boolean; item?: any; error?: string }>;
   deleteFeedback: (id: string) => Promise<{ success: boolean; error?: string }>;
+  fetchQuotations: () => Promise<void>;
+  createQuotation: (quotationData: any) => Promise<{ success: boolean; item?: any; message?: string; error?: string }>;
+  updateQuotation: (id: string, updates: any) => Promise<{ success: boolean; item?: any; error?: string }>;
+  deleteQuotation: (id: string) => Promise<{ success: boolean; error?: string }>;
   usedImages: string[];
   reset: () => void;
 }
@@ -118,6 +125,7 @@ const initialState: SiteState = {
   enquiries: [],
   feedback: [],
   publicFeedback: [],
+  quotations: [],
 };
 
 const SiteContext = createContext<SiteContextValue | null>(null);
@@ -134,6 +142,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   const [contactsLoading, setContactsLoading] = useState(false);
   const [enquiriesLoading, setEnquiriesLoading] = useState(false);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [quotationsLoading, setQuotationsLoading] = useState(false);
 
   const fetchProjects = useCallback(async () => {
     setProjectsLoading(true);
@@ -677,6 +686,77 @@ export function SiteProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Fetch Quotations from database
+  const fetchQuotations = useCallback(async () => {
+    try {
+      setQuotationsLoading(true);
+      const res = await fetch("/api/quotations", { cache: "no-store" });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          setState((prev) => ({ ...prev, quotations: json.data }));
+        }
+      }
+    } catch (err) {
+      console.warn("Could not fetch quotations:", err);
+    } finally {
+      setQuotationsLoading(false);
+    }
+  }, []);
+
+  const createQuotation = useCallback(async (quotationData: any) => {
+    try {
+      const res = await fetch("/api/quotations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(quotationData),
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setState((prev) => ({ ...prev, quotations: [data.data, ...prev.quotations] }));
+        return { success: true, item: data.data, message: data.message };
+      }
+      return { success: false, error: data.error };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Failed to create quotation." };
+    }
+  }, []);
+
+  const updateQuotation = useCallback(async (id: string, updates: any) => {
+    try {
+      const res = await fetch(`/api/quotations/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setState((prev) => ({
+          ...prev,
+          quotations: prev.quotations.map((q) => (q.id === id || (q as any)._id === id ? data.data : q)),
+        }));
+        return { success: true, item: data.data };
+      }
+      return { success: false, error: data.error };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Failed to update quotation." };
+    }
+  }, []);
+
+  const deleteQuotation = useCallback(async (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      quotations: prev.quotations.filter((q) => q.id !== id && (q as any)._id !== id),
+    }));
+    try {
+      const res = await fetch(`/api/quotations/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      return { success: Boolean(data.success) };
+    } catch {
+      return { success: true };
+    }
+  }, []);
+
   const login = useCallback(async (email?: string, password?: string): Promise<boolean> => {
     try {
       const res = await fetch("/api/auth/login", {
@@ -725,6 +805,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       contactsLoading,
       enquiriesLoading,
       feedbackLoading,
+      quotationsLoading,
       isRfqOpen,
       rfqInitialData,
       openRfqModal,
@@ -756,6 +837,10 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       submitFeedback,
       toggleFeedbackApproval,
       deleteFeedback,
+      fetchQuotations,
+      createQuotation,
+      updateQuotation,
+      deleteQuotation,
       usedImages,
       reset,
     }),
@@ -770,6 +855,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       contactsLoading,
       enquiriesLoading,
       feedbackLoading,
+      quotationsLoading,
       isRfqOpen,
       rfqInitialData,
       openRfqModal,
@@ -801,6 +887,10 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       submitFeedback,
       toggleFeedbackApproval,
       deleteFeedback,
+      fetchQuotations,
+      createQuotation,
+      updateQuotation,
+      deleteQuotation,
       usedImages,
       reset,
     ],
@@ -820,6 +910,7 @@ const defaultContextValue: SiteContextValue = {
   contactsLoading: false,
   enquiriesLoading: false,
   feedbackLoading: false,
+  quotationsLoading: false,
   isRfqOpen: false,
   rfqInitialData: null,
   openRfqModal: () => {},
@@ -851,6 +942,10 @@ const defaultContextValue: SiteContextValue = {
   submitFeedback: async () => ({ success: false }),
   toggleFeedbackApproval: async () => ({ success: false }),
   deleteFeedback: async () => ({ success: false }),
+  fetchQuotations: async () => {},
+  createQuotation: async () => ({ success: false }),
+  updateQuotation: async () => ({ success: false }),
+  deleteQuotation: async () => ({ success: false }),
   usedImages: [],
   reset: () => {},
 };

@@ -30,6 +30,7 @@ import {
   ExternalLink,
   Flame,
   Sparkles,
+  FileText,
 } from "lucide-react";
 
 interface NavItem {
@@ -38,7 +39,7 @@ interface NavItem {
   exact?: boolean;
   page?: string;
   icon: any;
-  badgeType?: "contacts" | "enquiries" | "feedback";
+  badgeType?: "contacts" | "enquiries" | "feedback" | "quotations";
 }
 
 interface NavGroup {
@@ -74,8 +75,9 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    title: "INQUIRIES & REVIEWS",
+    title: "COMMERCIAL & PROPOSALS",
     items: [
+      { to: "/admin/quotations", label: "Quotations", icon: FileText, badgeType: "quotations" },
       { to: "/admin/enquiries", label: "Quotes (RFQs)", icon: FileSpreadsheet, badgeType: "enquiries" },
       { to: "/admin/contacts", label: "Messages", icon: Mail, badgeType: "contacts" },
       { to: "/admin/feedback", label: "Client Feedback", icon: Star, badgeType: "feedback" },
@@ -84,7 +86,7 @@ const NAV_GROUPS: NavGroup[] = [
 ];
 
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {
-  const { isAuthed, authChecked, authEmail, logout, contacts, enquiries, feedback } = useSite();
+  const { isAuthed, authChecked, authEmail, logout, contacts, enquiries, feedback, quotations } = useSite();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -116,9 +118,9 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     });
   };
 
-  // Redirect to login if unauthenticated
+  // Redirect to login if unauthenticated (except login and preview pages)
   useEffect(() => {
-    if (authChecked && !isAuthed && pathname !== "/admin/login") {
+    if (authChecked && !isAuthed && pathname !== "/admin/login" && !pathname?.includes("/preview")) {
       router.replace("/admin/login");
     }
   }, [authChecked, isAuthed, pathname, router]);
@@ -128,8 +130,8 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     setIsMobileOpen(false);
   }, [pathname, searchParams]);
 
-  // If on login page, render children directly without admin shell
-  if (pathname === "/admin/login") {
+  // If on login page or full-page preview page, render children directly without admin shell
+  if (pathname === "/admin/login" || pathname?.includes("/preview")) {
     return <>{children}</>;
   }
 
@@ -153,12 +155,14 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const unreadContacts = contacts?.filter((c) => !c.read).length || 0;
   const unreadEnquiries = enquiries?.filter((e) => !e.read).length || 0;
   const pendingFeedback = feedback?.filter((f) => !f.isApproved && f.status !== "approved").length || 0;
+  const activeQuotesCount = quotations?.filter((q) => q.status === "draft" || q.status === "sent" || q.status === "under-review").length || quotations?.length || 0;
   const currentPage = searchParams.get("page") || (pathname === "/admin/content" ? "home" : null);
 
-  const getBadgeCount = (type?: "contacts" | "enquiries" | "feedback") => {
+  const getBadgeCount = (type?: "contacts" | "enquiries" | "feedback" | "quotations") => {
     if (type === "contacts") return unreadContacts;
     if (type === "enquiries") return unreadEnquiries;
     if (type === "feedback") return pendingFeedback;
+    if (type === "quotations") return activeQuotesCount;
     return 0;
   };
 
