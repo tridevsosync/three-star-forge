@@ -69,7 +69,7 @@ const SAMPLE_QUOTATIONS = [
     currency: "INR",
     commercialTerms: {
       paymentTerms: "30% Advance with Purchase Order, 60% against successful FAT trial inspection at Pune works, 10% after site commissioning.",
-      deliveryTimeline: "8 – 10 Weeks from drawing approval & advance receipt.",
+      deliveryTimeline: "8 - 10 Weeks from drawing approval & advance receipt.",
       validityDays: 30,
       warranty: "12 Months from date of commissioning or 18 months from dispatch date.",
       freightTerms: "Ex-Works Pune Plant. Freight, packing, and transit insurance extra at actuals.",
@@ -127,7 +127,7 @@ const SAMPLE_QUOTATIONS = [
     currency: "INR",
     commercialTerms: {
       paymentTerms: "40% Advance with PO, 50% on FAT inspection approval in Pune, 10% on handover.",
-      deliveryTimeline: "6 – 8 Weeks from layout signoff.",
+      deliveryTimeline: "6 - 8 Weeks from layout signoff.",
       validityDays: 30,
       warranty: "12 Months comprehensive warranty on mechanical & electrical assemblies.",
       freightTerms: "Ex-Works Pune.",

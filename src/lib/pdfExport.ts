@@ -14,13 +14,10 @@ function formatPdfCurrency(amount: number): string {
 }
 
 /**
- * Downloads a clean, vector, high-resolution official PDF quotation proposal directly to the client disk
- * using pure jsPDF and jspdf-autotable.
- * This completely avoids HTML rasterization / html2canvas clipping / negative z-index blank page issues!
+ * Generates an official, high-resolution vector PDF document using jsPDF & jspdf-autotable.
+ * Works seamlessly in both browser and Node.js server environments.
  */
-export async function downloadQuotationDirectly(q: Quotation): Promise<boolean> {
-  if (typeof window === "undefined") return false;
-
+export async function generateQuotationPDFDocument(q: Quotation): Promise<any> {
   try {
     const { jsPDF } = await import("jspdf");
     const autoTableModule = await import("jspdf-autotable");
@@ -248,50 +245,55 @@ export async function downloadQuotationDirectly(q: Quotation): Promise<boolean> 
       y = 14;
     }
 
-    // Financial Totals and Bank Details
-    const totalsBoxWidth = 72;
-    const totalsBoxHeight = 28;
-    const totalsBoxX = pageWidth - margin - totalsBoxWidth;
+    // Amount in words & Bank Details Left, Totals Box Right
+    const bottomBoxWidth = (contentWidth - 6) / 2;
 
-    // Left: Words & Bank Wire Details
-    const leftSummaryWidth = contentWidth - totalsBoxWidth - 6;
-
-    // Amount in Words
+    // Words & Bank Details Container
     doc.setFillColor(248, 250, 252);
     doc.setDrawColor(203, 213, 225);
-    doc.roundedRect(margin, y, leftSummaryWidth, 12, 1.5, 1.5, "FD");
+    doc.roundedRect(margin, y, bottomBoxWidth, 16, 1.5, 1.5, "FD");
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(6.5);
+    doc.setFontSize(6.8);
     doc.setTextColor(100, 116, 139);
-    doc.text("TOTAL AMOUNT IN WORDS:", margin + 3, y + 4);
+    doc.text("AMOUNT IN WORDS:", margin + 3, y + 4);
 
-    doc.setFont("helvetica", "bolditalic");
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(7.5);
     doc.setTextColor(15, 23, 42);
-    const wordsLines = doc.splitTextToSize(numberToIndianWords(q.grandTotal), leftSummaryWidth - 6);
+    const words = numberToIndianWords(q.grandTotal);
+    const wordsLines = doc.splitTextToSize(words, bottomBoxWidth - 6);
     doc.text(wordsLines[0] || "", margin + 3, y + 8.5);
+    if (wordsLines[1]) {
+      doc.text(wordsLines[1], margin + 3, y + 12.5);
+    }
 
-    // Bank Details Box
+    // Bank Details Box below words
+    const bankY = y + 18.5;
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(203, 213, 225);
-    doc.roundedRect(margin, y + 14, leftSummaryWidth, 14, 1.5, 1.5, "FD");
+    doc.roundedRect(margin, bankY, bottomBoxWidth, 15, 1.5, 1.5, "FD");
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(6.5);
     doc.setTextColor(30, 58, 138);
-    doc.text("COMPANY WIRE TRANSFER / BANK DETAILS:", margin + 3, y + 18);
+    doc.text("COMPANY WIRE TRANSFER BANK DETAILS:", margin + 3, bankY + 4);
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
+    doc.setFontSize(6.8);
     doc.setTextColor(51, 65, 85);
-    doc.text("Beneficiary: THREE STAR ENTERPRISES  |  Bank: HDFC Bank Ltd", margin + 3, y + 22);
-    doc.text("A/c No: 50200084791234  |  IFSC: HDFC0001234  |  Branch: Chakan Industrial Area, Pune", margin + 3, y + 25.5);
+    doc.text("Beneficiary: THREE STAR ENTERPRISES", margin + 3, bankY + 7.5);
+    doc.text("Bank: HDFC Bank Ltd  |  A/c: 50200084791234", margin + 3, bankY + 10.5);
+    doc.text("IFSC: HDFC0001234  |  Branch: Chakan Industrial Area, Pune", margin + 3, bankY + 13.5);
 
-    // Right: Financial Totals Box
+    // Totals Box Right
+    const totalsBoxX = margin + bottomBoxWidth + 6;
+    const totalsBoxWidth = bottomBoxWidth;
+    const totalsBoxHeight = 33.5;
+
     doc.setFillColor(248, 250, 252);
     doc.setDrawColor(203, 213, 225);
-    doc.roundedRect(totalsBoxX, y, totalsBoxWidth, totalsBoxHeight, 2, 2, "FD");
+    doc.roundedRect(totalsBoxX, y, totalsBoxWidth, totalsBoxHeight, 1.5, 1.5, "FD");
 
     let totalsY = y + 5;
     doc.setFont("helvetica", "normal");
@@ -419,7 +421,25 @@ export async function downloadQuotationDirectly(q: Quotation): Promise<boolean> 
     doc.setTextColor(71, 85, 105);
     doc.text("Authorized Signatory", pageWidth - margin - 22.5, y + 13.5, { align: "center" });
 
-    // Save File
+    return doc;
+  } catch (error) {
+    console.error("Direct PDF generation error:", error);
+    return null;
+  }
+}
+
+/**
+ * Downloads a clean, vector, high-resolution official PDF quotation proposal directly to the client disk
+ * using pure jsPDF and jspdf-autotable.
+ */
+export async function downloadQuotationDirectly(q: Quotation): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+
+  try {
+    const doc = await generateQuotationPDFDocument(q);
+    if (!doc) return false;
+
+    const quoteNo = q.quoteNumber || "TSE/QT/2026/0001";
     const sanitizedQuoteNo = quoteNo.replace(/[\/\\]/g, "-");
     const sanitizedCompany = (q.client?.company || "Client").replace(/[^\w\s-]/g, "").replace(/\s+/g, "_");
     const filename = `Quotation-${sanitizedQuoteNo}-${sanitizedCompany}.pdf`;
@@ -427,7 +447,7 @@ export async function downloadQuotationDirectly(q: Quotation): Promise<boolean> 
     doc.save(filename);
     return true;
   } catch (error) {
-    console.error("Direct PDF generation error:", error);
+    console.error("downloadQuotationDirectly error:", error);
     return false;
   }
 }
@@ -498,7 +518,7 @@ export function getQuotationHTML(q: Quotation): string {
         <div style="font-size: 13px; font-weight: 700; color: #0c1829;">${q.project?.title || "Turnkey Machinery Build"}</div>
         <div style="font-size: 11px; font-weight: 600; color: #1e3a8a; margin-top: 1px;">Category: ${q.project?.category || "Industrial Engineering"}</div>
         <div style="font-size: 10px; color: #334155; margin-top: 5px; line-height: 1.4;">
-          Delivery Schedule: <strong>${q.commercialTerms?.deliveryTimeline || "8 – 12 Weeks"}</strong><br/>
+          Delivery Schedule: <strong>${q.commercialTerms?.deliveryTimeline || "8 - 12 Weeks"}</strong><br/>
           Installation Plant: <strong>${q.client?.plantLocation || "Customer Plant Works"}</strong>
         </div>
         ${q.project?.referenceDocName ? `<div style="font-size: 10px; color: #1e3a8a; margin-top: 3px; font-weight: 600;">📎 Drawing / Scope Ref: ${q.project.referenceDocName}</div>` : ""}
@@ -586,7 +606,7 @@ export function getQuotationHTML(q: Quotation): string {
       <div style="font-weight: 700; text-transform: uppercase; color: #1e3a8a; font-size: 10px; margin-bottom: 6px;">Commercial Terms & Conditions:</div>
       <ol style="margin: 0; padding-left: 18px; line-height: 1.5; color: #334155;">
         <li><strong>Payment Terms:</strong> ${q.commercialTerms?.paymentTerms || "30% Advance with PO, 60% against FAT trial in Pune, 10% after commissioning."}</li>
-        <li><strong>Delivery Schedule:</strong> ${q.commercialTerms?.deliveryTimeline || "8 – 12 Weeks from drawing approval."}</li>
+        <li><strong>Delivery Schedule:</strong> ${q.commercialTerms?.deliveryTimeline || "8 - 12 Weeks from drawing approval."}</li>
         <li><strong>Factory Acceptance Trials (FAT):</strong> ${q.commercialTerms?.inspectionFAT || "100% FAT trial & workpiece testing at Pune plant prior to dispatch."}</li>
         <li><strong>Warranty:</strong> ${q.commercialTerms?.warranty || "12 Months from commissioning / 18 months from dispatch date."}</li>
         <li><strong>Freight:</strong> ${q.commercialTerms?.freightTerms || "Ex-Works Pune Plant. Freight, transit insurance & packaging extra at actuals."}</li>

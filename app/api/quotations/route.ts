@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
           currency: "INR",
           commercialTerms: {
             paymentTerms: "30% Advance with Purchase Order, 60% against successful FAT trial inspection at Pune works, 10% after site commissioning.",
-            deliveryTimeline: "8 – 10 Weeks from drawing approval & advance receipt.",
+            deliveryTimeline: "8 - 10 Weeks from drawing approval & advance receipt.",
             validityDays: 30,
             warranty: "12 Months from date of commissioning or 18 months from dispatch date.",
             freightTerms: "Ex-Works Pune Plant. Freight, packing, and transit insurance extra at actuals.",
@@ -158,7 +158,7 @@ export async function GET(request: NextRequest) {
           currency: "INR",
           commercialTerms: {
             paymentTerms: "40% Advance with PO, 50% on FAT inspection approval in Pune, 10% on handover.",
-            deliveryTimeline: "6 – 8 Weeks from layout signoff.",
+            deliveryTimeline: "6 - 8 Weeks from layout signoff.",
             validityDays: 30,
             warranty: "12 Months comprehensive warranty on mechanical & electrical assemblies.",
             freightTerms: "Ex-Works Pune.",
@@ -317,7 +317,7 @@ export async function POST(request: NextRequest) {
       currency: currency || "INR",
       commercialTerms: {
         paymentTerms: commercialTerms.paymentTerms || "30% Advance with PO, 60% against FAT trial approval in Pune, 10% after commissioning.",
-        deliveryTimeline: commercialTerms.deliveryTimeline || "8 – 12 Weeks from drawing approval & advance.",
+        deliveryTimeline: commercialTerms.deliveryTimeline || "8 - 12 Weeks from drawing approval & advance.",
         validityDays: Number(validityDays) || 30,
         warranty: commercialTerms.warranty || "12 Months from commissioning / 18 months from dispatch.",
         freightTerms: commercialTerms.freightTerms || "Ex-Works Pune Plant. Freight & insurance extra at actuals.",

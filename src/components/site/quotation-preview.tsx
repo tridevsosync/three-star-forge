@@ -97,14 +97,27 @@ export default function QuotationPreviewView({ params }: { params?: Promise<{ id
   const handleDirectDownload = async () => {
     if (!quotation) return;
     setIsDownloadingPdf(true);
+    const quoteId = quotation.id || (quotation as any)._id;
+
     try {
-      await downloadQuotationDirectly(quotation);
+      const ok = await downloadQuotationDirectly(quotation);
+      if (!ok) {
+        if (quoteId) {
+          window.location.href = `/api/quotations/${quoteId}/pdf`;
+        } else {
+          throw new Error("Direct PDF failed");
+        }
+      }
     } catch (err) {
       console.error("Direct PDF download fallback:", err);
-      const quoteNo = (quotation.quoteNumber || "Quotation").replace(/[\/\\]/g, "-");
-      const filename = `Quotation-${quoteNo}-${(quotation.client?.company || "Client").replace(/\s+/g, "_")}.pdf`;
-      const element = document.getElementById("printable-quotation-sheet") || document.body;
-      await downloadQuotationPDF(element, filename);
+      if (quoteId) {
+        window.location.href = `/api/quotations/${quoteId}/pdf`;
+      } else {
+        const quoteNo = (quotation.quoteNumber || "Quotation").replace(/[\/\\]/g, "-");
+        const filename = `Quotation-${quoteNo}-${(quotation.client?.company || "Client").replace(/\s+/g, "_")}.pdf`;
+        const element = document.getElementById("printable-quotation-sheet") || document.body;
+        await downloadQuotationPDF(element, filename);
+      }
     } finally {
       setIsDownloadingPdf(false);
     }
@@ -277,7 +290,7 @@ export default function QuotationPreviewView({ params }: { params?: Promise<{ id
             <h3 className="font-bold text-sm text-slate-900">{q.project?.title}</h3>
             <p className="font-semibold text-xs text-blue-800">Category: {q.project?.category || "Industrial Engineering"}</p>
             <div className="mt-2 text-xs text-slate-700 space-y-0.5">
-              <p>Delivery Schedule: <strong>{q.commercialTerms?.deliveryTimeline || "8 – 12 Weeks"}</strong></p>
+              <p>Delivery Schedule: <strong>{q.commercialTerms?.deliveryTimeline || "8 - 12 Weeks"}</strong></p>
               <p>Installation Plant: <strong>{q.client?.plantLocation || "Customer Works Site"}</strong></p>
               {q.project?.referenceDocName && (
                 <p className="text-[0.72rem] text-blue-800 mt-1">
@@ -383,7 +396,7 @@ export default function QuotationPreviewView({ params }: { params?: Promise<{ id
               <strong>Payment Terms:</strong> {q.commercialTerms?.paymentTerms || "30% Advance with Purchase Order, 60% against successful FAT trial inspection at Pune works, 10% after site commissioning."}
             </li>
             <li>
-              <strong>Delivery Timeline:</strong> {q.commercialTerms?.deliveryTimeline || "8 – 12 Weeks from drawing approval and advance receipt."}
+              <strong>Delivery Timeline:</strong> {q.commercialTerms?.deliveryTimeline || "8 - 12 Weeks from drawing approval and advance receipt."}
             </li>
             <li>
               <strong>Factory Acceptance Trials (FAT):</strong> {q.commercialTerms?.inspectionFAT || "100% FAT trial & workpiece cycle trial at Pune facility prior to dispatch."}

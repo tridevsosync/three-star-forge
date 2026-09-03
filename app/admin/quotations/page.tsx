@@ -438,12 +438,12 @@ function QuotationsPageInner() {
       if (ok) {
         flash(`✓ Downloaded ${q.quoteNumber} successfully!`);
       } else {
-        flash(`✓ PDF generation initiated`);
+        window.location.href = `/api/quotations/${itemId}/pdf`;
+        flash(`✓ Downloading ${q.quoteNumber} via server...`);
       }
     } catch (e) {
       console.error("Direct PDF download error:", e);
-      flash("⚠️ Direct download issue, opening preview...");
-      window.open(`/admin/quotations/${itemId}/preview`, "_blank");
+      window.location.href = `/api/quotations/${itemId}/pdf`;
     } finally {
       setDownloadingId(null);
     }
@@ -1326,7 +1326,7 @@ function QuotationsPageInner() {
                     rows={2}
                     value={formDeliveryTimeline}
                     onChange={(e) => setFormDeliveryTimeline(e.target.value)}
-                    placeholder="e.g. 8 – 12 Weeks from drawing approval and advance receipt"
+                    placeholder="e.g. 8 - 12 Weeks from drawing approval and advance receipt"
                     className="mt-1 w-full rounded-xl border border-line bg-background p-2.5 font-sans text-xs text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none"
                   />
                 </div>

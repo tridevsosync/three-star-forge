@@ -138,7 +138,7 @@ const QuotationSchema = new Schema<IQuotation>(
       },
       deliveryTimeline: {
         type: String,
-        default: "8 – 12 Weeks from drawing approval and advance receipt.",
+        default: "8 - 12 Weeks from drawing approval and advance receipt.",
         trim: true,
       },
       validityDays: {
