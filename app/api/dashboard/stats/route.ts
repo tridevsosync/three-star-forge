@@ -7,6 +7,8 @@ import Content from "@/models/Content";
 import Feedback from "@/models/Feedback";
 import { requireAdmin } from "@/lib/admin-auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   const unauthorized = requireAdmin(request);
   if (unauthorized) return unauthorized;

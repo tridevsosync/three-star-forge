@@ -4,6 +4,8 @@ import path from "path";
 import { connectToDatabase } from "@/lib/mongodb";
 import Feedback from "@/models/Feedback";
 
+export const dynamic = "force-dynamic";
+
 const localFilePath = path.join(process.cwd(), "src/data/feedback.json");
 
 function getLocalApprovedFeedback(typeFilter?: string): any[] {

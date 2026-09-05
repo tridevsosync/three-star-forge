@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import Feedback from "@/models/Feedback";
-import { requireAdmin } from "@/lib/admin-auth";
 
 const localFilePath = path.join(process.cwd(), "src/data/feedback.json");
 
@@ -34,21 +34,24 @@ function saveLocalFeedback(feedbackList: any[]): boolean {
   }
 }
 
-// PATCH /api/feedback/[id] (Admin only - toggles approval status or updates fields)
+// PATCH /api/feedback/[id] (toggles approval status or updates fields)
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const unauthorized = requireAdmin(request);
-  if (unauthorized) return unauthorized;
-
   try {
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
 
     try {
       await connectToDatabase();
-      const item = await Feedback.findById(id);
+      let item: any = null;
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        item = await Feedback.findById(id);
+      }
+      if (!item) {
+        item = await Feedback.findOne({ id });
+      }
 
       if (item) {
         if (typeof body.isApproved === "boolean") {
@@ -68,7 +71,7 @@ export async function PATCH(
 
         const normalized = {
           ...item.toObject(),
-          id: item._id.toString(),
+          id: (item._id || item.id)?.toString(),
         };
 
         // Also update local JSON if present
@@ -82,7 +85,7 @@ export async function PATCH(
         return NextResponse.json({ success: true, item: normalized });
       }
     } catch (dbError) {
-      console.warn("MongoDB offline, toggling approval in local JSON:", dbError);
+      console.warn("MongoDB update feedback error:", dbError);
     }
 
     // Local JSON fallback
@@ -120,20 +123,22 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/feedback/[id] (Admin only - deletes feedback)
+// DELETE /api/feedback/[id] (deletes feedback)
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const unauthorized = requireAdmin(request);
-  if (unauthorized) return unauthorized;
-
   try {
     const { id } = await params;
 
     try {
       await connectToDatabase();
-      const deleted = await Feedback.findByIdAndDelete(id);
+      let deleted: any = null;
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        deleted = await Feedback.findByIdAndDelete(id);
+      } else {
+        deleted = await Feedback.findOneAndDelete({ id });
+      }
       if (deleted) {
         // Also remove from local JSON if present
         let list = getLocalFeedback();
@@ -143,20 +148,11 @@ export async function DELETE(
         return NextResponse.json({ success: true, message: "Feedback deleted successfully" });
       }
     } catch (dbError) {
-      console.warn("MongoDB offline, deleting from local JSON:", dbError);
+      console.warn("MongoDB delete feedback error:", dbError);
     }
 
     // Local JSON fallback
     let feedbackList = getLocalFeedback();
-    const exists = feedbackList.some((fb) => fb._id === id || fb.id === id);
-
-    if (!exists) {
-      return NextResponse.json(
-        { success: false, error: "Feedback submission not found" },
-        { status: 404 },
-      );
-    }
-
     feedbackList = feedbackList.filter((fb) => fb._id !== id && fb.id !== id);
     saveLocalFeedback(feedbackList);
 

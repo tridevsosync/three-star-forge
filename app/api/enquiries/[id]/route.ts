@@ -12,7 +12,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       item = await Enquiry.findById(id).lean();
     }
     if (!item) {
-      item = await Enquiry.findOne({ $or: [{ _id: id }, { id }] }).lean();
+      item = await Enquiry.findOne({ id }).lean();
     }
     if (!item) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
     return NextResponse.json({ success: true, data: { ...item, id: item._id?.toString() || item.id || id } });
@@ -37,7 +37,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
     if (!updated) {
       updated = await Enquiry.findOneAndUpdate(
-        { $or: [{ _id: id }, { id }] },
+        { id },
         { $set: body },
         { new: true, runValidators: true },
       ).lean();
@@ -61,7 +61,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
     if (mongoose.Types.ObjectId.isValid(id)) {
       await Enquiry.findByIdAndDelete(id);
     } else {
-      await Enquiry.deleteOne({ $or: [{ _id: id }, { id }] });
+      await Enquiry.deleteOne({ id });
     }
     return NextResponse.json({ success: true, message: "Quotation request deleted" });
   } catch (error: any) {

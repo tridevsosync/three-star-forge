@@ -5,6 +5,8 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Feedback from "@/models/Feedback";
 import { requireAdmin } from "@/lib/admin-auth";
 
+export const dynamic = "force-dynamic";
+
 const localFilePath = path.join(process.cwd(), "src/data/feedback.json");
 
 function getLocalFeedback(): any[] {

@@ -2,26 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import Gallery from "@/models/Gallery";
-import { DEMO_GALLERY } from "@/data/site";
 import { deleteFromCloudinary } from "@/lib/cloudinary";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
     await connectToDatabase();
-    let items = await Gallery.find({}).sort({ order: 1, createdAt: -1 }).lean();
-    if (!items || items.length === 0) {
-      const seeded = await Gallery.insertMany(
-        DEMO_GALLERY.map((g: any, idx: number) => ({
-          title: g.title,
-          category: g.category,
-          image: g.image,
-          featured: Boolean(g.featured),
-          featuredInHero: Boolean(g.featuredInHero),
-          order: idx,
-        })),
-      );
-      items = seeded.map((s: any) => s.toObject());
-    }
+    const items = await Gallery.find({}).sort({ order: 1, createdAt: -1 }).lean();
 
     const normalized = items.map((item: any) => ({
       ...item,
@@ -97,12 +85,11 @@ export async function DELETE(request: NextRequest) {
 
     if (Array.isArray(ids) && ids.length > 0) {
       const validObjectIds = ids.filter((id: string) => mongoose.Types.ObjectId.isValid(id));
-      const itemsToDelete = await Gallery.find({
-        $or: [
-          ...(validObjectIds.length > 0 ? [{ _id: { $in: validObjectIds } }] : []),
-          { id: { $in: ids } },
-        ],
-      });
+      const filter = validObjectIds.length > 0
+        ? { $or: [{ _id: { $in: validObjectIds } }, { id: { $in: ids } }] }
+        : { id: { $in: ids } };
+
+      const itemsToDelete = await Gallery.find(filter);
 
       for (const item of itemsToDelete) {
         if (item.cloudinaryPublicId) {
@@ -110,12 +97,7 @@ export async function DELETE(request: NextRequest) {
         }
       }
 
-      await Gallery.deleteMany({
-        $or: [
-          ...(validObjectIds.length > 0 ? [{ _id: { $in: validObjectIds } }] : []),
-          { id: { $in: ids } },
-        ],
-      });
+      await Gallery.deleteMany(filter);
 
       return NextResponse.json({
         success: true,

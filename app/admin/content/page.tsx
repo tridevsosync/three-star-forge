@@ -398,23 +398,30 @@ function AdminContentPageInner() {
     const itemId = item.id || item._id || item.name || item.title || item.question || item.author;
     try {
       const currentList = values[section] || [];
-      update(
-        section as any,
-        currentList.filter((i: any) => {
-          if (item.id && (i.id === item.id || i._id === item.id)) return false;
-          if (item._id && (i.id === item._id || i._id === item._id)) return false;
-          if (item.name && i.name === item.name) return false;
-          if (item.title && i.title === item.title) return false;
-          if (item.question && i.question === item.question) return false;
-          if (item.author && i.author === item.author) return false;
-          if (itemId && (i.id === itemId || i._id === itemId)) return false;
-          return true;
-        }),
-      );
+      const updatedList = currentList.filter((i: any) => {
+        if (item.id && (i.id === item.id || i._id === item.id)) return false;
+        if (item._id && (i.id === item._id || i._id === item._id)) return false;
+        if (item.name && i.name === item.name) return false;
+        if (item.title && i.title === item.title) return false;
+        if (item.question && i.question === item.question) return false;
+        if (item.author && i.author === item.author) return false;
+        if (itemId && (i.id === itemId || i._id === itemId)) return false;
+        return true;
+      });
+
+      update(section as any, updatedList);
       setDeletingItem(null);
       flash(`✓ Deleted item from ${section}`);
+
+      // Persist full updated list to database
+      await fetch(`/api/content/${section}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedList),
+      });
+
       if (itemId) {
-        await fetch(`/api/content/${section}/${encodeURIComponent(itemId)}`, { method: "DELETE" });
+        await fetch(`/api/content/${section}/${encodeURIComponent(itemId)}`, { method: "DELETE" }).catch(() => {});
       }
     } catch {
       /* ignore */

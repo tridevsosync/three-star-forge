@@ -1,34 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Project from "@/models/Project";
-import { PROJECTS } from "@/data/site";
-import { requireAdmin } from "@/lib/admin-auth";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
     await connectToDatabase();
-    let projects = await Project.find({}).sort({ createdAt: -1 }).lean();
-    if (!projects || projects.length === 0) {
-      const seeded = await Project.insertMany(
-        PROJECTS.map((p: any) => ({
-          title: p.title,
-          industry: p.industry,
-          category: p.category,
-          image: p.image,
-          description: p.description,
-          challenge: p.challenge,
-          solution: p.solution,
-          features: p.features || [],
-          specifications: p.specifications || {},
-          gallery: p.gallery || [],
-          results: p.results || [],
-          scope: p.scope || [],
-          timeline: p.timeline || "",
-          status: p.status || "Completed",
-        })),
-      );
-      projects = seeded.map((s: any) => s.toObject());
-    }
+    const projects = await Project.find({}).sort({ createdAt: -1 }).lean();
     return NextResponse.json({
       success: true,
       data: projects.map((project: any) => ({
@@ -44,9 +23,7 @@ export async function GET() {
   }
 }
 
-export async function DELETE(request: NextRequest) {
-  const unauthorized = requireAdmin(request);
-  if (unauthorized) return unauthorized;
+export async function DELETE(_request: NextRequest) {
   try {
     await connectToDatabase();
     const result = await Project.deleteMany({});
@@ -60,8 +37,6 @@ export async function DELETE(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const unauthorized = requireAdmin(request);
-  if (unauthorized) return unauthorized;
   try {
     await connectToDatabase();
     const body = await request.json();

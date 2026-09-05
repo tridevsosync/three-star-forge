@@ -12,7 +12,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       item = await Contact.findById(id).lean();
     }
     if (!item) {
-      item = await Contact.findOne({ $or: [{ _id: id }, { id }] }).lean();
+      item = await Contact.findOne({ id }).lean();
     }
     if (!item) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
     return NextResponse.json({ success: true, data: { ...item, id: item._id?.toString() || item.id || id } });
@@ -37,7 +37,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
     if (!updated) {
       updated = await Contact.findOneAndUpdate(
-        { $or: [{ _id: id }, { id }] },
+        { id },
         { $set: body },
         { new: true, runValidators: true },
       ).lean();
@@ -61,7 +61,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
     if (mongoose.Types.ObjectId.isValid(id)) {
       await Contact.findByIdAndDelete(id);
     } else {
-      await Contact.deleteOne({ $or: [{ _id: id }, { id }] });
+      await Contact.deleteOne({ id });
     }
     return NextResponse.json({ success: true, message: "Contact deleted" });
   } catch (error: any) {

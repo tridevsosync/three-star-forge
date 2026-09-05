@@ -13,7 +13,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       item = await Quotation.findById(id).lean();
     }
     if (!item) {
-      item = await Quotation.findOne({ $or: [{ _id: id }, { quoteNumber: id }] }).lean();
+      item = await Quotation.findOne({ $or: [{ quoteNumber: id }, { id }] }).lean();
     }
 
     if (!item) {
@@ -84,7 +84,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
     if (!updated) {
       updated = await Quotation.findOneAndUpdate(
-        { $or: [{ _id: id }, { quoteNumber: id }] },
+        { $or: [{ quoteNumber: id }, { id }] },
         { $set: body },
         { new: true, runValidators: true },
       ).lean();
@@ -114,15 +114,11 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
       deleted = await Quotation.findByIdAndDelete(id);
     }
     if (!deleted) {
-      deleted = await Quotation.findOneAndDelete({ $or: [{ _id: id }, { quoteNumber: id }] });
-    }
-
-    if (!deleted) {
-      return NextResponse.json({ success: false, error: "Quotation not found" }, { status: 404 });
+      deleted = await Quotation.findOneAndDelete({ $or: [{ quoteNumber: id }, { id }] });
     }
 
     return NextResponse.json({ success: true, message: "Quotation deleted successfully" });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
-}
+}

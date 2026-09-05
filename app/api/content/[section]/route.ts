@@ -14,6 +14,8 @@ import {
 } from "@/data/site";
 import { requireAdmin } from "@/lib/admin-auth";
 
+export const dynamic = "force-dynamic";
+
 const defaults: Record<string, any> = {
   company: COMPANY,
   home: HOME_CONTENT,
@@ -50,7 +52,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       );
     await connectToDatabase();
     let record: any = await Content.findOne({ section });
-    if (!record || (Array.isArray(record.data) && record.data.length === 0)) {
+    if (!record) {
       record = await Content.findOneAndUpdate(
         { section },
         { section, data: normalizeItems(defaults[section]) },

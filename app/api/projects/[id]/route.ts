@@ -12,7 +12,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       project = await Project.findById(id);
     }
     if (!project) {
-      project = await Project.findOne({ $or: [{ _id: id }, { id }, { title: id }] });
+      project = await Project.findOne({ $or: [{ id }, { title: id }] });
     }
     if (!project)
       return NextResponse.json({ success: false, error: "Project not found" }, { status: 404 });
@@ -39,7 +39,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       });
     }
     if (!project) {
-      project = await Project.findOneAndUpdate({ $or: [{ _id: id }, { id }] }, updateData, {
+      project = await Project.findOneAndUpdate({ id }, updateData, {
         returnDocument: "after",
         runValidators: false,
       });
@@ -62,7 +62,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
     if (mongoose.Types.ObjectId.isValid(id)) {
       await Project.findByIdAndDelete(id);
     } else {
-      await Project.deleteOne({ $or: [{ _id: id }, { id }, { title: id }] });
+      await Project.deleteOne({ $or: [{ id }, { title: id }] });
     }
     return NextResponse.json({ success: true, message: "Project deleted" });
   } catch (error: any) {

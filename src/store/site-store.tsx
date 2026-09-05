@@ -325,18 +325,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const persisted = {
-        ...state,
-        company: initialState.company,
-        home: initialState.home,
-        services: initialState.services,
-        industries: initialState.industries,
-        capabilities: initialState.capabilities,
-        projects: initialState.projects,
-        faqs: initialState.faqs,
-        testimonials: initialState.testimonials,
-      };
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {
       /* ignore */
     }

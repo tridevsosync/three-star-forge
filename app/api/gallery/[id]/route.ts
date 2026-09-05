@@ -13,7 +13,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       item = await Gallery.findById(id).lean();
     }
     if (!item) {
-      item = await Gallery.findOne({ $or: [{ _id: id }, { id }] }).lean();
+      item = await Gallery.findOne({ id }).lean();
     }
 
     if (!item) {
@@ -40,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       existing = await Gallery.findById(id);
     }
     if (!existing) {
-      existing = await Gallery.findOne({ $or: [{ _id: id }, { id }] });
+      existing = await Gallery.findOne({ id });
     }
 
     if (!existing) {
@@ -57,7 +57,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       if (mongoose.Types.ObjectId.isValid(id)) {
         await Gallery.updateMany({ _id: { $ne: id } }, { featuredInHero: false });
       } else {
-        await Gallery.updateMany({ id: { $ne: id }, _id: { $ne: id } }, { featuredInHero: false });
+        await Gallery.updateMany({ id: { $ne: id } }, { featuredInHero: false });
       }
     }
 
@@ -77,7 +77,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       updated = await Gallery.findByIdAndUpdate(id, updateData, { returnDocument: "after", runValidators: false }).lean();
     }
     if (!updated) {
-      updated = await Gallery.findOneAndUpdate({ $or: [{ _id: id }, { id }] }, updateData, { returnDocument: "after", runValidators: false }).lean();
+      updated = await Gallery.findOneAndUpdate({ id }, updateData, { returnDocument: "after", runValidators: false }).lean();
     }
 
     return NextResponse.json({
@@ -101,7 +101,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
       item = await Gallery.findById(id);
     }
     if (!item) {
-      item = await Gallery.findOne({ $or: [{ _id: id }, { id }] });
+      item = await Gallery.findOne({ id });
     }
 
     if (item && item.cloudinaryPublicId) {
@@ -111,7 +111,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
     if (mongoose.Types.ObjectId.isValid(id)) {
       await Gallery.findByIdAndDelete(id);
     } else {
-      await Gallery.deleteOne({ $or: [{ _id: id }, { id }] });
+      await Gallery.deleteOne({ id });
     }
 
     return NextResponse.json({
