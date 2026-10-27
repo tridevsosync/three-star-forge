@@ -141,11 +141,43 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col gap-4 border-t border-onnavy/12 py-7 text-xs text-onnavy-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>
+        <div className="flex flex-col gap-5 border-t border-onnavy/12 py-7 text-xs text-onnavy-muted md:flex-row md:items-center md:justify-between">
+          <p className="order-1 md:order-1">
             © {year} {company.name}. All rights reserved. Precision OEM Partner.
           </p>
-          <div className="flex flex-wrap items-center gap-6">
+
+          {/* Non-removable Hardcoded Developer Attribution */}
+          <div className="order-2 flex flex-wrap items-center gap-2">
+            <span className="text-onnavy-muted/80">Designed &amp; developed by</span>
+            <a
+              href="https://www.sosyncaitech.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="SOSync AI Tech - https://www.sosyncaitech.in/"
+              className="group inline-flex items-center gap-2 rounded-md border border-onnavy/15 bg-navy-soft/80 px-2.5 py-1 transition-all duration-200 hover:border-accent/50 hover:bg-navy-soft"
+            >
+              <span className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded bg-white p-0.5 shadow-sm transition-transform duration-200 group-hover:scale-110">
+                <img
+                  src="/images/sosync-logo.jpg"
+                  alt="SOSync AI Tech Logo"
+                  className="h-full w-full object-contain"
+                />
+              </span>
+              <span className="font-semibold text-white transition-colors duration-200 group-hover:text-accent">
+                SOSync AI Tech
+              </span>
+              <svg
+                className="h-3 w-3 text-onnavy-muted opacity-60 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-accent group-hover:opacity-100"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
+
+          <div className="order-3 flex flex-wrap items-center gap-6">
             <button
               onClick={scrollToTop}
               className="flex items-center gap-1.5 text-accent hover:underline transition-all"
